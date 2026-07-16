@@ -1,6 +1,6 @@
-# CUMT Aletheion AI Lab Website
+# CUMT Alethic Insight AI Lab Website
 
-Public website source for CUMT Aletheion AI Lab.
+Public website source for CUMT Alethic Insight AI Lab.
 
 ## Development
 
@@ -20,4 +20,4 @@ The site is built with Vite and deploys as static files from `dist/`.
 
 Do not commit credentials, deployment tokens, private analytics keys, unreleased internal materials, recruitment questions, interview records, scoring rubrics, or candidate data.
 
-Contact: contact@aletheion.cn
+Contact: contact@alethicinsight.org

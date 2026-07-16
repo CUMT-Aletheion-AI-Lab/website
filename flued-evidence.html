@@ -1,0 +1,501 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="FLUED training curves and strict masked-source evidence browser."
+    />
+    <meta name="theme-color" content="#070809" />
+    <meta property="og:title" content="FLUED Evidence · Alethic Insight" />
+    <meta
+      property="og:description"
+      content="可交互浏览 FLUED v2 / v3 训练曲线、消融趋势和 strict masked-source 证据。"
+    />
+    <meta property="og:type" content="website" />
+    <title>FLUED Evidence · Alethic Insight</title>
+    <link rel="icon" href="/mark.svg" type="image/svg+xml" />
+    <script>
+      (() => {
+        let theme = "dark";
+        try {
+          theme = localStorage.getItem("theme") || "dark";
+        } catch {
+          theme = "dark";
+        }
+        document.documentElement.dataset.theme =
+          theme === "light" ? "light" : "dark";
+      })();
+    </script>
+    <link rel="stylesheet" href="/src/styles.css" />
+  </head>
+  <body>
+    <div class="site-shell project-page evidence-page">
+      <header class="site-header" data-site-header>
+        <a class="brand" href="/index.html#top" aria-label="Alethic Insight home">
+          <img src="/mark.svg" alt="" width="32" height="32" />
+          <span>Alethic Insight</span>
+        </a>
+        <nav class="nav-links" aria-label="Evidence navigation">
+          <a href="/flued.html">FLUED</a>
+          <a href="#curves">曲线</a>
+          <a href="/flued-experiments.html">实验档案</a>
+          <a href="#strict">Strict Mask</a>
+          <a href="#reading">读法</a>
+        </nav>
+        <div class="header-controls">
+          <button
+            class="theme-toggle"
+            type="button"
+            data-theme-toggle
+            aria-label="切换到亮色主题"
+            aria-pressed="false"
+          >
+            <span class="theme-toggle-track" aria-hidden="true">
+              <span class="theme-toggle-thumb"></span>
+            </span>
+            <span data-theme-toggle-label>Dark</span>
+          </button>
+          <a class="header-action" href="https://github.com/wdd9700/FLUED/tree/copilot/implement-stage-a-experiments">
+            GitHub
+          </a>
+        </div>
+      </header>
+
+      <main>
+        <section class="project-hero evidence-hero section-observe" id="top">
+          <div class="page-grid project-hero-grid">
+            <div class="project-hero-copy">
+              <a class="back-link" href="/flued.html#evidence">返回 FLUED 主页面</a>
+              <p class="eyebrow">FLUED Evidence Browser</p>
+              <h1>训练曲线与证据边界</h1>
+              <p class="hero-lede">100-step logs, no downsampling</p>
+              <p class="project-lede">
+                这里把 v2 稳定性、去噪比例、压缩控制和 v3 strict masked-source
+                对照拆开展示。v1 历史阳性只作为历史背景，不混入 v2 公平 D1 结论。
+              </p>
+              <div class="hero-actions">
+                <a class="button button-primary" href="#curves">Open curves</a>
+                <a class="button button-secondary" href="#strict">Compare strict mask</a>
+              </div>
+            </div>
+            <aside class="project-signal evidence-signal" aria-label="Evidence rules">
+              <div class="signal-title">evidence rules</div>
+              <ol>
+                <li>draw raw 100-step log points</li>
+                <li>keep NaN as failure signal</li>
+                <li>separate historical and fair runs</li>
+                <li>mask bytes before encode</li>
+                <li>show source paths for audit</li>
+              </ol>
+            </aside>
+          </div>
+        </section>
+
+        <section class="section page-grid section-observe" id="curves" aria-labelledby="curves-title">
+          <div class="section-heading">
+            <p class="section-kicker">Training Curves</p>
+            <h2 id="curves-title">同一页切换实验组和指标，直接对比训练动力学</h2>
+            <p>
+              曲线数据来自归档中的原始 <code>run.log</code>，按日志实际 100-step 粒度绘制。
+              前端只做平滑连线，不做抽样；NaN 会表现为曲线断裂和异常标记。
+            </p>
+          </div>
+
+          <div class="evidence-workbench">
+            <aside class="evidence-controls" aria-label="Curve controls">
+              <div>
+                <span class="control-label">实验组</span>
+                <div class="segmented-row" data-group-controls>
+                  <button class="is-active" type="button" data-group="v2_seeds">v2 seeds</button>
+                  <button type="button" data-group="denoise_scan">denoise</button>
+                  <button type="button" data-group="compression_scan">compression</button>
+                </div>
+              </div>
+              <div>
+                <span class="control-label">指标</span>
+                <div class="metric-button-grid" data-metric-controls>
+                  <button class="is-active" type="button" data-metric="loss">loss</button>
+                  <button type="button" data-metric="recon_acc">recon acc</button>
+                  <button type="button" data-metric="soft_mn">m/n</button>
+                  <button type="button" data-metric="bp_std">bp std</button>
+                  <button type="button" data-metric="bhead_gnorm">grad norm</button>
+                  <button type="button" data-metric="type_cjk">CJK bp</button>
+                  <button type="button" data-metric="type_utf8">UTF-8 bp</button>
+                  <button type="button" data-metric="type_op">op bp</button>
+                </div>
+              </div>
+              <div class="evidence-note" data-group-note>
+                正在加载训练曲线。
+              </div>
+            </aside>
+
+            <div class="chart-panel">
+              <div class="chart-panel-head">
+                <div>
+                  <span class="section-kicker">selected metric</span>
+                  <h3 data-chart-title>loss</h3>
+                </div>
+                <div class="chart-meta" data-chart-meta>loading</div>
+              </div>
+              <svg class="chart-svg" data-curve-chart viewBox="0 0 980 420" role="img" aria-label="FLUED training curve"></svg>
+              <div class="chart-legend" data-chart-legend></div>
+            </div>
+          </div>
+
+          <div class="run-table" data-run-table aria-label="Selected run summaries"></div>
+        </section>
+
+        <section class="section page-grid section-observe" id="strict" aria-labelledby="strict-title">
+          <div class="section-heading">
+            <p class="section-kicker">Strict Masked-Source</p>
+            <h2 id="strict-title">先在 byte 输入层 mask，再让 FLUED 编码</h2>
+            <p>
+              这组对照用于排除 clean encode 后再遮 readout 的信息侧漏。当前最干净的 v3-family
+              主证据是 v3.2.1 latent readout 让小 backbone 的 mask 补全从 0.1440 提升到约 0.1898。
+            </p>
+          </div>
+
+          <div class="strict-browser">
+            <div class="strict-controls">
+              <span class="control-label">对照指标</span>
+              <div class="segmented-row" data-strict-controls>
+                <button class="is-active" type="button" data-strict-metric="mask_acc">mask acc</button>
+                <button type="button" data-strict-metric="byte_ce">byte CE</button>
+                <button type="button" data-strict-metric="delta_acc_vs_byte">delta acc</button>
+                <button type="button" data-strict-metric="delta_ce_vs_byte">delta CE</button>
+              </div>
+            </div>
+            <div class="bar-panel" data-strict-bars></div>
+          </div>
+
+          <div class="evidence-table strict-table" role="table" aria-label="Strict masked-source full table" data-strict-table></div>
+        </section>
+
+        <section class="section page-grid section-observe" id="reading" aria-labelledby="reading-title">
+          <div class="section-heading">
+            <p class="section-kicker">How To Read</p>
+            <h2 id="reading-title">这页回答“训练是否稳定”，不直接替代论文指标</h2>
+          </div>
+          <div class="claim-columns">
+            <div>
+              <h3>应该看什么</h3>
+              <ul>
+                <li><code>recon_acc</code> 是否稳定上升，而不是只看最终点。</li>
+                <li><code>soft_m/n</code> 是否被压缩目标牵引，还是被去噪任务推高。</li>
+                <li><code>bp_std</code> 是否形成边界分化，避免全体边界概率塌成常数。</li>
+                <li>压缩扫描里的 NaN 不是坏点，而是训练动力学失稳的证据。</li>
+              </ul>
+            </div>
+            <div>
+              <h3>不应该混用什么</h3>
+              <ul>
+                <li>v1 历史 BPB 阳性不能覆盖 v2 2048-byte / 100K 公平矩阵。</li>
+                <li>reconstruction accuracy 不能等价成 latent semantic quality。</li>
+                <li>memory 在 clean reconstruction 中的收益不能直接宣称为严格补全收益。</li>
+                <li>v3.3 当前是架构和消融入口，不是已完成 SOTA 结果。</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer class="site-footer page-grid">
+        <span>FLUED Evidence · Alethic Insight</span>
+        <div>
+          <a href="/flued.html">FLUED</a>
+          <a href="https://github.com/wdd9700/FLUED/tree/copilot/implement-stage-a-experiments">GitHub</a>
+          <a href="mailto:contact@alethicinsight.org">Contact</a>
+        </div>
+      </footer>
+    </div>
+
+    <script type="module" src="/src/main.js"></script>
+    <script type="module">
+      const metrics = {
+        loss: { label: "total loss", digits: 3, zero: true },
+        recon_acc: { label: "reconstruction accuracy", digits: 3, domain: [0, 1] },
+        soft_mn: { label: "soft m/n compression ratio", digits: 3 },
+        bp_std: { label: "boundary probability std", digits: 3, domain: [0, 0.5] },
+        bhead_gnorm: { label: "boundary-head gradient norm", digits: 3, zero: true },
+        type_cjk: { label: "CJK boundary prior", digits: 3, domain: [0, 1] },
+        type_utf8: { label: "UTF-8 boundary prior", digits: 3, domain: [0, 1] },
+        type_op: { label: "operator boundary prior", digits: 3, domain: [0, 1] },
+      };
+
+      const groupNotes = {
+        v2_seeds:
+          "v2 A-class 用来证明可微边界和重建稳定性。当前曲线只绘制能追溯到原始 run.log 的 seed=123 / seed=999 点列，三种子聚合指标仍以归档 summary 为准。",
+        denoise_scan:
+          "AB2 显示去噪比例 0.3 到 0.9 都能学会重建，但去噪越重，soft m/n 往往越高，说明模型倾向保留更多 latent unit 来降低任务难度。",
+        compression_scan:
+          "AB1 是训练动力学反例：提高 compression pressure 会让部分 target 出现 NaN，说明 v2 的压缩控制不是一个可随意调参的稳定旋钮。",
+      };
+
+      const strictMetrics = {
+        mask_acc: { label: "mask accuracy", digits: 4, higherBetter: true },
+        byte_ce: { label: "byte cross entropy", digits: 4, higherBetter: false },
+        delta_acc_vs_byte: { label: "delta accuracy vs byte", digits: 4, higherBetter: true },
+        delta_ce_vs_byte: { label: "delta CE vs byte", digits: 4, higherBetter: true },
+      };
+
+      const state = {
+        group: "v2_seeds",
+        metric: "loss",
+        strictMetric: "mask_acc",
+        payload: null,
+      };
+
+      const chart = document.querySelector("[data-curve-chart]");
+      const legend = document.querySelector("[data-chart-legend]");
+      const chartTitle = document.querySelector("[data-chart-title]");
+      const chartMeta = document.querySelector("[data-chart-meta]");
+      const groupNote = document.querySelector("[data-group-note]");
+      const runTable = document.querySelector("[data-run-table]");
+      const strictBars = document.querySelector("[data-strict-bars]");
+      const strictTable = document.querySelector("[data-strict-table]");
+
+      const fmt = (value, digits = 3) => {
+        if (value === null || value === undefined || Number.isNaN(Number(value))) return "n/a";
+        return Number(value).toFixed(digits);
+      };
+
+      const esc = (value) =>
+        String(value ?? "").replace(/[&<>"']/g, (char) => ({
+          "&": "&amp;",
+          "<": "&lt;",
+          ">": "&gt;",
+          '"': "&quot;",
+          "'": "&#039;",
+        })[char]);
+
+      const visibleRuns = () =>
+        state.payload.runs.filter((run) => run.group === state.group && !run.missing);
+
+      const valueAt = (point, metric) => {
+        const value = point?.[metric];
+        return typeof value === "number" && Number.isFinite(value) ? value : null;
+      };
+
+      const domainFor = (runs, metric) => {
+        const spec = metrics[metric];
+        if (spec.domain) return spec.domain;
+        const values = runs.flatMap((run) =>
+          run.points.map((point) => valueAt(point, metric)).filter((value) => value !== null)
+        );
+        if (!values.length) return [0, 1];
+        let min = Math.min(...values);
+        let max = Math.max(...values);
+        if (spec.zero) min = 0;
+        if (min === max) {
+          min -= 0.5;
+          max += 0.5;
+        }
+        const pad = (max - min) * 0.08;
+        return [min - pad, max + pad];
+      };
+
+      const smoothPath = (coords) => {
+        if (!coords.length) return "";
+        if (coords.length === 1) return `M ${coords[0].x} ${coords[0].y}`;
+        let d = `M ${coords[0].x.toFixed(2)} ${coords[0].y.toFixed(2)}`;
+        for (let i = 1; i < coords.length - 1; i += 1) {
+          const midX = (coords[i].x + coords[i + 1].x) / 2;
+          const midY = (coords[i].y + coords[i + 1].y) / 2;
+          d += ` Q ${coords[i].x.toFixed(2)} ${coords[i].y.toFixed(2)} ${midX.toFixed(2)} ${midY.toFixed(2)}`;
+        }
+        const last = coords[coords.length - 1];
+        d += ` L ${last.x.toFixed(2)} ${last.y.toFixed(2)}`;
+        return d;
+      };
+
+      const splitSegments = (run, metric, xScale, yScale) => {
+        const segments = [];
+        let current = [];
+        run.points.forEach((point) => {
+          const value = valueAt(point, metric);
+          if (value === null) {
+            if (current.length) segments.push(current);
+            current = [];
+            return;
+          }
+          current.push({ x: xScale(point.step), y: yScale(value), step: point.step, value });
+        });
+        if (current.length) segments.push(current);
+        return segments;
+      };
+
+      const renderCurve = () => {
+        if (!state.payload) return;
+        const runs = visibleRuns();
+        const metric = state.metric;
+        const spec = metrics[metric];
+        const width = 980;
+        const height = 420;
+        const pad = { left: 72, right: 26, top: 28, bottom: 54 };
+        const plotWidth = width - pad.left - pad.right;
+        const plotHeight = height - pad.top - pad.bottom;
+        const maxStep = Math.max(...runs.flatMap((run) => run.points.map((point) => point.step)));
+        const [yMin, yMax] = domainFor(runs, metric);
+        const xScale = (step) => pad.left + (step / maxStep) * plotWidth;
+        const yScale = (value) => pad.top + (1 - (value - yMin) / (yMax - yMin)) * plotHeight;
+        const xTicks = [0, 0.25, 0.5, 0.75, 1].map((ratio) => Math.round(maxStep * ratio / 100) * 100);
+        const yTicks = [0, 0.25, 0.5, 0.75, 1].map((ratio) => yMin + (yMax - yMin) * ratio);
+
+        const grid = [
+          ...xTicks.map((tick) => `
+            <g class="chart-grid">
+              <line x1="${xScale(tick).toFixed(2)}" x2="${xScale(tick).toFixed(2)}" y1="${pad.top}" y2="${height - pad.bottom}"></line>
+              <text x="${xScale(tick).toFixed(2)}" y="${height - 18}" text-anchor="middle">${tick >= 1000 ? `${Math.round(tick / 1000)}k` : tick}</text>
+            </g>`),
+          ...yTicks.map((tick) => `
+            <g class="chart-grid">
+              <line x1="${pad.left}" x2="${width - pad.right}" y1="${yScale(tick).toFixed(2)}" y2="${yScale(tick).toFixed(2)}"></line>
+              <text x="56" y="${(yScale(tick) + 4).toFixed(2)}" text-anchor="end">${fmt(tick, spec.digits)}</text>
+            </g>`),
+        ].join("");
+
+        const paths = runs.map((run) => {
+          const segments = splitSegments(run, metric, xScale, yScale);
+          const segmentPaths = segments.map((segment) => `
+            <path class="chart-line" d="${smoothPath(segment)}" style="--line-color:${run.color}"></path>
+          `).join("");
+          const firstNan = run.nanSteps?.[0];
+          const nanMarker = firstNan ? `
+            <g class="chart-nan-marker">
+              <line x1="${xScale(firstNan).toFixed(2)}" x2="${xScale(firstNan).toFixed(2)}" y1="${pad.top}" y2="${height - pad.bottom}"></line>
+              <text x="${(xScale(firstNan) + 6).toFixed(2)}" y="${pad.top + 18}">NaN @ ${firstNan}</text>
+            </g>` : "";
+          return `${segmentPaths}${nanMarker}`;
+        }).join("");
+
+        chart.innerHTML = `
+          <rect class="chart-frame" x="${pad.left}" y="${pad.top}" width="${plotWidth}" height="${plotHeight}" rx="6"></rect>
+          ${grid}
+          ${paths}
+          <text class="chart-axis-label" x="${width / 2}" y="${height - 4}" text-anchor="middle">training step</text>
+          <text class="chart-axis-label" x="18" y="${height / 2}" text-anchor="middle" transform="rotate(-90 18 ${height / 2})">${spec.label}</text>
+        `;
+
+        chartTitle.textContent = spec.label;
+        chartMeta.textContent = `${runs.length} runs · ${state.payload.meta.stepGrain}`;
+        groupNote.textContent = groupNotes[state.group];
+        legend.innerHTML = runs.map((run) => `
+          <span><i style="background:${run.color}"></i>${esc(run.label)} · ${run.pointCount} pts</span>
+        `).join("");
+        renderRunTable(runs);
+      };
+
+      const renderRunTable = (runs) => {
+        const rows = runs.map((run) => {
+          const final = run.final || {};
+          const nan = run.nanSteps?.length ? `NaN starts @ ${run.nanSteps[0]}` : "stable log";
+          return `
+            <article>
+              <span>${esc(run.label)}</span>
+              <strong>${fmt(final[state.metric], metrics[state.metric].digits)}</strong>
+              <p>step ${final.step ?? "n/a"} · acc ${fmt(final.recon_acc)} · m/n ${fmt(final.soft_mn)} · bp_std ${fmt(final.bp_std)} · ${nan}</p>
+              <code>${esc(run.sourcePath)}</code>
+            </article>
+          `;
+        }).join("");
+        runTable.innerHTML = rows;
+      };
+
+      const renderStrict = () => {
+        if (!state.payload) return;
+        const rows = [...state.payload.strictBackbone.rows];
+        const metric = state.strictMetric;
+        const spec = strictMetrics[metric];
+        const values = rows
+          .map((row) => Number(row[metric]))
+          .filter((value) => Number.isFinite(value));
+        const min = Math.min(0, ...values);
+        const max = Math.max(...values);
+        const range = max - min || 1;
+        strictBars.innerHTML = rows.map((row) => {
+          const value = Number(row[metric]);
+          const left = ((Math.min(0, value) - min) / range) * 100;
+          const width = (Math.abs(value) / range) * 100;
+          const isBest = spec.higherBetter
+            ? value === Math.max(...values)
+            : value === Math.min(...values);
+          return `
+            <div class="bar-row ${isBest ? "is-best" : ""}">
+              <div>
+                <span>${esc(row.run)}</span>
+                <strong>${fmt(value, spec.digits)}</strong>
+              </div>
+              <div class="bar-track" aria-hidden="true">
+                <i class="bar-zero" style="left:${((-min / range) * 100).toFixed(2)}%"></i>
+                <b style="left:${left.toFixed(2)}%; width:${width.toFixed(2)}%"></b>
+              </div>
+            </div>
+          `;
+        }).join("");
+
+        strictTable.innerHTML = `
+          <div role="row">
+            <span role="columnheader">run</span>
+            <span role="columnheader">mask acc / CE</span>
+            <span role="columnheader">delta</span>
+          </div>
+          ${rows.map((row) => `
+            <div role="row">
+              <span role="cell">${esc(row.run)}</span>
+              <span role="cell">mask_acc ${fmt(row.mask_acc, 4)} · CE ${fmt(row.byte_ce, 4)} · params ${Number(row.params).toLocaleString("en-US")}</span>
+              <span role="cell">acc ${fmt(row.delta_acc_vs_byte, 4)} · CE ${fmt(row.delta_ce_vs_byte, 4)}</span>
+            </div>
+          `).join("")}
+        `;
+      };
+
+      const setActive = (selector, attr, value) => {
+        document.querySelectorAll(selector).forEach((button) => {
+          button.classList.toggle("is-active", button.dataset[attr] === value);
+        });
+      };
+
+      document.querySelector("[data-group-controls]").addEventListener("click", (event) => {
+        const button = event.target.closest("button[data-group]");
+        if (!button) return;
+        state.group = button.dataset.group;
+        setActive("[data-group-controls] button", "group", state.group);
+        renderCurve();
+      });
+
+      document.querySelector("[data-metric-controls]").addEventListener("click", (event) => {
+        const button = event.target.closest("button[data-metric]");
+        if (!button) return;
+        state.metric = button.dataset.metric;
+        setActive("[data-metric-controls] button", "metric", state.metric);
+        renderCurve();
+      });
+
+      document.querySelector("[data-strict-controls]").addEventListener("click", (event) => {
+        const button = event.target.closest("button[data-strict-metric]");
+        if (!button) return;
+        state.strictMetric = button.dataset.strictMetric;
+        setActive("[data-strict-controls] button", "strictMetric", state.strictMetric);
+        renderStrict();
+      });
+
+      fetch("/flued-training-curves.json")
+        .then((response) => {
+          if (!response.ok) throw new Error(`HTTP ${response.status}`);
+          return response.json();
+        })
+        .then((payload) => {
+          state.payload = payload;
+          renderCurve();
+          renderStrict();
+        })
+        .catch((error) => {
+          chartTitle.textContent = "data load failed";
+          chartMeta.textContent = error.message;
+          groupNote.textContent = "训练曲线 JSON 未能加载，请检查 public/flued-training-curves.json。";
+        });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="FLUED v0.4-v3.4 experiment atlas with auditable training curves, baselines and ablations." />
+    <meta name="theme-color" content="#070809" />
+    <meta property="og:title" content="FLUED Experiment Atlas · Alethic Insight" />
+    <meta property="og:description" content="按版本、阶段、基线与可信度浏览 FLUED 的关键实验和完整训练趋势。" />
+    <meta property="og:type" content="website" />
+    <title>FLUED Experiment Atlas · Alethic Insight</title>
+    <link rel="icon" href="/mark.svg" type="image/svg+xml" />
+    <script>
+      (() => {
+        try { document.documentElement.dataset.theme = localStorage.getItem("theme") || "dark"; }
+        catch { document.documentElement.dataset.theme = "dark"; }
+      })();
+    </script>
+    <link rel="stylesheet" href="/src/styles.css" />
+  </head>
+  <body>
+    <div class="site-shell project-page atlas-page">
+      <header class="site-header" data-site-header>
+        <a class="brand" href="/index.html#top" aria-label="Alethic Insight home"><img src="/mark.svg" alt="" width="32" height="32" /><span>Alethic Insight</span></a>
+        <nav class="nav-links" aria-label="FLUED navigation">
+          <a href="/flued.html">FLUED</a>
+          <a href="#ledger">实验台账</a>
+          <a href="#curves">训练曲线</a>
+          <a href="#reading">读法</a>
+        </nav>
+        <div class="header-controls">
+          <button class="theme-toggle" type="button" data-theme-toggle aria-label="切换到亮色主题" aria-pressed="false"><span class="theme-toggle-track" aria-hidden="true"><span class="theme-toggle-thumb"></span></span><span data-theme-toggle-label>Dark</span></button>
+          <a class="header-action" href="https://github.com/wdd9700/FLUED/tree/copilot/implement-stage-a-experiments">GitHub</a>
+        </div>
+      </header>
+
+      <main>
+        <section class="project-hero atlas-hero section-observe" id="top">
+          <div class="page-grid project-hero-grid">
+            <div class="project-hero-copy">
+              <a class="back-link" href="/flued.html#evidence">返回 FLUED 主页面</a>
+              <p class="eyebrow">FLUED Experiment Atlas</p>
+              <h1><span>完整研究过程，</span><span>不只保留最终点</span></h1>
+              <p class="hero-lede">v0.4 -> v3.4 · baselines · ablations · failure cases</p>
+              <p class="project-lede">这里汇总可公开的关键实验条目和派生训练曲线。每项都标注口径与可信度：历史现象、受控机制实验和可作为主结论的公平比较被明确分开。</p>
+              <div class="hero-actions"><a class="button button-primary" href="#ledger">Browse ledger</a><a class="button button-secondary" href="#curves">Inspect curves</a></div>
+            </div>
+            <aside class="project-signal atlas-signal" aria-label="Atlas facts">
+              <div class="signal-title">public evidence policy</div>
+              <ol>
+                <li><strong data-count="rows">0</strong><span>key experiment records</span></li>
+                <li><strong data-count="curves">0</strong><span>full derived log curves</span></li>
+                <li><strong>--</strong><span>raw checkpoint and corpus<br />stay private</span></li>
+                <li><strong>--</strong><span>historical results never<br />overwrite fair reruns</span></li>
+                <li><strong>--</strong><span>no self-citation in the report<br />bibliography</span></li>
+              </ol>
+            </aside>
+          </div>
+        </section>
+
+        <section class="section page-grid section-observe" id="ledger" aria-labelledby="ledger-title">
+          <div class="section-heading"><p class="section-kicker">Experiment Ledger</p><h2 id="ledger-title">按版本、阶段和<span class="atlas-mobile-break"><br /></span>证据等级筛选</h2><p>表格只展示关键指标和结论。原始日志保留在内部归档，用于生成曲线和复核；代码、配置与公开结果摘要可在仓库获得。</p></div>
+          <div class="atlas-filterbar" data-ledger-controls>
+            <label>版本<select data-version-filter><option value="all">全部版本</option></select></label>
+            <label>证据<select data-evidence-filter><option value="all">全部可信度</option><option value="high">高</option><option value="controlled">受控单种子</option><option value="historical">历史/纠偏前</option><option value="history">历史设计</option><option value="history-only">仅历史</option></select></label>
+            <label class="atlas-search">检索<input type="search" data-ledger-search placeholder="版本、实验、指标、结论" /></label>
+          </div>
+          <div class="atlas-table-wrap"><div class="atlas-table" role="table" aria-label="FLUED experiment ledger" data-ledger-table></div></div>
+          <p class="atlas-result-note" data-ledger-note></p>
+        </section>
+
+        <section class="section page-grid section-observe" id="curves" aria-labelledby="curves-title">
+          <div class="section-heading"><p class="section-kicker">Training Curves</p><h2 id="curves-title">全量日志点绘制，前端仅做平滑连线</h2><p>每条曲线保留其派生日志中的全部记录点。不会为了“好看”补点或跳过 NaN；没有同一口径的结果不会被画在同一比较组。</p></div>
+          <div class="atlas-workbench">
+            <aside class="atlas-controls">
+              <div><span class="control-label">曲线组</span><div class="segmented-row atlas-version-buttons" data-curve-family-controls></div></div>
+              <div><span class="control-label">指标</span><div class="metric-button-grid" data-curve-metric-controls>
+                <button class="is-active" type="button" data-metric="reconstruction">reconstruction</button><button type="button" data-metric="completion">completion</button><button type="button" data-metric="latent_per_byte">actual latent / byte</button><button type="button" data-metric="loss">loss</button><button type="button" data-metric="boundary_std">boundary std</button><button type="button" data-metric="grad_norm">grad norm</button>
+              </div></div>
+              <div class="evidence-note" data-curve-note>正在加载实验档案。</div>
+            </aside>
+            <div class="chart-panel">
+              <div class="chart-panel-head"><div><span class="section-kicker">selected family</span><h3 data-curve-title>loading</h3></div><div class="chart-meta" data-curve-meta></div></div>
+              <svg class="chart-svg" data-atlas-chart viewBox="0 0 980 420" role="img" aria-label="FLUED experiment training curves"></svg>
+              <div class="chart-legend" data-atlas-legend></div>
+            </div>
+          </div>
+          <div class="run-table" data-atlas-run-table></div>
+        </section>
+
+        <section class="section page-grid section-observe" id="reading" aria-labelledby="reading-title">
+          <div class="section-heading"><p class="section-kicker">Reading Rules</p><h2 id="reading-title">把结果放回它们真正回答的问题里</h2></div>
+          <div class="claim-columns">
+            <div><h3>可作为当前主结论</h3><ul><li>v2 A-class 多种子：稳定可微边界和近无损重建。</li><li>v2 D1：统一 2048 原始 byte / 100K 下，FLUED 稳定但尚未超过 BPE。</li><li>v3.2.1 strict masked-source：latent no-memory 使小主干 mask accuracy 从 0.1440 提升至 0.1898。</li></ul></div>
+            <div><h3>只用于定位或历史叙事</h3><ul><li>v1 的 E3 20K BPB 阳性不是 D1 公平比较的替代品。</li><li>v3.4 迁移前 5K 筛选用于发现候选组件，不能绕过后续代码纠偏。</li><li>v3.4 40K/20K 单种子矩阵可定位失稳机制，不能据此声称多种子或尺度规律。</li></ul></div>
+          </div>
+        </section>
+      </main>
+      <footer class="site-footer page-grid"><span>FLUED Experiment Atlas · Alethic Insight</span><div><a href="/flued.html">FLUED</a><a href="https://github.com/wdd9700/FLUED/tree/copilot/implement-stage-a-experiments">GitHub</a><a href="mailto:contact@alethicinsight.org">Contact</a></div></footer>
+    </div>
+    <script type="module" src="/src/main.js"></script>
+    <script type="module">
+      const COLORS = ["#45d3b5", "#7dd3fc", "#fbbf24", "#fb7185", "#c4b5fd", "#a3e635", "#fda4af", "#60a5fa"];
+      const METRIC = { reconstruction: { label: "reconstruction accuracy", digits: 3 }, completion: { label: "masked completion accuracy", digits: 3 }, latent_per_byte: { label: "actual backbone latent / byte", digits: 3 }, loss: { label: "loss", digits: 3 }, boundary_std: { label: "boundary probability std", digits: 3 }, grad_norm: { label: "gradient norm", digits: 2 } };
+      const state = { payload: null, family: null, metric: "reconstruction", version: "all", evidence: "all", query: "" };
+      const $ = (selector) => document.querySelector(selector);
+      const esc = (value) => String(value ?? "").replace(/[&<>\"]/g, (ch) => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"})[ch]);
+      const fmt = (value, digits = 3) => Number.isFinite(Number(value)) ? Number(value).toFixed(digits) : "-";
+      const labelEvidence = (value) => ({high:"高", controlled:"受控单种子", historical:"历史/纠偏前", history:"设计历史", "history-only":"仅历史"}[value] || value);
+      const smooth = (points, key) => points.map((point, index) => { const window = points.slice(Math.max(0, index - 2), Math.min(points.length, index + 3)).map((item) => item[key]).filter(Number.isFinite); return {...point, value: window.length ? window.reduce((a,b)=>a+b,0)/window.length : undefined}; });
+
+      function renderLedger() {
+        const rows = state.payload.rows.filter((row) => (state.version === "all" || row.version === state.version) && (state.evidence === "all" || row.evidence === state.evidence) && (!state.query || Object.values(row).join(" ").toLowerCase().includes(state.query)));
+        $("[data-ledger-table]").innerHTML = `<div role="row"><span role="columnheader">版本 / 阶段</span><span role="columnheader">实验</span><span role="columnheader">步数</span><span role="columnheader">关键指标</span><span role="columnheader">定位</span><span role="columnheader">证据</span></div>${rows.map((row) => `<div role="row"><span role="cell"><b>${esc(row.version)}</b><small>${esc(row.stage)}</small></span><span role="cell">${esc(row.experiment)}</span><span role="cell">${esc(row.steps)}</span><span role="cell">${esc(row.metric)}</span><span role="cell">${esc(row.finding)}</span><span role="cell"><i class="atlas-badge atlas-${esc(row.evidence)}">${labelEvidence(row.evidence)}</i></span></div>`).join("")}`;
+        $("[data-ledger-note]").textContent = `显示 ${rows.length} / ${state.payload.rows.length} 条关键实验记录。`;
+      }
+
+      function renderFamilyButtons() {
+        const families = [...new Set(state.payload.curves.map((item) => item.family))];
+        if (!state.family || !families.includes(state.family)) state.family = families[0];
+        $("[data-curve-family-controls]").innerHTML = families.map((family) => `<button class="${family === state.family ? "is-active" : ""}" type="button" data-family="${esc(family)}">${esc(family)}</button>`).join("");
+      }
+
+      function renderCurves() {
+        const curves = state.payload.curves.filter((item) => item.family === state.family).map((item) => ({...item, smooth: smooth(item.points.filter((point) => Number.isFinite(point[state.metric])), state.metric)})).filter((item) => item.smooth.length > 1);
+        const title = METRIC[state.metric].label;
+        $("[data-curve-title]").textContent = `${state.family} · ${title}`;
+        $("[data-curve-meta]").textContent = `${curves.length} curves · all available points`;
+        $("[data-curve-note]").textContent = curves[0]?.note || "此实验组没有该指标的连续日志。";
+        const svg = $("[data-atlas-chart]");
+        if (!curves.length) { svg.innerHTML = "<text x='490' y='210' text-anchor='middle' class='chart-axis-label'>no curve for this metric</text>"; $("[data-atlas-legend]").innerHTML = ""; $("[data-atlas-run-table]").innerHTML = ""; return; }
+        const W=980,H=420,p={l:62,r:22,t:24,b:46}, pw=W-p.l-p.r, ph=H-p.t-p.b;
+        const xs=curves.flatMap((item)=>item.smooth.map((point)=>point.step)), ys=curves.flatMap((item)=>item.smooth.map((point)=>point.value));
+        const xmin=Math.min(...xs),xmax=Math.max(...xs), minY=Math.min(...ys),maxY=Math.max(...ys), padY=(maxY-minY||1)*0.08, ymin=Math.max(0,minY-padY), ymax=maxY+padY;
+        const sx=(x)=>p.l+(x-xmin)/(xmax-xmin||1)*pw, sy=(y)=>p.t+(1-(y-ymin)/(ymax-ymin||1))*ph;
+        const grid=Array.from({length:6},(_,i)=>{const y=p.t+ph*i/5,v=ymax-(ymax-ymin)*i/5; const x=p.l+pw*i/5,step=xmin+(xmax-xmin)*i/5; return `<path class="chart-grid" d="M${p.l} ${y}H${W-p.r} M${x} ${p.t}V${H-p.b}"/><text class="chart-axis-label" x="${p.l-8}" y="${y+4}" text-anchor="end">${fmt(v,METRIC[state.metric].digits)}</text><text class="chart-axis-label" x="${x}" y="${H-18}" text-anchor="middle">${step>=1000?(step/1000).toFixed(step%1000?1:0)+"K":Math.round(step)}</text>`}).join("");
+        const paths=curves.map((item,index)=>{const d=item.smooth.map((point,i)=>`${i?"L":"M"}${sx(point.step).toFixed(2)} ${sy(point.value).toFixed(2)}`).join(" "); return `<path class="atlas-path ${item.historical?"is-historical":""}" d="${d}" stroke="${COLORS[index%COLORS.length]}"/>`;}).join("");
+        svg.innerHTML=`${grid}<rect class="chart-frame" x="${p.l}" y="${p.t}" width="${pw}" height="${ph}" rx="6"/>${paths}<text class="chart-axis-label" x="${W/2}" y="${H-4}" text-anchor="middle">training step</text>`;
+        $("[data-atlas-legend]").innerHTML=curves.map((item,index)=>`<span><i style="background:${COLORS[index%COLORS.length]}"></i>${esc(item.label)}${item.historical?" · historical":""}</span>`).join("");
+        $("[data-atlas-run-table]").innerHTML=curves.map((item)=>`<article><span>${esc(item.label)}</span><strong>${fmt(item.final[state.metric], METRIC[state.metric].digits)}</strong><p>${esc(item.protocol)} · ${item.pointCount} points · ${labelEvidence(item.evidence)}</p><code>${esc(item.note)}</code></article>`).join("");
+      }
+
+      fetch("/flued-experiment-atlas.json").then((res)=>{if(!res.ok)throw new Error(`HTTP ${res.status}`);return res.json();}).then((payload)=>{
+        state.payload=payload;
+        $("[data-count='rows']").textContent=payload.rows.length;
+        $("[data-count='curves']").textContent=payload.curves.length;
+        const versions=[...new Set(payload.rows.map((row)=>row.version))]; $("[data-version-filter]").innerHTML += versions.map((version)=>`<option value="${esc(version)}">${esc(version)}</option>`).join("");
+        renderLedger();renderFamilyButtons();renderCurves();
+      }).catch((error)=>{ $("[data-curve-note]").textContent=`数据加载失败：${error.message}`; });
+      $("[data-ledger-controls]").addEventListener("input",(event)=>{if(event.target.matches("[data-version-filter]"))state.version=event.target.value;if(event.target.matches("[data-evidence-filter]"))state.evidence=event.target.value;if(event.target.matches("[data-ledger-search]"))state.query=event.target.value.trim().toLowerCase();renderLedger();});
+      $("[data-curve-family-controls]").addEventListener("click",(event)=>{const button=event.target.closest("button[data-family]");if(!button)return;state.family=button.dataset.family;renderFamilyButtons();renderCurves();});
+      $("[data-curve-metric-controls]").addEventListener("click",(event)=>{const button=event.target.closest("button[data-metric]");if(!button)return;state.metric=button.dataset.metric;document.querySelectorAll("[data-curve-metric-controls] button").forEach((item)=>item.classList.toggle("is-active",item===button));renderCurves();});
+    </script>
+  </body>
+</html>
