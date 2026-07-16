@@ -1938,6 +1938,74 @@ h3 {
   line-height: 1.55;
 }
 
+.lineage-grid,
+.architecture-compare {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.lineage-grid {
+  margin-top: 28px;
+}
+
+.lineage-grid article,
+.architecture-compare article {
+  border: 1px solid var(--line);
+  background: var(--surface);
+  padding: 22px;
+}
+
+.lineage-grid span {
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+}
+
+.lineage-grid h3 {
+  margin: 10px 0;
+  font-size: 1.22rem;
+}
+
+.lineage-grid p,
+.architecture-compare p {
+  color: var(--muted);
+  line-height: 1.62;
+}
+
+.architecture-compare {
+  margin: 26px 0 18px;
+}
+
+.architecture-compare article {
+  min-width: 0;
+}
+
+.architecture-compare .section-kicker {
+  margin-bottom: 14px;
+}
+
+.mini-flow {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0 0 18px;
+}
+
+.mini-flow span {
+  display: grid;
+  min-height: 62px;
+  place-items: center;
+  padding: 8px;
+  border: 1px solid color-mix(in srgb, var(--accent) 42%, var(--line));
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  line-height: 1.35;
+  text-align: center;
+}
+
 .section-observe {
   opacity: 0;
   transform: translateY(18px);
@@ -2064,6 +2132,11 @@ h3 {
 
   .architecture-flow-wide {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .lineage-grid,
+  .architecture-compare {
+    grid-template-columns: 1fr;
   }
 
   .atlas-search {
@@ -2228,6 +2301,10 @@ h3 {
 
   .code-index-grid {
     grid-template-columns: 1fr;
+  }
+
+  .mini-flow {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .architecture-flow-wide {

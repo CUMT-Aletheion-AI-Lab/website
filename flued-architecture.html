@@ -21,6 +21,7 @@
         <a class="brand" href="/index.html#top" aria-label="Alethic Insight home"><img src="/mark.svg" alt="" width="32" height="32" /><span>Alethic Insight</span></a>
         <nav class="nav-links" aria-label="FLUED architecture navigation">
           <a href="/flued.html">FLUED</a>
+          <a href="#lineage">研究谱系</a>
           <a href="#evolution">版本演进</a>
           <a href="#current">当前路径</a>
           <a href="#gradients">梯度账本</a>
@@ -57,6 +58,17 @@
           </div>
         </section>
 
+        <section class="section page-grid section-observe" id="lineage" aria-labelledby="lineage-title">
+          <div class="section-heading"><p class="section-kicker">Research Lineage</p><h2 id="lineage-title">独立迭代，公开吸收，同构后做可证伪的分歧设计</h2><p>FLUED 不把相关工作包装成“从未存在”。这条路线先由连续语言空间的接口问题启动，随后分别吸收字节级分层、编码率分段和并行块级细化的可检验思想。H-Net 的出现确认了高层分层结构的合理性，也迫使我们把差异写成可做消融的模块，而不是口头创新。</p></div>
+          <div class="lineage-grid">
+            <article><span>起点</span><h3><a href="https://arxiv.org/abs/2605.10938">ELF</a></h3><p>连续嵌入空间应尽量持续到离散输出前的思想，触发了“byte 不是终点，潜表示才是主干接口”的最初问题。FLUED 仍保留独立可逆 decoder，而非把自身做成生成扩散语言模型。</p></article>
+            <article><span>v3.1</span><h3><a href="https://arxiv.org/abs/2412.09871">BLT</a> + <a href="https://arxiv.org/abs/2603.03583">ByteFlow</a></h3><p>BLT 提供 byte 端局部处理、压缩后主干、回译的职责拆分；ByteFlow 将分段与真实计算账本、编码率选择联系起来。FLUED 继承问题框架，不直接复刻它们的主干或 Top-K 路径。</p></article>
+            <article><span>v3.3</span><h3><a href="https://deepmind.google/models/gemma/diffusiongemma/">DiffusionGemma</a></h3><p>块级双向并行细化与自我修正说明语言处理不必逐 token 串行。v3.4 因而使用一次 DiT-style 条件细化，但不宣称已复现其多轮生成或吞吐结论。</p></article>
+            <article><span>v3.3 -> v3.4</span><h3><a href="https://arxiv.org/abs/2507.07955">H-Net</a></h3><p>高层“局部编码 -> 动态分块 -> 压缩主干 -> 回译”与 FLUED 形成结构同构。发现重叠后，路线转为显式比较：边界代理、memory 职责、可替换主干、严格掩码与 emit 预算是否给出可测增益。</p></article>
+          </div>
+          <p class="evidence-note">这是一条研究谱系，不是性能归因：外部方法的论文结论不转移给 FLUED。当前只主张 FLUED 已把上述借鉴落为可运行组件，并正在做其改进点的消融归因。</p>
+        </section>
+
         <section class="section page-grid section-observe" id="evolution" aria-labelledby="evolution-title">
           <div class="section-heading"><p class="section-kicker">Version Evolution</p><h2 id="evolution-title">从可逆重建到可训练语言编码器</h2><p>版本不是线性“更强”。部分早期结果被后续公平协议或代码纠偏降级为历史证据，仍保留以说明决策为什么发生。</p></div>
           <div class="evolution-grid">
@@ -75,6 +87,23 @@
             <div class="section-heading"><p class="section-kicker">Current Forward Path</p><h2 id="current-title">v3.4：一次并行细化，不是多步采样</h2><p>当前称为 one-shot diffusion-style refinement：训练态向 byte payload 注入一次噪声，DiT-style block 在一次前向中细化连续表示。它采用扩散式条件化和并行计算，不宣称已经验证多步扩散采样。</p></div>
             <div class="architecture-flow architecture-flow-wide" aria-label="v3.4 forward architecture">
               <span>masked byte IDs</span><span>structured byte lookup</span><span>DiT-style segmentor<br />RoPE / optional ALiBi</span><span>hard chunk IDs<br />soft boundary bridge</span><span>parallel chunk memory<br />other-memory read</span><span>local interpreter + small AR</span><span>hard emit readout</span><span>latent backbone</span><span>shared inverse decoder</span><span>byte logits</span>
+            </div>
+            <div class="architecture-compare" aria-label="H-Net and FLUED architecture comparison">
+              <article>
+                <p class="section-kicker">H-Net: high-level reference</p>
+                <div class="mini-flow"><span>raw bytes</span><span>local encoder</span><span>dynamic chunking</span><span>compressed main network</span><span>upsample + decoder</span><span>next-byte logits</span></div>
+                <p>H-Net 的单阶段层级结构把局部高分辨率处理、动态下采样、压缩主干和原分辨率 decoder 统一在端到端语言模型中。</p>
+              </article>
+              <article>
+                <p class="section-kicker">FLUED v3.4: codec-oriented variant</p>
+                <div class="mini-flow"><span>masked bytes</span><span>DiT segmentor</span><span>hard chunk + soft bridge</span><span>interpreter / emit readout</span><span>replaceable backbone</span><span>shared inverse bytes</span></div>
+                <p>结构同构在“局部编码 -> 动态压缩 -> 主干 -> 回译”。分歧是 FLUED 将 backbone 视为可替换的训练/部署接口，memory 不向 backbone 开放，且单独审计硬执行与软反传。</p>
+              </article>
+            </div>
+            <div class="research-grid">
+              <article><h3>同构不等于等价</h3><p>两者都解决可学习层级压缩；FLUED 还没有复现 H-Net 的同预算规模结论，不能把 H-Net 的性能外推为自身性能。</p></article>
+              <article><h3>撞车后的改进假设</h3><p>FLUED 将边界、readout 发声、codec memory 和外部主干拆开，目标是让真实计算成本、严格补全和梯度路由分别可干预。</p></article>
+              <article><h3>当前阶段</h3><p>验证改进点，而不是宣告超越：对照 H-Net 的 router/smoothing 视角，审计动态边界课程、emit 容量和共享逆 decoder 的耦合。</p></article>
             </div>
             <div class="research-grid">
               <article><h3>切分器不读 memory</h3><p>边界先由当前 byte/context 决定；memory 不得作为跨 chunk 边界作弊通道。</p></article>
