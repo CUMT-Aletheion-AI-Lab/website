@@ -45,6 +45,7 @@
           <a href="#evidence">证据</a>
           <a href="/flued-evidence.html">曲线</a>
           <a href="/flued-experiments.html">实验档案</a>
+          <a href="/flued-architecture.html">架构追踪</a>
           <a href="#roi">边界</a>
           <a href="#architecture">架构</a>
           <a href="#references">借鉴</a>
@@ -90,7 +91,7 @@
                 <a class="button button-primary" href="https://github.com/wdd9700/FLUED/tree/copilot/implement-stage-a-experiments">
                   Open Repository
                 </a>
-                <a class="button button-secondary" href="#architecture">
+                <a class="button button-secondary" href="/flued-architecture.html">
                   Read Architecture
                 </a>
                 <a class="button button-text" href="/flued-evidence.html">
@@ -124,9 +125,9 @@
           <div class="research-feed-grid">
             <article>
               <span>2026 · Retrospective</span>
-              <h3>v1 到 v3.3 的研究回顾</h3>
-              <p>从最小假设、去噪冲突、严格 masked-source，到 v3.3 的语言编码器架构截止点。</p>
-              <a href="#history">Read evolution</a>
+              <h3>v0.4 到 v3.4 的架构追踪</h3>
+              <p>从最小可逆假设、去噪冲突、严格 masked-source，到 one-shot、位置编码和小 AR 的决策链。</p>
+              <a href="/flued-architecture.html#evolution">Read evolution</a>
             </article>
             <article>
               <span>Evidence · BPB</span>
@@ -141,10 +142,10 @@
               <a href="#roi">View ROI</a>
             </article>
             <article>
-              <span>Code · v3.3</span>
-              <h3>完整开源骨架与消融接口</h3>
-              <p>v3.3 已按 segmentor、interpreter、memory、decoder 拆分，并保留直接开跑的参数接口；它是当前架构入口，不是已完成实验结果。</p>
-              <a href="https://github.com/wdd9700/FLUED/tree/copilot/implement-stage-a-experiments">Open GitHub</a>
+              <span>Code · v3.4</span>
+              <h3>架构、梯度与训练代码对照</h3>
+              <p>当前代码将 DiT-style segmentor、硬切分/软梯度桥、并行 memory、小 AR、硬 emit 和近似逆 decoder 拆成可审计节点。</p>
+              <a href="/flued-architecture.html#code">Open code trace</a>
             </article>
           </div>
         </section>
@@ -301,8 +302,8 @@
                 <strong>+0.0458 mask acc</strong>
               </div>
               <div>
-                <span>v3.3 status</span>
-                <strong>ablation-ready</strong>
+                <span>v3.4 status</span>
+                <strong>attribution in progress</strong>
               </div>
             </div>
             <div class="evidence-table" role="table" aria-label="FLUED evidence table">
@@ -327,9 +328,9 @@
                 <span role="cell">证明 latent interface 可能降低 backbone 学习难度，但 memory gain 仍需严格消融。</span>
               </div>
               <div role="row">
-                <span role="cell">v3.3</span>
-                <span role="cell">收束为可复现、可消融的 byte-to-latent decision interface，并明确 segmentor 不读 memory、memory 只供 interpreter 参考；当前 K 盘尚无 v3.3 完整结果归档。</span>
-                <span role="cell">当前公开重点是研究深度、失败纠偏、架构清晰度和可复现实验入口。</span>
+                <span role="cell">v3.4</span>
+                <span role="cell">one-shot DiT-style refinement、硬执行/软反传、并行 no-self memory、RoPE + 小 AR 与 shared inverse decoder 已实现；40K 归因显示动态边界与 hard emit 的课程仍耦合。</span>
+                <span role="cell">当前公开重点是架构与梯度的可审计性，不将单种子归因写成最终性能结论。</span>
               </div>
             </div>
           </div>
@@ -459,57 +460,58 @@
         <section class="section page-grid section-observe" id="architecture" aria-labelledby="architecture-title">
           <div class="section-heading">
             <p class="section-kicker">Architecture</p>
-            <h2 id="architecture-title">v3.3 编码与解码路径</h2>
+            <h2 id="architecture-title">v3.4 当前编码与解码路径</h2>
             <p>
-              v3.3 的重点不是继续叠加 loss，而是把职责边界拆干净：segmentor 负责边界，
-              interpreter 负责 byte-to-latent 翻译，memory 只作为 encoder 内部历史参考，
-              backbone 只消费 readout latent，decoder 只负责 latent-to-byte。
+              v3.4 在保留职责边界的基础上，把串行 memory 改为并行 chunk summary，并加入 one-shot
+              DiT-style refinement、位置编码和窄小 AR 修正。硬切分与硬发声决定真实计算量，连续分数只在反向传播中提供可塑性。
             </p>
           </div>
-          <div class="architecture-map" aria-label="FLUED v3.3 architecture diagram">
+          <div class="architecture-map" aria-label="FLUED v3.4 architecture diagram">
             <div class="arch-lane">
               <span class="lane-label">Encoder</span>
               <div class="arch-node">byte ID</div>
               <div class="arch-node">16x16 structured byte seed</div>
-              <div class="arch-node">signed segmentor</div>
-              <div class="arch-node">dual-threshold chunk policy</div>
-              <div class="arch-node accent-node">byte-to-latent interpreter</div>
+              <div class="arch-node">DiT-style one-shot segmentor</div>
+              <div class="arch-node">signed confidence + rate score</div>
+              <div class="arch-node">hard chunks / soft bridge</div>
             </div>
             <div class="arch-lane memory-lane">
-              <span class="lane-label">Causal Memory</span>
-              <div class="arch-node muted-node">past chunk memory sequence</div>
-              <div class="arch-node">top-k sparse read</div>
-              <div class="arch-node">current chunk memory write</div>
-              <div class="arch-node muted-node">delayed commit for future chunks</div>
+              <span class="lane-label">Parallel Memory</span>
+              <div class="arch-node muted-node">each chunk summarizes itself</div>
+              <div class="arch-node">all chunk memories form in parallel</div>
+              <div class="arch-node">interpreter reads other-memory</div>
+              <div class="arch-node muted-node">current chunk memory is masked</div>
             </div>
             <div class="arch-lane">
               <span class="lane-label">Backbone Interface</span>
-              <div class="arch-node accent-node">readout latent representation</div>
-              <div class="arch-node">AR / diffusion backbone</div>
+              <div class="arch-node accent-node">local interpreter + small AR</div>
+              <div class="arch-node">hard emit readout representation</div>
+              <div class="arch-node">masked-infill training backbone</div>
               <div class="arch-node">predicted or completed latent</div>
             </div>
             <div class="arch-lane">
               <span class="lane-label">Decoder</span>
-              <div class="arch-node">tied-inverse interpreter</div>
-              <div class="arch-node">length + byte-slot decoder</div>
+              <div class="arch-node">shared first-order inverse</div>
+              <div class="arch-node">readout-pool transpose expansion</div>
               <div class="arch-node">byte distribution</div>
               <div class="arch-node">byte ID</div>
             </div>
           </div>
           <div class="research-grid">
             <article>
-              <h3>Segmentor 不读 memory</h3>
-              <p>切分先由当前输入决定，memory 只参与 interpreter 对当前 chunk 的语义解释。</p>
+              <h3>硬执行，软反传</h3>
+              <p>hard chunk / hard emit 进入真实计算账本；soft bridge / straight-through 只为梯度可塑性服务。</p>
             </article>
             <article>
-              <h3>Memory 延迟提交</h3>
-              <p>当前 chunk 写入的 memory 只对未来 chunk 可见，避免当前块自循环和评估侧漏。</p>
+              <h3>Memory 并行且 no-self</h3>
+              <p>每个 chunk 独立生成 memory；interpreter 可读 other-memory，但不读当前 chunk memory。</p>
             </article>
             <article>
-              <h3>Backbone 与 FLUED 分离</h3>
-              <p>FLUED 负责语言编码和可还原 codec，外部 backbone 负责预测、补全或生成。</p>
+              <h3>位置 + 小 AR 修复局部顺序</h3>
+              <p>one-shot 保持主路径并行；RoPE 提供坐标，小 AR 只在 chunk 内做低幅度有序修正。</p>
             </article>
           </div>
+          <div class="hero-actions"><a class="button button-secondary" href="/flued-architecture.html">Read full architecture and gradient trace</a></div>
         </section>
 
         <section class="section section-dark section-observe" id="references" aria-labelledby="references-title">

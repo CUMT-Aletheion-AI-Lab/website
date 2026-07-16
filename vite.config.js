@@ -9,6 +9,7 @@ export default defineConfig({
         flued: resolve(__dirname, "flued.html"),
         fluedEvidence: resolve(__dirname, "flued-evidence.html"),
         fluedExperiments: resolve(__dirname, "flued-experiments.html"),
+        fluedArchitecture: resolve(__dirname, "flued-architecture.html"),
       },
     },
   },
