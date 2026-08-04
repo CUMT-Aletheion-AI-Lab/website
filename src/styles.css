@@ -1867,6 +1867,197 @@ h3 {
   margin-top: 0;
 }
 
+/* Mainline stack: main generation card + subordinate training-stage card */
+.pipe-stack {
+  display: grid;
+  gap: 0;
+  margin-bottom: 28px;
+}
+
+.pipe-card.is-stage {
+  position: relative;
+  width: min(680px, calc(100% - 56px));
+  margin-top: 32px;
+  margin-left: 56px;
+  padding: 14px 16px;
+  border-style: dashed;
+  background: var(--surface);
+}
+
+.pipe-card.is-stage::before {
+  content: "";
+  position: absolute;
+  top: -33px;
+  left: 40px;
+  width: 1px;
+  height: 32px;
+  background: var(--line-strong);
+}
+
+.pipe-card.is-stage .pipe-tag {
+  color: var(--muted);
+}
+
+.pipe-card.is-stage h3 {
+  font-size: 0.92rem;
+}
+
+.pipe-card.is-stage .pipe-flow li {
+  padding: 6px 8px;
+  font-size: 0.68rem;
+}
+
+.stage-badge {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 2px 8px;
+  border: 1px dashed var(--line-strong);
+  border-radius: 999px;
+  color: var(--muted);
+  font-family: "SF Mono", "Cascadia Code", Consolas, monospace;
+  font-size: 0.62rem;
+  font-weight: 780;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  vertical-align: 2px;
+}
+
+/* Forward pipeline x-ray: 60/40 two-column, notes aligned to node groups */
+.pipe-xray {
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+  column-gap: 32px;
+  margin: 30px 0 22px;
+}
+
+.pipe-xray .pipe-flow {
+  display: contents;
+}
+
+.pipe-xray .pipe-flow li {
+  grid-column: 1;
+  align-self: start;
+  width: 100%;
+  color: color-mix(in srgb, var(--ink) 72%, var(--muted));
+}
+
+.pipe-xray .pipe-flow li.is-key {
+  border-color: color-mix(in srgb, var(--accent) 60%, var(--line));
+  background: color-mix(in srgb, var(--accent) 9%, var(--surface));
+  color: var(--ink);
+}
+
+.pipe-xray .pipe-flow li.is-key small {
+  color: color-mix(in srgb, var(--ink) 62%, var(--muted));
+}
+
+.pipe-xray .pipe-flow li.is-io {
+  color: var(--muted);
+}
+
+.xray-note {
+  grid-column: 2;
+  align-self: center;
+  padding: 16px 20px;
+  border: 1px solid var(--line);
+  border-left: 2px solid var(--accent);
+  border-radius: 8px;
+  background: var(--panel);
+}
+
+.xray-note h3 {
+  margin: 0 0 8px;
+  font-size: 0.98rem;
+}
+
+.xray-note p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.84rem;
+  line-height: 1.6;
+}
+
+.xray-note-a {
+  grid-row: 3 / span 2;
+}
+
+.xray-note-b {
+  grid-row: 7 / span 3;
+}
+
+.xray-note-c {
+  grid-row: 11 / span 2;
+}
+
+/* Module-by-module three-column comparison */
+.cmp-table {
+  display: grid;
+  min-width: 0;
+  margin-top: 28px;
+  border-top: 1px solid var(--line);
+  border-left: 1px solid var(--line);
+}
+
+.cmp-table [role="row"] {
+  display: grid;
+  min-width: 0;
+  grid-template-columns: 128px minmax(0, 1.15fr) minmax(0, 1fr) minmax(0, 1fr);
+}
+
+.cmp-table span {
+  min-width: 0;
+  padding: 13px 16px;
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  font-size: 0.8rem;
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+}
+
+.cmp-table span[role="columnheader"] {
+  color: var(--muted);
+  font-family: "SF Mono", "Cascadia Code", Consolas, monospace;
+  font-size: 0.72rem;
+  font-weight: 780;
+  letter-spacing: 0.03em;
+}
+
+.cmp-table span[role="rowheader"] {
+  color: var(--ink);
+  font-size: 0.78rem;
+  font-weight: 640;
+}
+
+.cmp-table span[role="cell"] {
+  color: var(--muted);
+}
+
+.cmp-table span[role="cell"] b {
+  color: var(--ink);
+  font-weight: 680;
+}
+
+.cmp-table .cmp-flued {
+  background: color-mix(in srgb, var(--accent) 7%, transparent);
+}
+
+.cmp-table span[role="cell"].cmp-flued {
+  color: color-mix(in srgb, var(--ink) 86%, var(--muted));
+}
+
+.cmp-table span[role="cell"].cmp-flued b {
+  color: var(--accent);
+}
+
+.cmp-table .cmp-head .cmp-flued {
+  color: var(--accent);
+}
+
+.cmp-table span[role="cell"]::before {
+  content: attr(data-who);
+  display: none;
+}
+
 /* FLUED experiment atlas */
 .atlas-hero {
   min-height: 0;
@@ -2275,6 +2466,54 @@ h3 {
 
   .pipe-grid-duo {
     grid-template-columns: 1fr;
+  }
+
+  .pipe-card.is-stage {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .pipe-xray {
+    grid-template-columns: 1fr;
+  }
+
+  .pipe-xray .pipe-flow li,
+  .xray-note {
+    grid-column: 1;
+  }
+
+  .xray-note {
+    grid-row: auto;
+    align-self: auto;
+    margin-top: 22px;
+  }
+
+  .cmp-table [role="row"] {
+    grid-template-columns: 1fr;
+  }
+
+  .cmp-table .cmp-head {
+    display: none;
+  }
+
+  .cmp-table span[role="rowheader"] {
+    background: var(--surface-hover);
+    font-size: 0.84rem;
+  }
+
+  .cmp-table span[role="cell"]::before {
+    display: block;
+    margin-bottom: 4px;
+    color: var(--muted);
+    font-family: "SF Mono", "Cascadia Code", Consolas, monospace;
+    font-size: 0.66rem;
+    font-weight: 780;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .cmp-table span[role="cell"].cmp-flued::before {
+    color: var(--accent);
   }
 
   .architecture-flow {

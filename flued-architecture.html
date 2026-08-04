@@ -38,6 +38,7 @@
         <a href="#pipeline" data-rail-link="pipeline" aria-label="前向管线"><span>Pipeline</span></a>
         <a href="#tasks" data-rail-link="tasks" aria-label="两个训练任务"><span>Tasks</span></a>
         <a href="#evidence" data-rail-link="evidence" aria-label="公平对比锚点"><span>Fair</span></a>
+        <a href="#compare" data-rail-link="compare" aria-label="逐模块三列对比"><span>Compare</span></a>
         <a href="#frontier" data-rail-link="frontier" aria-label="最新证据"><span>Frontier</span></a>
         <a href="#code" data-rail-link="code" aria-label="代码索引"><span>Code</span></a>
       </nav>
@@ -67,10 +68,10 @@
         </section>
 
         <section class="section page-grid section-observe" id="evolution" aria-labelledby="evolution-title">
-          <div class="section-heading"><p class="section-kicker">Architecture Trace</p><h2 id="evolution-title">架构追踪：每代一张自上而下的流水线</h2><p>追踪的意思是逐节点对照真实代码：每张卡是一条从上而下的前向流水线，节点对应公开仓库里的具体模块，卡尾记录该代的结局。下方先给当前主线 v3.6 与 S0.5 训练阶段，再回溯 v0.4 → v3.4 三代，最后把竞争对手 BLT / H-Net / BPE 放到同一尺度上对照。</p></div>
+          <div class="section-heading"><p class="section-kicker">Architecture Trace</p><h2 id="evolution-title">架构追踪：每代一张自上而下的流水线</h2><p>追踪的意思是逐节点对照真实代码：每张卡是一条从上而下的前向流水线，节点对应公开仓库里的具体模块，卡尾记录该代的结局。下方先给当前主线 v3.6（S0.5 GRPO 是它的训练阶段延伸，作从属卡挂在主卡之后，不占独立代际），再按时间序回溯 v0.4 → v2 → v3.1 → v3.2 → v3.3 → v3.4 六代，最后把竞争对手 BLT / H-Net / BPE 放到同一尺度上对照。</p></div>
 
           <h3 class="pipe-subhead">当前主线 · v3.6（KDA 世代）</h3>
-          <div class="pipe-grid-duo">
+          <div class="pipe-stack">
             <article class="pipe-card is-main">
               <header>
                 <span class="pipe-tag">v3.6 · flued/v36/model.py（369 行）· canonical v36.1</span>
@@ -94,10 +95,10 @@
               </ol>
               <p class="pipe-fate"><strong>瓶颈备注：</strong>v36.1 decoder 条件 = package.mean + chunk_pos 广播；S0.7 逐段条件化已证检索瓶颈可解（unmasked 0.351 / PPL 12.1），但非默认。</p>
             </article>
-            <article class="pipe-card">
+            <article class="pipe-card is-stage">
               <header>
-                <span class="pipe-tag">S0.5 · 训练阶段（不改架构）</span>
-                <h3>GRPO 边界优化</h3>
+                <span class="pipe-tag">S0.5 · 挂在 v3.6 主线之后 · 不改架构</span>
+                <h3>GRPO 边界优化 <span class="stage-badge">训练阶段 · 非独立架构</span></h3>
                 <p class="pipe-fate"><strong>结局：</strong>hard 停点 24.3 段 ≈ 用户手标 21B，教师粒度之争了结；质量与控制臂打平——GRPO 当前价值 = 选粒度，非提质量。</p>
               </header>
               <ol class="pipe-flow">
@@ -109,7 +110,7 @@
             </article>
           </div>
 
-          <h3 class="pipe-subhead">历代架构（v0.4 → v3.4）</h3>
+          <h3 class="pipe-subhead">历代架构（按时间序 v0.4 → v3.4）</h3>
           <div class="pipe-grid">
             <article class="pipe-card">
               <header>
@@ -125,6 +126,56 @@
                 <li>latent units</li>
                 <li>tied inverse decoder<small>逆序减块（MHA / FFN 减回）· 与正向共享参数</small></li>
                 <li class="is-io">bytes 还原</li>
+              </ol>
+            </article>
+            <article class="pipe-card">
+              <header>
+                <span class="pipe-tag">v2 · flued/model.py · 328M tied 放大 + 去噪目标</span>
+                <h3>去噪重建规模化</h3>
+                <p class="pipe-fate"><strong>结局：</strong>三种子重建稳定，但暴露 denoising / compression / boundary 训练动力学冲突；公平 D1 稳定但落后 BPE（0.8732 vs 0.8066 BPB）。</p>
+              </header>
+              <ol class="pipe-flow">
+                <li class="is-io">byte / mask ids<small>vocab 258 · MASK_ID 257 · PAD-offset</small></li>
+                <li>tied Transformer blocks<small>SDPA + SwiGLU 3072 · 动态正弦 PE</small></li>
+                <li>boundary_head(ΔH)<small>五类字节类型边界先验（utf8_cont / ascii / cjk / op / digit）</small></li>
+                <li>banded 软指派矩阵 A<small>log-space · assignment_window 128</small></li>
+                <li>latent units<small>length-aware 压缩目标</small></li>
+                <li>tied inverse decoder<small>逆序减块 · 与正向共享参数</small></li>
+                <li class="is-io">bytes 还原<small>clean / denoise 混合（denoise_prob 0.7 · corrupt 15% · span 1-8）</small></li>
+              </ol>
+            </article>
+            <article class="pipe-card">
+              <header>
+                <span class="pipe-tag">v3.1 · tools/analysis/v3_1/ · 语言编码器原型</span>
+                <h3>readout / summary 分工确立</h3>
+                <p class="pipe-fate"><strong>结局：</strong>2M codec 闭环能学（recon 0.506 · length_acc 0.973 · units/byte 0.117）；latent backbone 小胜 segment-mask byte 基线（0.178 vs 0.150），但早期 clean encode 评估有侧漏风险。</p>
+              </header>
+              <ol class="pipe-flow">
+                <li class="is-io">byte ids</li>
+                <li>weak boundary starts<small>UTF-8 / 标点 / 长度弱规则标签</small></li>
+                <li>shared segment representation<small>mean_first_last 聚合</small></li>
+                <li>readout latent<small>对外 backbone 唯一接口</small></li>
+                <li>summary latent → causal memory<small>内部机制 · 只读旧 memory · 段后写入</small></li>
+                <li>length / slot allocator<small>显式 span 长度 1..Lmax</small></li>
+                <li>latent-to-byte decoder</li>
+                <li class="is-io">byte span</li>
+              </ol>
+            </article>
+            <article class="pipe-card">
+              <header>
+                <span class="pipe-tag">v3.2 / v3.2.1 · strict masked-source</span>
+                <h3>先 mask 后 encode</h3>
+                <p class="pipe-fate"><strong>结局：</strong>先在 byte 输入层 mask、再 encode，堵住 clean readout 侧漏；严格口径下 latent backbone 明显超过 byte 基线（mask_acc 0.1898 vs 0.1440，+0.046）——当时 v3 系列最干净的正向证据。</p>
+              </header>
+              <ol class="pipe-flow">
+                <li class="is-io">byte ids</li>
+                <li>byte 输入层先 mask<small>strict masked-source · 堵 clean encode 侧漏</small></li>
+                <li>memory-free boundary<small>boundary 不读 memory，防互相污染</small></li>
+                <li>memory-conditioned interpreter<small>chunk + 过去 memory → readout</small></li>
+                <li>causal append-only summary<small>top-k retrieval 未证默认收益，留实验分支</small></li>
+                <li>readout latent → minimal backbone<small>masked latent infill 验证</small></li>
+                <li>latent-to-byte decoder</li>
+                <li class="is-io">byte span</li>
               </ol>
             </article>
             <article class="pipe-card">
@@ -205,14 +256,34 @@
         </section>
 
         <section class="section page-grid section-observe" id="pipeline" aria-labelledby="pipeline-title">
-          <div class="section-heading"><p class="section-kicker">Forward Pipeline</p><h2 id="pipeline-title">从字节流到单个 readout 包</h2><p>前向是一条单向流水线：编码、切分、摘要、写入、读出。没有窗口、没有 stride，512 字节作为一个完整样本被一次性消费。</p></div>
-          <div class="architecture-flow architecture-flow-wide" aria-label="v3.6 forward architecture">
-            <span>字节流 512B<br />单样本全上下文</span><span>byte encoder<br />3 层</span><span>segmentor<br />9 层细长型 · S0 冻结</span><span>动态切分<br />tanh &gt; 0.94 · UTF-8 guard</span><span>ChunkSummarizer<br />逐段产 memory</span><span>WriteHead<br />k / v / β / α 门控</span><span>KDA 状态机<br />串行消费</span><span>readout 包 ×1<br />d_pack 1,536</span><span>TinyBackbone<br />任务二改写</span><span>共享 span decoder<br />cosine logits</span><span>byte logits</span>
-          </div>
-          <div class="research-grid">
-            <article><h3>边界是学出来的，且被冻结</h3><p>segmentor（9 层细长型）先用 S0 段落标签预训练，随后在主线训练中冻结。切分规则：tanh 置信度 &gt; 0.94 才下刀，且 UTF-8 续字节位置禁止切分，保证不切断多字节字符。</p></article>
-            <article><h3>KDA 状态机</h3><p>KDA（逐通道门控 delta 规则的线性注意力）把每个 chunk 的 memory 经 WriteHead 的 k/v/β/α 门控写入状态。1 个 readout query 从最终状态读出 4×256=1,024 维，再经 realign MLP 映射为 d_pack=1,536 标量——即整条 prompt 恰好一个 readout 包；状态本体（4 头 128×256）随样本生灭，不参与传输。</p></article>
-            <article><h3>共享 span decoder</h3><p>decoder 与 byte encoder 共享同一张字节嵌入表，输出 cosine logits。嵌入表两端共享让「编码进状态」与「从状态解码」使用同一套字节语义坐标。</p></article>
+          <div class="section-heading"><p class="section-kicker">Forward Pipeline</p><h2 id="pipeline-title">从字节流到单个 readout 包</h2><p>前向是一条单向流水线：编码、切分、摘要、写入、读出。没有窗口、没有 stride，512 字节作为一个完整样本被一次性消费。左侧高亮节点是 v3.6 的核心创新，暗一档的是常规模块；右侧解释卡与对应节点组纵向对齐。</p></div>
+          <div class="pipe-xray" aria-label="v3.6 forward architecture">
+            <ol class="pipe-flow">
+              <li class="is-io">字节流 512B<small>单样本全上下文 · 无窗口无 stride</small></li>
+              <li>byte encoder ×3<small>DiTStyleBlock · RoPE + ALiBi · d_byte 384</small></li>
+              <li class="is-key">segmentor ×9（S0 冻结）<small>细长 DiT · 段落标签预训后冻结 · 教师 F1 0.886</small></li>
+              <li class="is-key">动态切分<small>tanh 置信度 &gt; 0.94 下刀 · UTF-8 续字节禁切 · 首字节强切 · 容量截断</small></li>
+              <li>ChunkBuilder<small>max 64 chunks / span 64</small></li>
+              <li>ChunkSummarizer<small>4 slot 注意力池化 + FFN → 每段一个 memory（d_mem 512）</small></li>
+              <li class="is-key">WriteHead<small>k L2 归一 · v · β sigmoid（bias −2）· α 逐通道衰减</small></li>
+              <li class="is-key">KDA 状态机<small>串行 delta-rule 写入 · S ← αS − βk(kᵀS) + βkvᵀ · 4 头 k128/v256</small></li>
+              <li class="is-key">readout 包 ×1<small>终态读出 4×256=1,024 → realign MLP → 1,536 标量</small></li>
+              <li>TinyBackbone<small>3L 双向 pre-norm · 仅任务二经过</small></li>
+              <li>共享 span decoder<small>与 encoder 共享字节表 · cosine logits</small></li>
+              <li class="is-io">byte logits<small>任务一 direct 精准还原 · 任务二 backbone 改写后还原（5% span 1-8 原生 mask）</small></li>
+            </ol>
+            <aside class="xray-note xray-note-a">
+              <h3>边界是学出来的，且被冻结</h3>
+              <p>segmentor（9 层细长型）先用 S0 段落标签预训练，随后在主线训练中冻结。切分规则：tanh 置信度 &gt; 0.94 才下刀，且 UTF-8 续字节位置禁止切分，保证不切断多字节字符。</p>
+            </aside>
+            <aside class="xray-note xray-note-b">
+              <h3>KDA 状态机</h3>
+              <p>KDA（逐通道门控 delta 规则的线性注意力）把每个 chunk 的 memory 经 WriteHead 的 k/v/β/α 门控写入状态。1 个 readout query 从最终状态读出 4×256=1,024 维，再经 realign MLP 映射为 d_pack=1,536 标量——即整条 prompt 恰好一个 readout 包；状态本体（4 头 128×256）随样本生灭，不参与传输。</p>
+            </aside>
+            <aside class="xray-note xray-note-c">
+              <h3>共享 span decoder</h3>
+              <p>decoder 与 byte encoder 共享同一张字节嵌入表，输出 cosine logits。嵌入表两端共享让「编码进状态」与「从状态解码」使用同一套字节语义坐标。</p>
+            </aside>
           </div>
         </section>
 
@@ -240,6 +311,67 @@
             <article><h3>两臂退化是现象不是 bug</h3><p>无显式压缩激励时动态切分无中间态：标准臂几乎不切（约 1 chunk），瓶颈臂过度切分（约 190 chunks）。演示页可直观看到这两条臂的真实切分。</p></article>
             <article><h3>口径声明</h3><p>以上均为单 seed、演示性质证据，用于锚定当前研究方向；不构成多种子或尺度上的性能结论。</p></article>
           </div>
+        </section>
+
+        <section class="section page-grid section-observe" id="compare" aria-labelledby="compare-title">
+          <div class="section-heading"><p class="section-kicker">Module-by-Module</p><h2 id="compare-title">v3.6 vs H-Net：逐模块三列对齐</h2><p>比的是训练方式与不同模块的算子差异：边界怎么切、梯度怎么回传、怎么汇聚压缩、怎么上采样还原。第一列是 FLUED v3.6；第二列是原 H-Net 的论文机制；第三列是我方把 H-Net 主干换成 DiT 的公平对比臂，与 v3.6 同口径跑 masked infilling。</p></div>
+          <div class="cmp-table" role="table" aria-label="FLUED v3.6 vs H-Net module-by-module comparison">
+            <div role="row" class="cmp-head">
+              <span role="columnheader">模块</span>
+              <span role="columnheader" class="cmp-flued">FLUED v3.6</span>
+              <span role="columnheader">H-Net 原版（论文机制）</span>
+              <span role="columnheader">HNet-DiT（我方公平对比臂）</span>
+            </div>
+            <div role="row">
+              <span role="rowheader">边界算子</span>
+              <span role="cell" class="cmp-flued" data-who="FLUED v3.6">segmentor 9 层细长 DiT → tanh 有界置信度 &gt;0.94 下刀 + UTF-8 续字节禁切</span>
+              <span role="cell" data-who="H-Net 原版">相邻隐状态余弦不相似度 0.5·(1−cos) &gt;0.5 下刀（routing module，2 层 encoder 之上）</span>
+              <span role="cell" data-who="HNet-DiT">同 H-Net 原版（余弦不相似度）</span>
+            </div>
+            <div role="row">
+              <span role="rowheader">边界梯度（训练方式）</span>
+              <span role="cell" class="cmp-flued" data-who="FLUED v3.6"><b>不走主任务梯度</b>：S0 段落标签 BCE 独立预训后冻结；S0.5 用 GRPO（组相对策略梯度）做离散边界优化</span>
+              <span role="cell" data-who="H-Net 原版"><b>STE 直通估计器端到端回传</b>（hard boundary + (prob − prob.detach())）+ ratio loss 把边界率压向 0.2</span>
+              <span role="cell" data-who="HNet-DiT">同原版 STE，但训练目标换成 masked infilling</span>
+            </div>
+            <div role="row">
+              <span role="rowheader">汇聚 / 压缩算子</span>
+              <span role="cell" class="cmp-flued" data-who="FLUED v3.6">ChunkSummarizer 4-slot 注意力池化逐段产 memory → WriteHead k/v/β/α 门控 → KDA 状态机串行 delta-rule 写入</span>
+              <span role="cell" data-who="H-Net 原版">按边界硬切 + chunk 均值池化 → chunk_proj 进主干</span>
+              <span role="cell" data-who="HNet-DiT">同原版</span>
+            </div>
+            <div role="row">
+              <span role="rowheader">主干</span>
+              <span role="cell" class="cmp-flued" data-who="FLUED v3.6">TinyBackbone 3 层双向 Transformer，只看 1 个 readout 包（1,536 标量）</span>
+              <span role="cell" data-who="H-Net 原版">层级主干，论文为 Mamba-2；我方复现因 Windows 环境用 9 层因果 Transformer（已披露差异）</span>
+              <span role="cell" data-who="HNet-DiT">7 层双向 Transformer（38.2M 对齐 39M 目标）</span>
+            </div>
+            <div role="row">
+              <span role="rowheader">解码 / 上采样算子</span>
+              <span role="cell" class="cmp-flued" data-who="FLUED v3.6">GlobalSpanDecoder：slot+cond 经 DiTStyleBlock，与 encoder 共享字节表做 cosine logits</span>
+              <span role="cell" data-who="H-Net 原版">dechunk：取「最后完成 chunk」的主干输出回贴字节级 + 边界概率平滑 + encoder 残差（decoder_skip）</span>
+              <span role="cell" data-who="HNet-DiT">同原版；标准臂保留 byte 旁路（skip），瓶颈臂砍旁路逼信息走瓶颈</span>
+            </div>
+            <div role="row">
+              <span role="rowheader">训练目标</span>
+              <span role="cell" class="cmp-flued" data-who="FLUED v3.6">两任务：readout→decoder 精准还原 + readout→backbone 改写→decoder 全量还原（5% span 1-8 mask 原生）</span>
+              <span role="cell" data-who="H-Net 原版">next-byte 自回归</span>
+              <span role="cell" data-who="HNet-DiT">masked infilling（5% span 1-8，与 v3.6 同口径）</span>
+            </div>
+            <div role="row">
+              <span role="rowheader">压缩激励</span>
+              <span role="cell" class="cmp-flued" data-who="FLUED v3.6">率控制 100% 归边界（CBIU 锚点协议 + GRPO 线）</span>
+              <span role="cell" data-who="H-Net 原版">ratio loss = (边界率 − 0.2)² × 0.03</span>
+              <span role="cell" data-who="HNet-DiT"><b>无显式激励 → 边界退化</b>：标准臂塌成 ~1 chunk、瓶颈臂碎到 ~190 chunks（E20 的对照证据）</span>
+            </div>
+            <div role="row">
+              <span role="rowheader">实测（单 seed）</span>
+              <span role="cell" class="cmp-flued" data-who="FLUED v3.6">masked <b>0.149</b> @ <b>1,536 标量</b></span>
+              <span role="cell" data-who="H-Net 原版">AR 复现 next-byte BPB 0.653（全信息天花板锚）</span>
+              <span role="cell" data-who="HNet-DiT">std 0.324 @ 262,144 标量（天花板）/ 瓶颈 <b>0.142</b> @ 97,540</span>
+            </div>
+          </div>
+          <p class="evidence-note">总结论：同口径硬指标 v3.6 masked 0.149 ≈ HNet-DiT 瓶颈臂 0.142，但 v3.6 只传 1,536 标量，约 60× 信息传输效率；H-Net 两臂在无显式压缩激励时边界必退化，动态切分无中间态。</p>
         </section>
 
         <section class="section section-dark section-observe" id="frontier" aria-labelledby="frontier-title">
