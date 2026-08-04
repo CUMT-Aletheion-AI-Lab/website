@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="FLUED v0.4-v3.4 experiment atlas with auditable training curves, baselines and ablations." />
+    <meta name="description" content="FLUED v0.4-v3.6 experiment atlas with auditable training curves, baselines and ablations." />
     <meta name="theme-color" content="#070809" />
     <meta property="og:title" content="FLUED Experiment Atlas · Alethic Insight" />
     <meta property="og:description" content="按版本、阶段、基线与可信度浏览 FLUED 的关键实验和完整训练趋势。" />
@@ -24,15 +24,24 @@
         <a class="brand" href="/index.html#top" aria-label="Alethic Insight home"><img src="/mark.svg" alt="" width="32" height="32" /><span>Alethic Insight</span></a>
         <nav class="nav-links" aria-label="FLUED navigation">
           <a href="/flued.html">FLUED</a>
-          <a href="#ledger">实验台账</a>
-          <a href="#curves">训练曲线</a>
-          <a href="#reading">读法</a>
+          <a href="/flued-architecture.html">架构</a>
+          <a href="/flued-demo.html">实时演示</a>
+          <a href="/flued-evidence.html">证据</a>
+          <a href="/flued-experiments.html" aria-current="page">实验图谱</a>
         </nav>
         <div class="header-controls">
           <button class="theme-toggle" type="button" data-theme-toggle aria-label="切换到亮色主题" aria-pressed="false"><span class="theme-toggle-track" aria-hidden="true"><span class="theme-toggle-thumb"></span></span><span data-theme-toggle-label>Dark</span></button>
           <a class="header-action" href="https://github.com/wdd9700/FLUED/tree/copilot/implement-stage-a-experiments">GitHub</a>
         </div>
       </header>
+
+      <nav class="section-rail" aria-label="Section navigation">
+        <a href="#top" data-rail-link="top" aria-label="顶部"><span>Top</span></a>
+        <a href="#ledger" data-rail-link="ledger" aria-label="实验台账"><span>Ledger</span></a>
+        <a href="#curves" data-rail-link="curves" aria-label="训练曲线"><span>Curves</span></a>
+        <a href="#frontier" data-rail-link="frontier" aria-label="率失真前沿"><span>Frontier</span></a>
+        <a href="#reading" data-rail-link="reading" aria-label="读法"><span>Reading</span></a>
+      </nav>
 
       <main>
         <section class="project-hero atlas-hero section-observe" id="top">
@@ -41,7 +50,7 @@
               <a class="back-link" href="/flued.html#evidence">返回 FLUED 主页面</a>
               <p class="eyebrow">FLUED Experiment Atlas</p>
               <h1><span>完整研究过程，</span><span>不只保留最终点</span></h1>
-              <p class="hero-lede">v0.4 -> v3.4 · baselines · ablations · failure cases</p>
+              <p class="hero-lede">v0.4 -> v3.6 · baselines · ablations · failure cases</p>
               <p class="project-lede">这里汇总可公开的关键实验条目和派生训练曲线。每项都标注口径与可信度：历史现象、受控机制实验和可作为主结论的公平比较被明确分开。</p>
               <div class="hero-actions"><a class="button button-primary" href="#ledger">Browse ledger</a><a class="button button-secondary" href="#curves">Inspect curves</a></div>
             </div>
@@ -75,7 +84,7 @@
             <aside class="atlas-controls">
               <div><span class="control-label">曲线组</span><div class="segmented-row atlas-version-buttons" data-curve-family-controls></div></div>
               <div><span class="control-label">指标</span><div class="metric-button-grid" data-curve-metric-controls>
-                <button class="is-active" type="button" data-metric="reconstruction">reconstruction</button><button type="button" data-metric="completion">completion</button><button type="button" data-metric="latent_per_byte">actual latent / byte</button><button type="button" data-metric="loss">loss</button><button type="button" data-metric="boundary_std">boundary std</button><button type="button" data-metric="grad_norm">grad norm</button>
+                <button class="is-active" type="button" data-metric="reconstruction">reconstruction</button><button type="button" data-metric="completion">completion</button><button type="button" data-metric="backbone_acc">backbone acc</button><button type="button" data-metric="latent_per_byte">actual latent / byte</button><button type="button" data-metric="loss">loss</button><button type="button" data-metric="chunks">chunks / sample</button><button type="button" data-metric="boundary_std">boundary std</button><button type="button" data-metric="grad_norm">grad norm</button>
               </div></div>
               <div class="evidence-note" data-curve-note>正在加载实验档案。</div>
             </aside>
@@ -88,11 +97,23 @@
           <div class="run-table" data-atlas-run-table></div>
         </section>
 
+        <section class="section page-grid section-observe" id="frontier" aria-labelledby="frontier-title">
+          <div class="section-heading"><p class="section-kicker">Rate–Distortion Frontier</p><h2 id="frontier-title">v3.6 的信息效率：同指标下 ~60×</h2><p>横轴为每条 512-byte prompt 传输的标量总数（对数刻度），纵轴为 strict masked-source 补全准确率（越高越好）。八个点全部来自 20K 步、corpus_v3、单 seed=42 的受控 run；S0.7 逐段条件化臂为非默认口径，单独标注。天花板锚 AR H-Net next-byte BPB 0.653 是不同指标，不进 acc 坐标系。</p></div>
+          <div class="frontier-panel">
+            <svg class="chart-svg" data-rd-chart viewBox="0 0 980 460" role="img" aria-label="FLUED v3.6 rate-distortion frontier"></svg>
+            <div class="chart-legend" data-rd-legend></div>
+          </div>
+          <div class="frontier-panel">
+            <h3 class="frontier-subtitle">masked acc 对比（柱上数字 = 信息传输标量数 / 512B prompt）</h3>
+            <div class="rd-bars" data-rd-bars></div>
+          </div>
+        </section>
+
         <section class="section page-grid section-observe" id="reading" aria-labelledby="reading-title">
           <div class="section-heading"><p class="section-kicker">Reading Rules</p><h2 id="reading-title">把结果放回它们真正回答的问题里</h2></div>
           <div class="claim-columns">
-            <div><h3>可作为当前主结论</h3><ul><li>v2 A-class 多种子：稳定可微边界和近无损重建。</li><li>v2 D1：统一 2048 原始 byte / 100K 下，FLUED 稳定但尚未超过 BPE。</li><li>v3.2.1 strict masked-source：latent no-memory 使小主干 mask accuracy 从 0.1440 提升至 0.1898。</li></ul></div>
-            <div><h3>只用于定位或历史叙事</h3><ul><li>v1 的 E3 20K BPB 阳性不是 D1 公平比较的替代品。</li><li>v3.4 迁移前 5K 筛选用于发现候选组件，不能绕过后续代码纠偏。</li><li>v3.4 40K/20K 单种子矩阵可定位失稳机制，不能据此声称多种子或尺度规律。</li></ul></div>
+            <div><h3>可作为当前主结论</h3><ul><li>v3.6 公平对比：masked acc 0.149 对 HNet-DiT 瓶颈臂 0.142（同规模同步数同语料单 seed），信息传输 1,536 vs ~97,540 标量。</li><li>v2 A-class 多种子：稳定可微边界和近无损重建。</li><li>v2 D1：统一 2048 原始 byte / 100K 下，FLUED 稳定但尚未超过 BPE。</li><li>v3.2.1 strict masked-source：latent no-memory 使小主干 mask accuracy 从 0.1440 提升至 0.1898。</li></ul></div>
+            <div><h3>只用于定位或历史叙事</h3><ul><li>v3.6 S0.7 逐段条件化（unmasked 0.351 / PPL 12.1）是非默认口径诊断臂，不进入主结论。</li><li>v1 的 E3 20K BPB 阳性不是 D1 公平比较的替代品。</li><li>v3.4 迁移前 5K 筛选用于发现候选组件，不能绕过后续代码纠偏。</li><li>v3.4 40K/20K 单种子矩阵可定位失稳机制，不能据此声称多种子或尺度规律。</li></ul></div>
           </div>
         </section>
       </main>
@@ -101,7 +122,7 @@
     <script type="module" src="/src/main.js"></script>
     <script type="module">
       const COLORS = ["#45d3b5", "#7dd3fc", "#fbbf24", "#fb7185", "#c4b5fd", "#a3e635", "#fda4af", "#60a5fa"];
-      const METRIC = { reconstruction: { label: "reconstruction accuracy", digits: 3 }, completion: { label: "masked completion accuracy", digits: 3 }, latent_per_byte: { label: "actual backbone latent / byte", digits: 3 }, loss: { label: "loss", digits: 3 }, boundary_std: { label: "boundary probability std", digits: 3 }, grad_norm: { label: "gradient norm", digits: 2 } };
+      const METRIC = { reconstruction: { label: "reconstruction accuracy", digits: 3 }, completion: { label: "masked completion accuracy", digits: 3 }, backbone_acc: { label: "backbone acc（unmasked 全位置）", digits: 3 }, latent_per_byte: { label: "actual backbone latent / byte", digits: 3 }, loss: { label: "loss", digits: 3 }, chunks: { label: "chunks / sample（切分段数）", digits: 1 }, boundary_std: { label: "boundary probability std", digits: 3 }, grad_norm: { label: "gradient norm", digits: 2 } };
       const state = { payload: null, family: null, metric: "reconstruction", version: "all", evidence: "all", query: "" };
       const $ = (selector) => document.querySelector(selector);
       const esc = (value) => String(value ?? "").replace(/[&<>\"]/g, (ch) => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"})[ch]);
@@ -150,6 +171,94 @@
       $("[data-ledger-controls]").addEventListener("input",(event)=>{if(event.target.matches("[data-version-filter]"))state.version=event.target.value;if(event.target.matches("[data-evidence-filter]"))state.evidence=event.target.value;if(event.target.matches("[data-ledger-search]"))state.query=event.target.value.trim().toLowerCase();renderLedger();});
       $("[data-curve-family-controls]").addEventListener("click",(event)=>{const button=event.target.closest("button[data-family]");if(!button)return;state.family=button.dataset.family;renderFamilyButtons();renderCurves();});
       $("[data-curve-metric-controls]").addEventListener("click",(event)=>{const button=event.target.closest("button[data-metric]");if(!button)return;state.metric=button.dataset.metric;document.querySelectorAll("[data-curve-metric-controls] button").forEach((item)=>item.classList.toggle("is-active",item===button));renderCurves();});
+    </script>
+    <script type="module">
+      // Rate–distortion frontier + masked-acc bars (data: results/v3.6/rd_frontier_20260802/points.csv, 单 seed=42, 20K steps, corpus_v3).
+      const RD_GROUPS = {
+        v36: { color: "#45d3b5", label: "v3.6 frontier（S0 + 4x KDA）" },
+        ctx: { color: "#9aa0aa", label: "uniform-boundary context" },
+        hnet: { color: "#fbbf24", label: "HNet-DiT reference" },
+        s07: { color: "#c4b5fd", label: "S0.7 逐段条件化臂 · 非默认" },
+      };
+      const RD_POINTS = [
+        { label: "v3.6 k=1 (S0+4x)", rate: 1536, acc: 0.1485, group: "v36", pos: "a" },
+        { label: "v3.6 k=4", rate: 6144, acc: 0.1463, group: "v36", pos: "a" },
+        { label: "v3.6 k=16", rate: 24576, acc: 0.1509, group: "v36", pos: "a" },
+        { label: "B1 uniform 4x k=1", rate: 1536, acc: 0.1293, group: "ctx", pos: "b" },
+        { label: "B0 uniform 1x k=1", rate: 384, acc: 0.1272, group: "ctx", pos: "a" },
+        { label: "legacy uniform probe", rate: 384, acc: 0.1135, group: "ctx", pos: "b" },
+        { label: "HNet-DiT std（无压缩天花板）", rate: 262144, acc: 0.3236, group: "hnet", pos: "a", anchor: "end" },
+        { label: "HNet-DiT bottleneck", rate: 97540, acc: 0.1418, group: "hnet", pos: "a" },
+        { label: "S0.7 逐段条件化臂（非默认）", rate: 27000, acc: 0.1413, group: "s07", pos: "b" },
+      ];
+      const RD_BARS = [
+        { label: "HNet-DiT std（无压缩天花板）", acc: 0.3236, rate: 262144, group: "hnet" },
+        { label: "FLUED v3.6 k=1（主基线）", acc: 0.1485, rate: 1536, group: "v36" },
+        { label: "HNet-DiT bottleneck（公平对比臂）", acc: 0.1418, rate: 97540, group: "hnet" },
+        { label: "B1 uniform 4x k=1", acc: 0.1293, rate: 1536, group: "ctx" },
+        { label: "B0 uniform 1x k=1", acc: 0.1272, rate: 384, group: "ctx" },
+        { label: "legacy uniform probe", acc: 0.1135, rate: 384, group: "ctx" },
+      ];
+      const fmtRate = (r) => r.toLocaleString("en-US");
+
+      (function renderFrontier() {
+        const svg = document.querySelector("[data-rd-chart]");
+        if (!svg) return;
+        const W = 980, H = 460, p = { l: 64, r: 26, t: 30, b: 52 }, pw = W - p.l - p.r, ph = H - p.t - p.b;
+        const xmin = Math.log10(300), xmax = Math.log10(400000), ymin = 0.10, ymax = 0.35;
+        const sx = (r) => p.l + (Math.log10(r) - xmin) / (xmax - xmin) * pw;
+        const sy = (a) => p.t + (1 - (a - ymin) / (ymax - ymin)) * ph;
+        const yticks = [0.10, 0.15, 0.20, 0.25, 0.30, 0.35];
+        const xticks = [1000, 10000, 100000];
+        let out = "";
+        out += yticks.map((v) => { const y = sy(v); return `<path class="chart-grid" d="M${p.l} ${y}H${W - p.r}"/><text class="chart-axis-label" x="${p.l - 8}" y="${y + 4}" text-anchor="end">${v.toFixed(2)}</text>`; }).join("");
+        out += xticks.map((v) => { const x = sx(v); return `<path class="chart-grid" d="M${x} ${p.t}V${H - p.b}"/><text class="chart-axis-label" x="${x}" y="${H - 26}" text-anchor="middle">${v.toLocaleString("en-US")}</text>`; }).join("");
+        out += `<rect class="chart-frame" x="${p.l}" y="${p.t}" width="${pw}" height="${ph}" rx="6"/>`;
+        // v3.6 frontier polyline (k=1 -> k=4 -> k=16)
+        const line = RD_POINTS.filter((d) => d.group === "v36").map((d) => `${sx(d.rate).toFixed(1)},${sy(d.acc).toFixed(1)}`).join(" ");
+        out += `<polyline points="${line}" fill="none" stroke="${RD_GROUPS.v36.color}" stroke-width="1.6" opacity="0.75"/>`;
+        // ~60x annotation between v3.6 k=1 and HNet-DiT bottleneck (placed below the dashed line, left third)
+        const a = RD_POINTS[0], b = RD_POINTS[7];
+        const ax = sx(a.rate) + (sx(b.rate) - sx(a.rate)) * 0.27;
+        const ay = sy(a.acc) + (sy(b.acc) - sy(a.acc)) * 0.27;
+        out += `<line x1="${sx(a.rate)}" y1="${sy(a.acc)}" x2="${sx(b.rate)}" y2="${sy(b.acc)}" stroke="#45d3b5" stroke-width="1" stroke-dasharray="4 4" opacity="0.55"/>`;
+        out += `<text class="rd-annotation" x="${ax}" y="${ay + 20}" text-anchor="middle">同指标下 ~60× 信息效率</text>`;
+        out += `<text class="rd-annotation" x="${ax}" y="${ay + 36}" text-anchor="middle">0.149 @ 1,536 vs 0.142 @ 97,540</text>`;
+        // ceiling note
+        out += `<text class="rd-annotation is-warm" x="${p.l + 8}" y="${p.t + 18}">天花板锚（不同口径，不入坐标系）：AR H-Net next-byte BPB 0.653</text>`;
+        for (const d of RD_POINTS) {
+          const x = sx(d.rate), y = sy(d.acc), c = RD_GROUPS[d.group].color;
+          if (d.group === "ctx") {
+            out += `<path d="M${x - 5} ${y - 5}L${x + 5} ${y + 5}M${x + 5} ${y - 5}L${x - 5} ${y + 5}" stroke="${c}" stroke-width="2"/>`;
+          } else if (d.group === "hnet") {
+            out += `<rect x="${x - 6}" y="${y - 6}" width="12" height="12" fill="${c}" opacity="0.9" transform="rotate(45 ${x} ${y})"/>`;
+          } else if (d.group === "s07") {
+            out += `<circle cx="${x}" cy="${y}" r="7" fill="none" stroke="${c}" stroke-width="1.6" stroke-dasharray="3 3"/><circle cx="${x}" cy="${y}" r="3.4" fill="${c}"/>`;
+          } else {
+            out += `<circle cx="${x}" cy="${y}" r="6" fill="${c}"/>`;
+          }
+          out += `<title>${d.label} · ${d.acc.toFixed(3)} @ ${fmtRate(d.rate)} 标量</title>`;
+          const anchor = d.anchor || "middle";
+          const labelY = d.pos === "a" ? y - 26 : y + 20;
+          const valueY = d.pos === "a" ? y - 12 : y + 34;
+          out += `<text class="rd-point-label" x="${x}" y="${labelY}" text-anchor="${anchor}">${d.label}</text>`;
+          out += `<text class="rd-point-value" x="${x}" y="${valueY}" text-anchor="${anchor}">${d.acc.toFixed(3)} @ ${fmtRate(d.rate)}</text>`;
+        }
+        out += `<text class="chart-axis-label" x="${W / 2}" y="${H - 6}" text-anchor="middle">rate: transmitted scalars per 512-byte prompt（log scale）</text>`;
+        out += `<text class="chart-axis-label" x="16" y="${p.t + ph / 2}" text-anchor="middle" transform="rotate(-90 16 ${p.t + ph / 2})">masked acc（越高越好）</text>`;
+        svg.innerHTML = out;
+        document.querySelector("[data-rd-legend]").innerHTML = Object.values(RD_GROUPS).map((g) => `<span><i style="background:${g.color}"></i>${g.label}</span>`).join("");
+      })();
+
+      (function renderBars() {
+        const el = document.querySelector("[data-rd-bars]");
+        if (!el) return;
+        const max = Math.max(...RD_BARS.map((d) => d.acc));
+        el.innerHTML = RD_BARS.map((d) => {
+          const w = (d.acc / max * 100).toFixed(1);
+          return `<div class="rd-bar-row"><span class="rd-bar-name">${d.label}</span><span class="rd-bar-track"><span class="rd-bar-fill" style="width:${w}%;background:${RD_GROUPS[d.group].color}"></span></span><span class="rd-bar-value">${d.acc.toFixed(3)} · ${fmtRate(d.rate)} 标量</span></div>`;
+        }).join("");
+      })();
     </script>
   </body>
 </html>

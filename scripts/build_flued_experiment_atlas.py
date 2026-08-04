@@ -11,10 +11,14 @@ import json
 from pathlib import Path
 
 
-SITE = Path(r"W:\Aletheion\website")
+SITE = Path(r"E:\projects\Aletheion\website")
 REPO = Path(r"E:\projects\FLUED\FLUED")
 V1 = Path(r"L:\FLUED_archive\migrated_from_K_20260712\E_checkpoints")
 V34 = Path(r"L:\FLUED_archive\v34_attribution_matrices_20260716")
+V36_S0 = Path(r"L:\FLUED_archive\v36_s0_vs_e2e_20260727")
+V36_ATTR = Path(r"L:\FLUED_archive\v36_attribution_matrix_20260731")
+V36_GRPO = Path(r"L:\FLUED_archive\s05_grpo_r4_2k_20260802")
+V36_S07 = Path(r"L:\FLUED_archive\s07_perchunk_20k_20260802")
 OUT = SITE / "public" / "flued-experiment-atlas.json"
 
 
@@ -55,7 +59,13 @@ def normalize(rows, mapping):
 
 
 def final(points):
-    return points[-1] if points else {}
+    # Last available value per key (some logs omit metrics in their final rows).
+    out = {}
+    for point in reversed(points):
+        for key, value in point.items():
+            if key not in out:
+                out[key] = value
+    return out
 
 
 def curve(run_id, family, label, protocol, evidence, points, note, *, historical=False):
@@ -164,6 +174,52 @@ def main():
         {"version":"v3.4", "stage":"40K 边界归因", "experiment":"S0: 1K transition", "steps":"40K", "metric":"recon 0.1842；completion 0.1182；PPL 42.245；latent/byte 0.201", "finding":"延长训练未恢复动态阶段，排除简单欠训练。", "evidence":"controlled", "comparable":True},
         {"version":"v3.4", "stage":"40K 边界归因", "experiment":"S1: 500 transition", "steps":"40K", "metric":"recon 0.2176；completion 0.1214；PPL 41.663；latent/byte 0.150", "finding":"缩短过渡略好，但不解决 hard emit 先行容量塌缩。", "evidence":"controlled", "comparable":True},
         {"version":"v3.4", "stage":"20K memory usage", "experiment":"no-memory / w=0 / w=.02 / w=.05", "steps":"20K", "metric":"w=.05: recon 0.2074；completion 0.1141；PPL 43.488；latent/byte 0.191", "finding":"w=.05 是单种子候选 Pareto 点，不等于 memory 已形成有序语义序列。", "evidence":"controlled", "comparable":True},
+    ])
+
+    # v3.6 (KDA generation): S0-vs-E2E pair, attribution matrix, GRPO boundary arms, per-chunk readout.
+    # Metric mapping into the shared schema: reconstruction=direct_acc (task 1),
+    # completion=backbone_masked_acc (task 2 main protocol), backbone_acc=unmasked full-position acc,
+    # chunks=chunks_per_sample. All runs are single seed=42, corpus_v3, 512-byte prompts.
+    V36_METRICS = {
+        "reconstruction": ("direct_acc",),
+        "completion": ("backbone_masked_acc",),
+        "backbone_acc": ("backbone_acc",),
+        "loss": ("loss",),
+        "chunks": ("chunks_per_sample",),
+    }
+    v36_curve_specs = [
+        ("v36-s0e2e", "v3.6 S0 vs E2E", V36_S0, [
+            ("arm_a_s0", "arm_a_s0 · 组件预训主基线", "组件预训（S0 segmentor 冻结）主基线：masked 0.149 @ readout 包 k=1（1,536 标量）。"),
+            ("arm_b_e2e", "arm_b_e2e · 端到端对照", "端到端对照：masked 0.124，过 12K 后退化；组件预训 +5.8pp 判死端到端路线。"),
+        ]),
+        ("v36-attr", "v3.6 归因矩阵", V36_ATTR, [
+            ("b0_uniform_1x_k1", "B0 · uniform 1x k=1 (384 标量)", "uniform 边界 + 1x KDA：容量下限参照。"),
+            ("b1_uniform_4x_k1", "B1 · uniform 4x k=1 (1,536 标量)", "uniform 边界 + 4x KDA：与 arm_a_s0 同容量同率，差 +4.4pp 全部来自 S0 动态边界。"),
+            ("k4_s0_4x_rerun", "k4 · S0 4x (6,144 标量)", "S0 边界 + k=4 readout：与 k=1 无显著差异。"),
+            ("k16_s0_4x", "k16 · S0 4x (24,576 标量)", "S0 边界 + k=16 readout：k 继续加大仍无增益——容量与 k 均为零效应。"),
+        ]),
+        ("v36-grpo", "v3.6 S0.5 GRPO", V36_GRPO, [
+            ("grpo_arm", "grpo_arm · R4 边界优化", "GRPO R4：约束走可微直接损失 E[count]=Σcut_prob，hard 停点 24.3 段 ≈ 用户手标 21B；质量与控制臂打平——GRPO 当前价值是选粒度。"),
+            ("control_arm", "control_arm · 控制臂", "同预算控制臂：chunks 17.6（S0 教师粒度），masked 0.149。"),
+        ]),
+        ("v36-s07", "v3.6 S0.7 逐段条件化", V36_S07, [
+            (".", "per_chunk_readout · 非默认口径", "逐段条件化：unmasked 0.351 / PPL 12.1 证明检索瓶颈可解；masked 0.141 未过预注册线。canonical 维持 v36.1，此臂非默认。"),
+        ]),
+    ]
+    for family_id, family_label, base, arms in v36_curve_specs:
+        for arm_dir, label, note in arms:
+            points = normalize(read_jsonl(base / arm_dir / "train_log.jsonl"), V36_METRICS)
+            curves.append(curve(f"{family_id}-{arm_dir.replace('.', 'perchunk')}", family_label, label, "44.7M FLUED v3.6；512 bytes；seed 42；corpus_v3", "controlled", points, note))
+
+    rows.extend([
+        {"version":"v3.6", "stage":"S0 vs E2E", "experiment":"arm_a_s0 组件预训主基线", "steps":"20K", "metric":"masked 0.1485；direct 0.1891；unmasked 0.1907；PPL 34.2", "finding":"当前主基线：整条 prompt = 1 个 readout 包（1,536 标量）。", "evidence":"controlled", "comparable":True},
+        {"version":"v3.6", "stage":"S0 vs E2E", "experiment":"arm_b_e2e 端到端对照", "steps":"20K", "metric":"masked 0.1243；direct 0.1305；过 12K 退化", "finding":"组件预训 +5.8pp，端到端路线判死。", "evidence":"controlled", "comparable":True},
+        {"version":"v3.6", "stage":"归因矩阵", "experiment":"B0 uniform 1x k=1", "steps":"20K", "metric":"masked 0.1272 @ 384 标量", "finding":"uniform 边界容量下限参照。", "evidence":"controlled", "comparable":True},
+        {"version":"v3.6", "stage":"归因矩阵", "experiment":"B1 uniform 4x k=1", "steps":"20K", "metric":"masked 0.1293 @ 1,536 标量", "finding":"与 arm_a_s0 同率同容量：+4.4pp 增益全部来自 S0 动态边界。", "evidence":"controlled", "comparable":True},
+        {"version":"v3.6", "stage":"归因矩阵", "experiment":"k4 / k16（S0 4x）", "steps":"20K", "metric":"masked 0.1463 @ 6,144；0.1509 @ 24,576 标量", "finding":"readout 数量 k 无显著差异；容量零效应复核。", "evidence":"controlled", "comparable":True},
+        {"version":"v3.6", "stage":"S0.5 GRPO", "experiment":"grpo_arm R4", "steps":"2K（自 3K 基线续训）", "metric":"masked 0.1477；chunks 24.3（hard 停点）", "finding":"边界裁决成功：24.3 段 ≈ 用户手标 21B；GRPO 当前价值=选粒度非提质量。", "evidence":"controlled", "comparable":True},
+        {"version":"v3.6", "stage":"S0.5 GRPO", "experiment":"control_arm 控制臂", "steps":"2K", "metric":"masked 0.1492；chunks 17.6", "finding":"质量口径与 R4 打平，差异只在切分粒度。", "evidence":"controlled", "comparable":True},
+        {"version":"v3.6", "stage":"S0.7 逐段条件化", "experiment":"per_chunk_readout（非默认）", "steps":"20K", "metric":"unmasked 0.3507；PPL 12.12；masked 0.1413", "finding":"检索瓶颈可解、路线活；masked 未过预注册线，canonical 维持 v36.1。", "evidence":"controlled", "comparable":False},
     ])
 
     payload = {

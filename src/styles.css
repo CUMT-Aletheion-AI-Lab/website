@@ -237,6 +237,11 @@ code {
   border-color: currentColor;
 }
 
+.nav-links a[aria-current="page"] {
+  color: var(--ink);
+  border-color: currentColor;
+}
+
 .header-action {
   padding: 9px 14px;
   border: 1px solid var(--line-strong);
@@ -949,6 +954,19 @@ h3 {
   counter-increment: signal-step;
   content: counter(signal-step, decimal-leading-zero);
   color: var(--accent);
+}
+
+/* Demo page only: li carries ::before counter + <strong> value + <span> detail (3 items),
+   so it needs a third explicit track; the shared 2-track rule would overflow the span
+   into an implicit narrow column and squash the card. */
+.demo-page .project-signal li {
+  grid-template-columns: 42px minmax(64px, auto) minmax(0, 1fr);
+  column-gap: 14px;
+}
+
+.demo-page .project-signal li strong {
+  color: var(--ink);
+  font-weight: 600;
 }
 
 .research-grid,
@@ -1707,6 +1725,148 @@ h3 {
   background: var(--line-strong);
 }
 
+/* Architecture trace: top-down pipeline cards */
+.pipe-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+  gap: 16px;
+  align-items: start;
+  margin-bottom: 28px;
+}
+
+.pipe-grid-duo {
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+  gap: 16px;
+  align-items: start;
+  margin-bottom: 28px;
+}
+
+.pipe-card {
+  display: grid;
+  gap: 14px;
+  align-content: start;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--panel);
+}
+
+.pipe-card.is-main {
+  border-color: color-mix(in srgb, var(--accent) 55%, var(--line));
+}
+
+.pipe-card.is-rival {
+  border-style: dashed;
+}
+
+.pipe-card header {
+  display: grid;
+  gap: 6px;
+}
+
+.pipe-tag {
+  color: var(--accent);
+  font-family: "SF Mono", "Cascadia Code", Consolas, monospace;
+  font-size: 0.72rem;
+  font-weight: 780;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.pipe-card.is-rival .pipe-tag {
+  color: var(--accent-blue);
+}
+
+.pipe-card h3 {
+  margin: 0;
+  font-size: 1.02rem;
+}
+
+.pipe-fate {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.8rem;
+  line-height: 1.55;
+}
+
+.pipe-fate strong {
+  color: var(--ink);
+  font-weight: 640;
+}
+
+.pipe-flow {
+  display: grid;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pipe-flow li {
+  position: relative;
+  margin-bottom: 20px;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--ink);
+  font-family: "SF Mono", "Cascadia Code", Consolas, monospace;
+  font-size: 0.72rem;
+  line-height: 1.45;
+  text-align: center;
+}
+
+.pipe-flow li:last-child {
+  margin-bottom: 0;
+}
+
+.pipe-flow li small {
+  display: block;
+  margin-top: 2px;
+  color: var(--muted);
+  font-size: 0.66rem;
+}
+
+.pipe-flow li:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -20px;
+  width: 1px;
+  height: 20px;
+  background: var(--line-strong);
+}
+
+.pipe-flow li:not(:first-child)::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: -5px;
+  transform: translateX(-50%);
+  border: 4px solid transparent;
+  border-top-color: var(--line-strong);
+}
+
+.pipe-flow li.is-io {
+  border-style: dashed;
+  color: var(--muted);
+}
+
+.pipe-subhead {
+  margin: 34px 0 16px;
+  color: var(--muted);
+  font-family: "SF Mono", "Cascadia Code", Consolas, monospace;
+  font-size: 0.78rem;
+  font-weight: 780;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.pipe-subhead:first-of-type {
+  margin-top: 0;
+}
+
 /* FLUED experiment atlas */
 .atlas-hero {
   min-height: 0;
@@ -2029,6 +2189,11 @@ h3 {
     animation: none !important;
   }
 
+  .section-observe {
+    opacity: 1;
+    transform: none;
+  }
+
   *,
   *::before,
   *::after {
@@ -2106,6 +2271,10 @@ h3 {
   .roi-grid,
   .architecture-map {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .pipe-grid-duo {
+    grid-template-columns: 1fr;
   }
 
   .architecture-flow {
@@ -2383,5 +2552,610 @@ h3 {
 
   .chart-svg {
     min-height: 300px;
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/* FLUED v3.6 live demo page (flued-demo.html)                                 */
+/* -------------------------------------------------------------------------- */
+
+.demo-offline-badge {
+  display: inline-block;
+  margin: 0 0 18px;
+  padding: 8px 14px;
+  border: 1px solid var(--accent-red);
+  border-radius: 8px;
+  color: var(--accent-red);
+  background: rgba(255, 109, 117, 0.08);
+  font-weight: 600;
+}
+
+.demo-input-panel {
+  display: grid;
+  gap: 14px;
+  padding: 20px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--panel);
+}
+
+.demo-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.demo-preset {
+  padding: 8px 14px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.86rem;
+  cursor: pointer;
+  transition: border-color 160ms ease, background 160ms ease;
+}
+
+.demo-preset:hover {
+  border-color: var(--line-strong);
+  background: var(--surface-hover);
+}
+
+.demo-textarea {
+  width: 100%;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: rgba(var(--ink-rgb), 0.03);
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.95rem;
+  line-height: 1.7;
+  resize: vertical;
+}
+
+.demo-textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.demo-input-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  align-items: center;
+}
+
+.demo-run-status {
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+.demo-placeholder {
+  margin: 0;
+  padding: 28px;
+  border: 1px dashed var(--line);
+  border-radius: 12px;
+  color: var(--muted);
+  text-align: center;
+}
+
+.demo-model-list {
+  display: grid;
+  gap: 20px;
+}
+
+.demo-model-card {
+  padding: 20px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--panel);
+}
+
+.demo-model-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: baseline;
+  margin-bottom: 6px;
+}
+
+.demo-model-head strong {
+  font-size: 1.02rem;
+}
+
+.demo-model-tag {
+  padding: 2px 10px;
+  border: 1px solid var(--signal-border);
+  border-radius: 999px;
+  color: var(--accent);
+  font-size: 0.76rem;
+}
+
+.demo-model-tag.is-warn {
+  color: var(--accent-red);
+  border-color: var(--accent-red);
+}
+
+.demo-model-chunks {
+  margin-left: auto;
+  color: var(--muted);
+  font-size: 0.84rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.demo-model-note {
+  margin: 0 0 14px;
+  color: var(--muted);
+  font-size: 0.86rem;
+}
+
+.demo-seg-text {
+  margin-bottom: 14px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: rgba(var(--ink-rgb), 0.02);
+  font-size: 0.92rem;
+  line-height: 2;
+  overflow-wrap: anywhere;
+}
+
+.demo-seg-a {
+  background: rgba(var(--ink-rgb), 0.085);
+  border-radius: 3px;
+  padding: 1px 0;
+}
+
+.demo-seg-b {
+  background: rgba(55, 214, 180, 0.12);
+  border-radius: 3px;
+  padding: 1px 0;
+}
+
+:root[data-theme="light"] .demo-seg-b {
+  background: rgba(14, 124, 102, 0.14);
+}
+
+.demo-seg-mark {
+  color: var(--accent);
+  font-weight: 700;
+  padding: 0 1px;
+}
+
+.demo-score-chart {
+  display: block;
+  width: 100%;
+  height: 40px;
+}
+
+.demo-score-bar {
+  fill: rgba(var(--ink-rgb), 0.3);
+}
+
+.demo-score-cut {
+  fill: var(--accent);
+}
+
+.demo-score-axis {
+  display: flex;
+  justify-content: space-between;
+  color: var(--muted);
+  font-size: 0.72rem;
+  margin-top: 2px;
+}
+
+.demo-masked-text {
+  margin-bottom: 20px;
+}
+
+.demo-masked-label {
+  margin: 0 0 8px;
+  color: var(--muted);
+  font-size: 0.86rem;
+}
+
+.demo-masked-body {
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--panel);
+  font-size: 0.92rem;
+  line-height: 2;
+  overflow-wrap: anywhere;
+}
+
+.demo-mask-char {
+  background: rgba(255, 109, 117, 0.2);
+  color: var(--accent-red);
+  border-bottom: 2px solid var(--accent-red);
+  border-radius: 2px;
+  padding: 0 1px;
+}
+
+.demo-acc-row {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.demo-acc {
+  font-size: 2rem;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  color: var(--accent);
+}
+
+.demo-acc-label {
+  color: var(--muted);
+  font-size: 0.84rem;
+}
+
+.demo-extra-metrics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+  margin-bottom: 12px;
+  color: var(--muted);
+  font-size: 0.84rem;
+}
+
+.demo-extra-metrics b {
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.demo-pred-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.demo-pred {
+  padding: 3px 9px;
+  border-radius: 6px;
+  font-size: 0.82rem;
+  font-variant-numeric: tabular-nums;
+  border: 1px solid var(--line);
+}
+
+.demo-pred b {
+  color: var(--muted);
+  font-weight: 500;
+  margin-right: 4px;
+}
+
+.demo-pred.is-ok {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: rgba(55, 214, 180, 0.08);
+}
+
+.demo-pred.is-bad {
+  border-color: rgba(255, 109, 117, 0.45);
+  color: var(--accent-red);
+  background: rgba(255, 109, 117, 0.07);
+}
+
+.demo-timing-panel {
+  display: grid;
+  gap: 12px;
+  padding: 20px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--panel);
+}
+
+.demo-timing-row {
+  display: grid;
+  grid-template-columns: minmax(160px, 220px) 1fr 90px;
+  gap: 12px;
+  align-items: center;
+}
+
+.demo-timing-name {
+  font-size: 0.86rem;
+}
+
+.demo-timing-track {
+  height: 14px;
+  border-radius: 7px;
+  background: rgba(var(--ink-rgb), 0.06);
+  overflow: hidden;
+}
+
+.demo-timing-bar {
+  display: block;
+  height: 100%;
+  border-radius: 7px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-blue));
+}
+
+.demo-timing-ms {
+  text-align: right;
+  color: var(--muted);
+  font-size: 0.84rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.demo-e2e {
+  margin-top: 18px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.demo-e2e strong {
+  font-size: 2.2rem;
+  line-height: 1;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+}
+
+.demo-e2e span {
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+@media (max-width: 760px) {
+  .demo-timing-row {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+
+  .demo-timing-ms {
+    text-align: left;
+  }
+}
+
+/* v3.6 segmentation showcase (flued.html #roi) — scoped styles, data-driven from /flued-segmentation-showcase.json */
+.showcase-banner {
+  margin: 0 0 24px;
+  padding: 12px 16px;
+  border: 1px solid var(--signal-border);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--accent) 7%, transparent);
+  color: var(--ink);
+  font-size: 0.92rem;
+}
+
+.showcase-banner a {
+  color: var(--accent);
+  text-underline-offset: 3px;
+}
+
+.showcase-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.showcase-tab {
+  padding: 8px 16px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: border-color 160ms ease, color 160ms ease, background 160ms ease;
+}
+
+.showcase-tab:hover {
+  border-color: var(--line-strong);
+  background: var(--surface-hover);
+}
+
+.showcase-tab.is-active {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.showcase-list {
+  display: grid;
+  gap: 18px;
+}
+
+.showcase-card {
+  padding: 20px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--panel);
+}
+
+.showcase-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: baseline;
+  margin-bottom: 6px;
+}
+
+.showcase-head strong {
+  font-size: 1.02rem;
+}
+
+.showcase-kind {
+  padding: 2px 10px;
+  border: 1px solid var(--signal-border);
+  border-radius: 999px;
+  color: var(--accent);
+  font-size: 0.76rem;
+}
+
+.showcase-nseg {
+  margin-left: auto;
+  color: var(--muted);
+  font-size: 0.84rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.showcase-blurb {
+  margin: 0 0 14px;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.showcase-text {
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: rgba(var(--ink-rgb), 0.02);
+  font-size: 0.92rem;
+  line-height: 2;
+  overflow-wrap: anywhere;
+}
+
+.showcase-seg-a {
+  background: rgba(var(--ink-rgb), 0.085);
+  border-radius: 3px;
+  padding: 1px 0;
+}
+
+.showcase-seg-b {
+  background: rgba(55, 214, 180, 0.12);
+  border-radius: 3px;
+  padding: 1px 0;
+}
+
+:root[data-theme="light"] .showcase-seg-b {
+  background: rgba(14, 124, 102, 0.14);
+}
+
+.showcase-seg-mark {
+  color: var(--accent);
+  font-weight: 700;
+  padding: 0 1px;
+}
+
+.showcase-chart {
+  display: block;
+  width: 100%;
+  height: 40px;
+  margin-top: 12px;
+}
+
+.showcase-bar {
+  fill: rgba(var(--ink-rgb), 0.3);
+}
+
+.showcase-cut {
+  fill: var(--accent);
+}
+
+.showcase-axis {
+  display: flex;
+  justify-content: space-between;
+  color: var(--muted);
+  font-family: "SF Mono", "Cascadia Code", Consolas, monospace;
+  font-size: 0.72rem;
+  margin-top: 2px;
+}
+
+.showcase-lossy {
+  margin: 10px 0 0;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.showcase-foot {
+  margin: 20px 0 0;
+  color: var(--muted);
+  font-size: 0.86rem;
+}
+
+/* v3.6 rate–distortion frontier (flued-experiments.html #frontier) */
+.frontier-panel {
+  margin-bottom: 24px;
+  padding: 20px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--panel);
+}
+
+.frontier-subtitle {
+  margin: 0 0 14px;
+  font-size: 0.95rem;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.rd-annotation {
+  fill: var(--accent);
+  font-family: "SF Mono", "Cascadia Code", Consolas, monospace;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.rd-annotation.is-warm {
+  fill: var(--accent-red);
+  font-weight: 500;
+}
+
+.rd-point-label {
+  fill: var(--ink);
+  font-size: 0.74rem;
+  font-weight: 600;
+}
+
+.rd-point-value {
+  fill: var(--muted);
+  font-family: "SF Mono", "Cascadia Code", Consolas, monospace;
+  font-size: 0.68rem;
+}
+
+.rd-bars {
+  display: grid;
+  gap: 10px;
+}
+
+.rd-bar-row {
+  display: grid;
+  grid-template-columns: minmax(0, 260px) minmax(0, 1fr) minmax(0, 190px);
+  gap: 14px;
+  align-items: center;
+}
+
+.rd-bar-name {
+  color: var(--ink);
+  font-size: 0.88rem;
+}
+
+.rd-bar-track {
+  display: block;
+  height: 12px;
+  border-radius: 999px;
+  background: rgba(var(--ink-rgb), 0.08);
+  overflow: hidden;
+}
+
+.rd-bar-fill {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+}
+
+.rd-bar-value {
+  color: var(--muted);
+  font-family: "SF Mono", "Cascadia Code", Consolas, monospace;
+  font-size: 0.78rem;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+@media (max-width: 760px) {
+  .rd-bar-row {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+
+  .rd-bar-value {
+    text-align: left;
   }
 }

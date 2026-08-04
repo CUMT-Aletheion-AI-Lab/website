@@ -37,19 +37,12 @@
           <img src="/mark.svg" alt="" width="32" height="32" />
           <span>Alethic Insight</span>
         </a>
-        <nav class="nav-links" aria-label="Project navigation">
-          <a href="/index.html#projects">项目</a>
-          <a href="#research-feed">进展</a>
-          <a href="#thesis">思想</a>
-          <a href="#history">历史</a>
-          <a href="#evidence">证据</a>
-          <a href="/flued-evidence.html">曲线</a>
-          <a href="/flued-experiments.html">实验档案</a>
-          <a href="/flued-architecture.html">架构追踪</a>
-          <a href="#roi">边界</a>
-          <a href="#architecture">架构</a>
-          <a href="#references">借鉴</a>
-          <a href="#boundary">结论</a>
+        <nav class="nav-links" aria-label="FLUED navigation">
+          <a href="/flued.html" aria-current="page">FLUED</a>
+          <a href="/flued-architecture.html">架构</a>
+          <a href="/flued-demo.html">实时演示</a>
+          <a href="/flued-evidence.html">证据</a>
+          <a href="/flued-experiments.html">实验图谱</a>
         </nav>
         <div class="header-controls">
           <button
@@ -69,6 +62,18 @@
           </a>
         </div>
       </header>
+
+      <nav class="section-rail" aria-label="Section navigation">
+        <a href="#top" data-rail-link="top" aria-label="顶部"><span>Top</span></a>
+        <a href="#research-feed" data-rail-link="research-feed" aria-label="最新研究"><span>Latest</span></a>
+        <a href="#thesis" data-rail-link="thesis" aria-label="研究问题"><span>Thesis</span></a>
+        <a href="#history" data-rail-link="history" aria-label="历史"><span>History</span></a>
+        <a href="#evidence" data-rail-link="evidence" aria-label="证据"><span>Evidence</span></a>
+        <a href="#roi" data-rail-link="roi" aria-label="切分展示"><span>Boundary</span></a>
+        <a href="#architecture" data-rail-link="architecture" aria-label="架构追踪"><span>Arch</span></a>
+        <a href="#references" data-rail-link="references" aria-label="借鉴工作"><span>Related</span></a>
+        <a href="#boundary" data-rail-link="boundary" aria-label="主张边界"><span>Claims</span></a>
+      </nav>
 
       <main>
         <section class="project-hero section-observe" id="top">
@@ -116,36 +121,37 @@
         <section class="section page-grid section-observe" id="research-feed" aria-labelledby="research-feed-title">
           <div class="section-heading">
             <p class="section-kicker">Latest Research</p>
-            <h2 id="research-feed-title">研究不是一条直线，而是一组可复盘的判断</h2>
+            <h2 id="research-feed-title">当前主线 v3.6：整条 prompt 压缩成一个 readout 包</h2>
             <p>
-              借鉴成熟 AI 团队的公开展示方式，FLUED 页面不只展示最终架构，也展示关键分歧、
-              失败样本、可复现实验入口和当前暂不主张的边界。下面四个入口是理解 FLUED 的最短路径。
+              v3.6（KDA 世代）把 512 字节 prompt 经动态切分、逐段摘要和 KDA 状态机串行消费后，
+              只保留 1 个 readout 包（1,536 标量），再由 decoder 从固定大小状态还原原文。
+              下面四个入口是理解当前证据的最短路径；v2 D1 等旧口径保留在 History，不替代当前结论。
             </p>
           </div>
           <div class="research-feed-grid">
             <article>
-              <span>2026 · Retrospective</span>
-              <h3>v0.4 到 v3.4 的架构追踪</h3>
-              <p>从最小可逆假设、去噪冲突、严格 masked-source，到 one-shot、位置编码和小 AR 的决策链。</p>
-              <a href="/flued-architecture.html#evolution">Read evolution</a>
+              <span>2026-08 · KDA Generation</span>
+              <h3>v3.6 架构：512 字节进，一个包出</h3>
+              <p>S0 动态边界、ChunkSummarizer、WriteHead 门控写入、KDA 状态机串行消费，整条 prompt 恰好读出 1×1,536 标量。</p>
+              <a href="/flued-architecture.html">Read architecture</a>
             </article>
             <article>
-              <span>Evidence · BPB</span>
-              <h3>v2 公平重跑和主证据边界</h3>
-              <p>主证据采用 2048 original-byte / 100K D1 公平矩阵；v1 历史阳性保留在 History，不替代当前结论。</p>
-              <a href="/flued-evidence.html">Open curves</a>
+              <span>Evidence · Fair Comparison</span>
+              <h3>masked 0.149 打赢 HNet-DiT 瓶颈臂 0.142</h3>
+              <p>单 seed、38–44M 同规模、同 20K 步同语料、同 masked infilling 口径；信息传输 1,536 vs ~97,540 标量，同指标约 60× 信息效率。</p>
+              <a href="/flued-experiments.html#frontier">Open frontier</a>
             </article>
             <article>
-              <span>Visual · Boundary ROI</span>
-              <h3>v3.1 切分边界可视化</h3>
-              <p>用中文、英文、代码和混合样本展示 ROI 形状，让边界逻辑接受肉眼检查。</p>
-              <a href="#roi">View ROI</a>
+              <span>S0.5 · GRPO</span>
+              <h3>边界优化停在 24.3 段 ≈ 用户手标 21B</h3>
+              <p>GRPO 组内排名优化边界与写入门，质量与控制臂打平——当前价值是选粒度而非提质量，教师粒度之争了结。</p>
+              <a href="/flued-architecture.html#frontier">Read S0.5–S0.7</a>
             </article>
             <article>
-              <span>Code · v3.4</span>
-              <h3>架构、梯度与训练代码对照</h3>
-              <p>当前代码将 DiT-style segmentor、硬切分/软梯度桥、并行 memory、小 AR、硬 emit 和近似逆 decoder 拆成可审计节点。</p>
-              <a href="/flued-architecture.html#code">Open code trace</a>
+              <span>S0.7 · 非默认口径</span>
+              <h3>逐段条件化：unmasked 0.351 / PPL 12.1</h3>
+              <p>证明检索瓶颈可解、路线活；masked 未过预注册线，canonical 维持 v36.1，此臂不设默认。</p>
+              <a href="/flued-demo.html">Watch live demo</a>
             </article>
           </div>
         </section>
@@ -267,6 +273,8 @@
             <div><span>v3.1</span><p>语言编码器原型：readout latent / summary memory / minimal backbone，但早期 clean encode 评估有侧漏风险。</p></div>
             <div><span>v3.2.1</span><p>严格 masked-source：先在 byte 输入层 mask，再 encode，确认 latent readout 对小 backbone 有正向作用。</p></div>
             <div><span>v3.3</span><p>架构截止点：segmentor、interpreter、memory、decoder 职责拆开，转向系统消融和公开复现。</p></div>
+            <div><span>v3.4</span><p>消融矩阵（2026-07）：共享逆以三重证据判死、独立 decoder 成为默认；提出 CBIU（counterfactual boundary utility，反事实边界效用）协议评估单点边界贡献。</p></div>
+            <div><span>v3.6</span><p>KDA 世代（2026-07/08）：S0 segmentor 预训 F1 0.886；组件预训 +5.8pp 判死端到端；归因矩阵确认增益全部来自 S0 动态边界；S0.5 GRPO 边界优化停于 24.3 段 ≈ 用户手标 21B；S0.7 逐段条件化证明检索瓶颈可解、路线活。</p></div>
           </div>
         </section>
 
@@ -302,8 +310,8 @@
                 <strong>+0.0458 mask acc</strong>
               </div>
               <div>
-                <span>v3.4 status</span>
-                <strong>attribution in progress</strong>
+                <span>v3.6 masked acc</span>
+                <strong>0.149 @ 1,536 标量</strong>
               </div>
             </div>
             <div class="evidence-table" role="table" aria-label="FLUED evidence table">
@@ -332,186 +340,114 @@
                 <span role="cell">one-shot DiT-style refinement、硬执行/软反传、并行 no-self memory、RoPE + 小 AR 与 shared inverse decoder 已实现；40K 归因显示动态边界与 hard emit 的课程仍耦合。</span>
                 <span role="cell">当前公开重点是架构与梯度的可审计性，不将单种子归因写成最终性能结论。</span>
               </div>
+              <div role="row">
+                <span role="cell">v3.6</span>
+                <span role="cell">38–44M 同规模、同 20K 步、同语料、同 masked infilling 口径（单 seed）：FLUED v3.6 masked 0.149 @ 1,536 标量，HNet-DiT 瓶颈臂 0.142 @ ~97,540 标量；HNet-DiT 标准臂 0.324 为无压缩天花板锚，不在同一压缩口径。</span>
+                <span role="cell">同指标下约 60× 信息效率；受控单种子证据，不做多种子或尺度外推。</span>
+              </div>
+              <div role="row">
+                <span role="cell">v3.6 S0.7</span>
+                <span role="cell">逐段条件化诊断臂：unmasked 全位置 acc 0.351 / PPL 12.1，masked 0.141 未过预注册线；该臂为非默认口径，canonical 维持 v36.1。</span>
+                <span role="cell">证明 KDA 状态的检索瓶颈可解、路线活；不进入主结论。</span>
+              </div>
             </div>
           </div>
         </section>
 
         <section class="section page-grid section-observe" id="roi" aria-labelledby="roi-title">
           <div class="section-heading">
-            <p class="section-kicker">Boundary ROI</p>
-            <h2 id="roi-title">v3.1 的切分边界长什么样</h2>
+            <p class="section-kicker">Boundary Showcase</p>
+            <h2 id="roi-title">v3.6 的切分边界长什么样</h2>
             <p>
-              下面来自 <code>codec_10k_pool_mfl</code> 的 <code>roi_constrained.md</code>，不是示意图。
-              这个版本的边界已经能稳定避开 UTF-8 continuation byte，并明显响应空格、标点、下划线、数字符号和长度约束；
-              但它还不是完全语义级切分，中文长片段仍有 max_span 驱动的痕迹。
+              同一段文本，五种切分来源并排：FLUED v3.6 的 S0 / GRPO R4 两个学习切分臂、H-Net 复现（学习切分）、BLT 字节 LM 熵切分、BPE 分词器。
+              全部来自预计算的真实模型输出（单 seed 演示口径，offsets 为 UTF-8 字节偏移），不是示意图；
+              <a href="/flued-demo.html">实时演示</a>可以在本机对任意输入重跑其中的模型。
             </p>
           </div>
+          <p class="showcase-banner">当前主线为 v3.6（KDA 世代）：逐节点管线、历代架构变迁与竞争对手对照见<a href="/flued-architecture.html">架构追踪页</a>，完整实验数据见<a href="/flued-experiments.html">实验图谱</a>。</p>
 
           <div class="roi-summary">
-            <div><span>checkpoint</span><strong>v3.1 codec_10k_pool_mfl</strong></div>
-            <div><span>boundary_acc</span><strong>0.9353</strong></div>
-            <div><span>units / byte</span><strong>0.1170</strong></div>
-            <div><span>UTF-8 cont starts</span><strong>0</strong></div>
+            <div><span>checkpoint</span><strong>arm_a_s0 + grpo_r4</strong></div>
+            <div><span>S0 教师边界 F1</span><strong>0.886</strong></div>
+            <div><span>R4 hard 停点</span><strong>24.3 段 ≈ 用户手标 21B</strong></div>
+            <div><span>口径</span><strong>单 seed 演示</strong></div>
           </div>
 
-          <div class="roi-grid">
-            <article class="roi-card">
-              <div class="roi-card-head">
-                <div>
-                  <span>zh · 88 bytes · 8 units</span>
-                  <h3>中文 + UTF-8 + 标点</h3>
-                </div>
-                <strong>0.0909 units/B</strong>
-              </div>
-              <div class="roi-heat" aria-label="v3.1 Chinese segmentation">
-                <span class="roi-segment low" title="unit 0, p=0.1762, len=15">这个版本需<small>.176</small></span>
-                <span class="roi-segment low" title="unit 1, p=0.1762, len=15">要看清楚中<small>.176</small></span>
-                <span class="roi-segment low" title="unit 2, p=0.1834, len=15">文词语、标<small>.183</small></span>
-                <span class="roi-segment low" title="unit 3, p=0.1852, len=6">点和<small>.185</small></span>
-                <span class="roi-segment high" title="unit 4, p=0.8810, len=4"> UTF<small>.881</small></span>
-                <span class="roi-segment high" title="unit 5, p=0.8225, len=2">-8<small>.823</small></span>
-                <span class="roi-segment high" title="unit 6, p=0.8810, len=16"> 字节边界的<small>.881</small></span>
-                <span class="roi-segment low" title="unit 7, p=0.1798, len=15">分段情况。<small>.180</small></span>
-              </div>
-              <p>
-                这里最重要的不是中文词切得漂亮，而是 continuation byte 没被切断；
-                空格和 `-` 明显抬高边界置信度，长中文段仍受 16-byte 容量约束影响。
-              </p>
-            </article>
-
-            <article class="roi-card">
-              <div class="roi-card-head">
-                <div>
-                  <span>en · 105 bytes · 18 units</span>
-                  <h3>英文说明句</h3>
-                </div>
-                <strong>0.1714 units/B</strong>
-              </div>
-              <div class="roi-heat" aria-label="v3.1 English segmentation">
-                <span class="roi-segment mid" title="unit 0, p=0.5371">The<small>.537</small></span>
-                <span class="roi-segment high" title="unit 1, p=0.9071"> readout<small>.907</small></span>
-                <span class="roi-segment high" title="unit 2, p=0.9071"> latent<small>.907</small></span>
-                <span class="roi-segment high" title="unit 5, p=0.9071"> public<small>.907</small></span>
-                <span class="roi-segment high" title="unit 7, p=0.9071"> interface<small>.907</small></span>
-                <span class="roi-segment high" title="unit 8, p=0.9743">, while<small>.974</small></span>
-                <span class="roi-segment high" title="unit 9, p=0.9071"> summary<small>.907</small></span>
-                <span class="roi-segment high" title="unit 11, p=0.9071"> memory<small>.907</small></span>
-                <span class="roi-segment high" title="unit 15, p=0.9071"> FLUED<small>.907</small></span>
-                <span class="roi-segment high" title="unit 16, p=0.9071"> encoder<small>.907</small></span>
-              </div>
-              <p>
-                英文样本基本按空格、逗号和单词边界切分。它接近 tokenizer 行为，
-                但输出是 readout latent，而不是离散 token id。
-              </p>
-            </article>
-
-            <article class="roi-card">
-              <div class="roi-card-head">
-                <div>
-                  <span>code · 105 bytes · 24 units</span>
-                  <h3>代码与符号</h3>
-                </div>
-                <strong>0.2286 units/B</strong>
-              </div>
-              <div class="roi-heat" aria-label="v3.1 code segmentation">
-                <span class="roi-segment low" title="unit 0, p=0.0761">def<small>.076</small></span>
-                <span class="roi-segment mid" title="unit 1, p=0.6260"> segment<small>.626</small></span>
-                <span class="roi-segment mid" title="unit 2, p=0.5247">_lengths(raw:<small>.525</small></span>
-                <span class="roi-segment high" title="unit 4, p=0.7639">):\n<small>.764</small></span>
-                <span class="roi-segment mid" title="unit 6, p=0.6260">   starts<small>.626</small></span>
-                <span class="roi-segment high" title="unit 9, p=0.9269">]\n<small>.927</small></span>
-                <span class="roi-segment mid" title="unit 11, p=0.6260">   return<small>.626</small></span>
-                <span class="roi-segment mid" title="unit 19, p=0.6260"> zip(starts<small>.626</small></span>
-                <span class="roi-segment high" title="unit 22, p=0.9269">])<small>.927</small></span>
-              </div>
-              <p>
-                代码场景切得更碎，说明符号、括号、换行和缩进对边界有强影响。
-                这也是后续 v3.3 需要更明确处理 code / identifier 的原因。
-              </p>
-            </article>
-
-            <article class="roi-card">
-              <div class="roi-card-head">
-                <div>
-                  <span>mixed · 128 bytes · 21 units</span>
-                  <h3>中英混合 + APINameLikeThis</h3>
-                </div>
-                <strong>0.1641 units/B</strong>
-              </div>
-              <div class="roi-heat" aria-label="v3.1 mixed segmentation">
-                <span class="roi-segment low" title="unit 0, p=0.1831">FLUED<small>.183</small></span>
-                <span class="roi-segment high" title="unit 1, p=0.8197">-v3<small>.820</small></span>
-                <span class="roi-segment high" title="unit 7, p=0.9810">&gt; readout<small>.981</small></span>
-                <span class="roi-segment high" title="unit 10, p=0.9810">&gt; byte<small>.981</small></span>
-                <span class="roi-segment high" title="unit 14, p=0.8722"> 主线，APINam<small>.872</small></span>
-                <span class="roi-segment low" title="unit 15, p=0.0115">eLikeThis<small>.012</small></span>
-                <span class="roi-segment high" title="unit 17, p=0.8722"> 4096<small>.872</small></span>
-                <span class="roi-segment high" title="unit 18, p=0.8197">-byte<small>.820</small></span>
-                <span class="roi-segment high" title="unit 19, p=0.8722"> block<small>.872</small></span>
-              </div>
-              <p>
-                这个样本暴露了 v3.1 的典型缺陷：`APINameLikeThis` 被拆得不够语义化，
-                说明边界仍偏表面符号和容量约束，距离真正语义段还有距离。
-              </p>
-            </article>
-          </div>
+          <div class="showcase-tabs" data-showcase-tabs role="tablist" aria-label="切换展示文本"></div>
+          <div class="showcase-list" data-showcase-list><p class="demo-placeholder">切分对比加载中…</p></div>
+          <p class="showcase-foot">
+            S0 臂按教师标注粒度切（约 27B/段）；GRPO R4 臂经 S0.5 边界优化停在约 24 段 ≈ 用户手标 21B 粒度——任务奖励自选粒度，GRPO 当前的价值是选粒度而非提质量。
+            BPE 切得碎且无语义（zh 148 段 / en 319 段）；BLT 熵切分是纯局部统计信号（entropy &gt; 3.5 下刀）；
+            H-Net 是字节级模型，zh 文本存在字符内部下刀（段内出现 � 替换符为正常行为，数据已标注 lossless_join=false）。
+          </p>
         </section>
 
         <section class="section page-grid section-observe" id="architecture" aria-labelledby="architecture-title">
           <div class="section-heading">
-            <p class="section-kicker">Architecture</p>
-            <h2 id="architecture-title">v3.4 当前编码与解码路径</h2>
+            <p class="section-kicker">Architecture Trace</p>
+            <h2 id="architecture-title">架构追踪：从 tied 自编码器到 KDA 状态机</h2>
             <p>
-              v3.4 在保留职责边界的基础上，把串行 memory 改为并行 chunk summary，并加入 one-shot
-              DiT-style refinement、位置编码和窄小 AR 修正。硬切分与硬发声决定真实计算量，连续分数只在反向传播中提供可塑性。
+              每一代架构都是一条从上而下的流水线，节点对应公开仓库里的真实模块，结局如实记录。
+              这里是摘要版；逐节点完整流水线、两任务口径与代码行级对照在<a href="/flued-architecture.html">架构追踪页</a>。
             </p>
           </div>
-          <div class="architecture-map" aria-label="FLUED v3.4 architecture diagram">
-            <div class="arch-lane">
-              <span class="lane-label">Encoder</span>
-              <div class="arch-node">byte ID</div>
-              <div class="arch-node">16x16 structured byte seed</div>
-              <div class="arch-node">DiT-style one-shot segmentor</div>
-              <div class="arch-node">signed confidence + rate score</div>
-              <div class="arch-node">hard chunks / soft bridge</div>
-            </div>
-            <div class="arch-lane memory-lane">
-              <span class="lane-label">Parallel Memory</span>
-              <div class="arch-node muted-node">each chunk summarizes itself</div>
-              <div class="arch-node">all chunk memories form in parallel</div>
-              <div class="arch-node">interpreter reads other-memory</div>
-              <div class="arch-node muted-node">current chunk memory is masked</div>
-            </div>
-            <div class="arch-lane">
-              <span class="lane-label">Backbone Interface</span>
-              <div class="arch-node accent-node">local interpreter + small AR</div>
-              <div class="arch-node">hard emit readout representation</div>
-              <div class="arch-node">masked-infill training backbone</div>
-              <div class="arch-node">predicted or completed latent</div>
-            </div>
-            <div class="arch-lane">
-              <span class="lane-label">Decoder</span>
-              <div class="arch-node">shared first-order inverse</div>
-              <div class="arch-node">readout-pool transpose expansion</div>
-              <div class="arch-node">byte distribution</div>
-              <div class="arch-node">byte ID</div>
-            </div>
-          </div>
-          <div class="research-grid">
-            <article>
-              <h3>硬执行，软反传</h3>
-              <p>hard chunk / hard emit 进入真实计算账本；soft bridge / straight-through 只为梯度可塑性服务。</p>
+          <div class="pipe-grid-duo">
+            <article class="pipe-card is-main">
+              <header>
+                <span class="pipe-tag">v3.6 · flued/v36/model.py · 当前主线</span>
+                <h3>512 字节进，一个 readout 包出</h3>
+                <p class="pipe-fate"><strong>状态：</strong>canonical v36.1。整条 prompt 压成 1×1,536 标量；masked 0.149 打赢 HNet-DiT 瓶颈臂 0.142（单 seed 同口径）。</p>
+              </header>
+              <ol class="pipe-flow">
+                <li class="is-io">字节流 512B<small>单样本全上下文</small></li>
+                <li>PlainByteLookup → byte encoder ×3<small>DiTStyleBlock · RoPE + ALiBi</small></li>
+                <li>segmentor ×9 + tanh 置信度<small>S0 预训后冻结 · F1 0.886</small></li>
+                <li>动态切分<small>conf &gt; 0.94 · UTF-8 续字节禁切 · 容量截断</small></li>
+                <li>ChunkBuilder → ChunkSummarizer<small>每段摘要成一个 memory（d_mem 512）</small></li>
+                <li>WriteHead → KDAStateMachine<small>k/v/β/α 门控 · 串行 delta 规则 · 4 头 k128/v256</small></li>
+                <li>readout query ×1 + realign<small>包 1×1,536 标量</small></li>
+                <li>TinyBackbone<small>3L pre-norm · 仅任务二经过</small></li>
+                <li class="is-io">GlobalSpanDecoder → bytes<small>共享 byte 表 · cosine logits</small></li>
+              </ol>
             </article>
-            <article>
-              <h3>Memory 并行且 no-self</h3>
-              <p>每个 chunk 独立生成 memory；interpreter 可读 other-memory，但不读当前 chunk memory。</p>
-            </article>
-            <article>
-              <h3>位置 + 小 AR 修复局部顺序</h3>
-              <p>one-shot 保持主路径并行；RoPE 提供坐标，小 AR 只在 chunk 内做低幅度有序修正。</p>
+            <article class="pipe-card">
+              <header>
+                <span class="pipe-tag">竞争对手 · 同一问题的三种回答</span>
+                <h3>边界在哪里下刀</h3>
+              </header>
+              <ol class="pipe-flow">
+                <li>BLT<small>byte LM 逐字节熵超阈值下刀 · 纯局部统计信号</small></li>
+                <li>H-Net<small>余弦不相似度硬下采样 + 因果主干 · 无压缩激励即退化（E20：~1 或 ~190 chunks）</small></li>
+                <li>BPE<small>离线频次合并固定词表 · 与语义无关 · 最碎（zh 148 段）</small></li>
+                <li>FLUED v3.6<small>S0 学习边界 · 为下游任务训练 · 粒度可被 GRPO 选择（24.3 段 ≈ 用户 21B）</small></li>
+              </ol>
+              <p class="pipe-fate">逐节点流水线与 E20 退化证据见<a href="/flued-architecture.html#evolution">架构追踪页</a>。</p>
             </article>
           </div>
-          <div class="hero-actions"><a class="button button-secondary" href="/flued-architecture.html">Read full architecture and gradient trace</a></div>
+          <div class="pipe-grid">
+            <article class="pipe-card">
+              <header>
+                <span class="pipe-tag">v0.4 · flued/model.py</span>
+                <h3>tied 权重自编码器</h3>
+                <p class="pipe-fate">sigmoid(Linear(ΔH)) 软切分 + O(T²) 池化 + tied inverse。<strong>结局：共享逆三重证据判死。</strong></p>
+              </header>
+            </article>
+            <article class="pipe-card">
+              <header>
+                <span class="pipe-tag">v3.3 · flued/v33/</span>
+                <h3>模块化拆分</h3>
+                <p class="pipe-fate">segmentor / policy / memory / decoder 七模块职责分离。<strong>结局：架构截止点，转向系统消融。</strong></p>
+              </header>
+            </article>
+            <article class="pipe-card">
+              <header>
+                <span class="pipe-tag">v3.4 · flued/v34/</span>
+                <h3>单体 probe + 消融矩阵</h3>
+                <p class="pipe-fate">DiT block、软桥、no-self memory、rate_emit 逐个过消融。<strong>结局：memory / emit 关闭，canonical_v35 固化。</strong></p>
+              </header>
+            </article>
+          </div>
+          <div class="hero-actions"><a class="button button-secondary" href="/flued-architecture.html">Read full architecture trace</a></div>
         </section>
 
         <section class="section section-dark section-observe" id="references" aria-labelledby="references-title">
@@ -585,6 +521,7 @@
                 <li>v3.2.1 在严格协议下证明 latent readout 对小 backbone 有帮助：0.1898 mask_acc vs byte baseline 0.1440。</li>
                 <li>v3.3 把问题明确推进到 byte-level language encoder 的计算复杂度、语义自然度、训练难度三角。</li>
                 <li>v3.3 提供了清晰的开源架构、参数接口和消融入口。</li>
+                <li>v3.6 在同规模、同步数、同语料、同 masked infilling 口径下 masked 0.149 超过 HNet-DiT 瓶颈臂 0.142，信息传输少约 60×（单 seed 受控证据）。</li>
               </ul>
             </div>
             <div>
@@ -614,5 +551,72 @@
     </div>
 
     <script type="module" src="/src/main.js"></script>
+    <script type="module">
+      // v3.6 segmentation showcase: render /flued-segmentation-showcase.json into #roi.
+      const esc = (value) => String(value ?? "").replace(/[&<>"]/g, (ch) => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"})[ch]);
+
+      const SHOWCASE_METHOD_META = {
+        flued_v36_s0:      { space: "tanh",    blurb: "S0 臂：按教师标注粒度切（约 27B/段）——学习切分，tanh 置信度 > 0.94 下刀。" },
+        flued_v36_grpo_r4: { space: "tanh",    blurb: "GRPO R4 臂：S0.5 边界优化后自选粒度，约 24 段 ≈ 用户手标 21B 粒度——任务奖励自选粒度。" },
+        hnet_repro_ar:     { space: "prob",    blurb: "H-Net 复现：动态分块学习切分（AR next-byte 目标），公认强基线对照。" },
+        blt_entropy:       { space: "entropy", blurb: "BLT 字节 LM 熵切分：entropy > 3.5 下刀，纯局部统计信号。" },
+        bpe_tokenizer:     { space: null,      blurb: "BPE 分词器（vocab 8192）：算法切分，最碎且无语义；段为 token 边界并集。" },
+      };
+
+      function showcaseChart(method, meta) {
+        const scores = method.scores || [];
+        const threshold = method.threshold;
+        if (!scores.length || !meta.space || !Number.isFinite(threshold)) return "";
+        const n = scores.length;
+        const peak = Math.max(...scores.map((s) => (meta.space === "tanh" ? (s + 1) / 2 : s)), 0.01);
+        const norm = (s) => {
+          const v = meta.space === "tanh" ? (s + 1) / 2 : s;
+          return meta.space === "entropy" ? v / peak : Math.min(v, 1);
+        };
+        const rects = scores.map((s, i) => {
+          const h = Math.max(0.6, norm(s) * 38);
+          const cut = s >= threshold;
+          return `<rect x="${i}" y="${(40 - h).toFixed(2)}" width="1" height="${h.toFixed(2)}" class="${cut ? "showcase-cut" : "showcase-bar"}"/>`;
+        }).join("");
+        const spaceLabel = meta.space === "tanh" ? "tanh 空间" : meta.space === "entropy" ? "nats" : "概率";
+        return `<svg class="showcase-chart" viewBox="0 0 ${n} 40" preserveAspectRatio="none" role="img" aria-label="${esc(method.name)} boundary scores">${rects}</svg><div class="showcase-axis"><span>byte 0</span><span>切点阈值 ${threshold}（${spaceLabel}），过阈值高亮</span><span>byte ${n}</span></div>`;
+      }
+
+      function showcaseCard(method, meta) {
+        const segs = method.segments.map((seg, index) =>
+          `<span class="${index % 2 ? "showcase-seg-b" : "showcase-seg-a"}" title="bytes ${seg.start}–${seg.end}">${esc(seg.text)}</span>`
+        ).join('<span class="showcase-seg-mark" aria-hidden="true">▏</span>');
+        const lossy = method.lossless_join === false
+          ? `<p class="showcase-lossy">lossless_join=false：学习切分在字符内部下刀，段内 � 替换符是字节级模型的正常行为。</p>` : "";
+        return `<article class="showcase-card"><div class="showcase-head"><strong>${esc(method.name)}</strong><span class="showcase-kind">${esc(method.kind)}</span><span class="showcase-nseg">${method.n_segments} 段</span></div><p class="showcase-blurb">${esc(meta.blurb)}</p><div class="showcase-text">${segs}</div>${showcaseChart(method, meta)}${lossy}</article>`;
+      }
+
+      async function initShowcase() {
+        const tabsEl = document.querySelector("[data-showcase-tabs]");
+        const listEl = document.querySelector("[data-showcase-list]");
+        if (!tabsEl || !listEl) return;
+        try {
+          const res = await fetch("/flued-segmentation-showcase.json");
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          const data = await res.json();
+          const render = (textId) => {
+            const text = data.texts.find((t) => t.id === textId) || data.texts[0];
+            listEl.innerHTML = text.methods.map((m) => showcaseCard(m, SHOWCASE_METHOD_META[m.id] || { space: null, blurb: "" })).join("");
+            tabsEl.querySelectorAll("button").forEach((b) => b.classList.toggle("is-active", b.dataset.textId === text.id));
+          };
+          tabsEl.innerHTML = data.texts.map((t) =>
+            `<button type="button" class="showcase-tab" role="tab" data-text-id="${esc(t.id)}">${esc(t.lang)} · ${t.n_bytes}B</button>`
+          ).join("");
+          tabsEl.addEventListener("click", (event) => {
+            const button = event.target.closest("button[data-text-id]");
+            if (button) render(button.dataset.textId);
+          });
+          render(data.texts[0].id);
+        } catch (error) {
+          listEl.innerHTML = `<p class="demo-placeholder">切分对比数据加载失败（${esc(error.message)}）。</p>`;
+        }
+      }
+      initShowcase();
+    </script>
   </body>
 </html>

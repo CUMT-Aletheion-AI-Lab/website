@@ -11,3 +11,10 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
+
+# Local demo/verification artifacts (not for publish)
+.pids/
+_s*.png
+*.err.log
+dev-flued*.log
+watchdog.log
