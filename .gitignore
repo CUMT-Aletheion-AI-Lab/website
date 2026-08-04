@@ -19,3 +19,4 @@ _s*.png
 dev-flued*.log
 watchdog.log
 scripts/_demo_inline.tmp.mjs
+watchdog.ps1
