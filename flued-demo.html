@@ -1,0 +1,331 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="FLUED v3.6 live demo: dynamic boundary segmentation and masked byte completion across five models." />
+    <meta name="theme-color" content="#070809" />
+    <meta property="og:title" content="FLUED v3.6 Live Demo · Alethic Insight" />
+    <meta property="og:description" content="同一段文本，五个模型的语义切分与掩码补全实时对比。" />
+    <meta property="og:type" content="website" />
+    <title>FLUED v3.6 Live Demo · Alethic Insight</title>
+    <link rel="icon" href="/mark.svg" type="image/svg+xml" />
+    <script>
+      (() => {
+        try { document.documentElement.dataset.theme = localStorage.getItem("theme") || "dark"; }
+        catch { document.documentElement.dataset.theme = "dark"; }
+      })();
+    </script>
+    <link rel="stylesheet" href="/src/styles.css" />
+  </head>
+  <body>
+    <div class="site-shell project-page demo-page">
+      <header class="site-header" data-site-header>
+        <a class="brand" href="/index.html#top" aria-label="Alethic Insight home"><img src="/mark.svg" alt="" width="32" height="32" /><span>Alethic Insight</span></a>
+        <nav class="nav-links" aria-label="FLUED navigation">
+          <a href="/flued.html">FLUED</a>
+          <a href="/flued-architecture.html">架构</a>
+          <a href="/flued-demo.html" aria-current="page">实时演示</a>
+          <a href="/flued-evidence.html">证据</a>
+          <a href="/flued-experiments.html">实验图谱</a>
+        </nav>
+        <div class="header-controls">
+          <button class="theme-toggle" type="button" data-theme-toggle aria-label="切换到亮色主题" aria-pressed="false"><span class="theme-toggle-track" aria-hidden="true"><span class="theme-toggle-thumb"></span></span><span data-theme-toggle-label>Dark</span></button>
+          <a class="header-action" href="https://github.com/wdd9700/FLUED/tree/copilot/implement-stage-a-experiments">GitHub</a>
+        </div>
+      </header>
+
+      <nav class="section-rail" aria-label="Section navigation">
+        <a href="#top" data-rail-link="top" aria-label="顶部"><span>Top</span></a>
+        <a href="#input" data-rail-link="input" aria-label="输入"><span>Input</span></a>
+        <a href="#segments" data-rail-link="segments" aria-label="语义切分"><span>Segments</span></a>
+        <a href="#completion" data-rail-link="completion" aria-label="掩码补全"><span>Completion</span></a>
+        <a href="#timing" data-rail-link="timing" aria-label="耗时"><span>Timing</span></a>
+      </nav>
+
+      <main>
+        <section class="project-hero section-observe" id="top">
+          <div class="page-grid project-hero-grid">
+            <div class="project-hero-copy">
+              <a class="back-link" href="/flued.html#evidence">返回 FLUED 主页面</a>
+              <p class="eyebrow">FLUED v3.6 Live Demo</p>
+              <h1><span>五个模型，同一段文本，</span><span>各自决定在哪里下刀</span></h1>
+              <p class="hero-lede">动态边界切分 · 掩码字节补全 · 本机实时推理</p>
+              <p class="project-lede">本页面在本机访问时连接本机推理服务（127.0.0.1:8722，CPU 实时推理），公网访问时自动展示预录样例。演示把同一段输入同时送入 FLUED v3.6 的两个边界臂（S0 教师粒度 + GRPO R4 自选粒度）和三个 H-Net 基线：先展示每个模型把字节流切成了哪些语义段，再随机掩盖约 5% 的字节让模型补全。KDA（逐通道门控 delta 规则的线性注意力）是 v3.6 的主干状态机；readout 包指整条 prompt 被压缩成的单个逻辑读出单位（1536 个标量）。</p>
+              <div class="hero-actions"><a class="button button-primary" href="#input">开始演示</a><a class="button button-secondary" href="/flued-architecture.html">阅读 v3.6 架构</a></div>
+            </div>
+            <aside class="project-signal" aria-label="Demo service status">
+              <div class="signal-title">inference service</div>
+              <ol>
+                <li><strong data-service-state>…</strong><span data-service-detail>正在连接 127.0.0.1:8722</span></li>
+                <li><strong>5</strong><span>models loaded on CPU<br />串行推理同一输入</span></li>
+                <li><strong>512B</strong><span>单样本全上下文<br />超长截断，不足补 PAD</span></li>
+                <li><strong>~5%</strong><span>字节被随机掩盖<br />span 1-8，seed 固定可复现</span></li>
+                <li><strong>--</strong><span>单 seed 演示口径<br />不构成性能结论</span></li>
+              </ol>
+            </aside>
+          </div>
+        </section>
+
+        <section class="section page-grid section-observe" id="input" aria-labelledby="input-title">
+          <div class="section-heading"><p class="section-kicker">Input</p><h2 id="input-title">输入一段文本，或选一个预置样本</h2><p>掩码补全协议在过短的文本上会退化（掩盖位置太少、上下文不足），预置样本均为 300 字节以上的中英混合文本。在线模式下输入会原样发送到本机推理服务；离线模式下无论输入什么都渲染同一份静态样例。</p></div>
+          <p class="demo-offline-badge" data-offline-badge hidden>预录样例模式——展示本机推理服务的真实输出录样；本地启动 demo-server 后可对任意输入实时推理</p>
+          <div class="demo-input-panel">
+            <div class="demo-presets" data-presets></div>
+            <textarea class="demo-textarea" data-input-text rows="7" spellcheck="false" placeholder="输入中英混合文本（建议 300 字节以上）…"></textarea>
+            <div class="demo-input-row">
+              <button class="button button-primary" type="button" data-run-button disabled>运行演示</button>
+              <span class="demo-run-status" data-run-status>正在连接推理服务…</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="section section-dark section-observe" id="segments" aria-labelledby="segments-title">
+          <div class="page-grid">
+            <div class="section-heading"><p class="section-kicker">Semantic Segmentation</p><h2 id="segments-title">语义段切分对比</h2><p>每个模型各自决定边界：同一段文本按切分结果用交替底色渲染，段与段之间以分隔标记区分。每字节位置的切分置信度画成迷你条形图（与文本位置对齐），超过阈值的高亮柱即实际切点。</p></div>
+            <p class="evidence-note">HNet-DiT 两臂的行为是真实模型输出，不是渲染问题：标准臂边界退化（几乎不切，约 1 个 chunk），瓶颈臂过度切分（约 190 个 chunk）。没有显式压缩激励时，动态切分不存在中间态——这正是公平对比要说明的现象。</p>
+            <div class="demo-model-list" data-segments><p class="demo-placeholder">尚未运行演示。输入文本并点击「运行演示」，五个模型的切分结果将在此并排渲染。</p></div>
+          </div>
+        </section>
+
+        <section class="section page-grid section-observe" id="completion" aria-labelledby="completion-title">
+          <div class="section-heading"><p class="section-kicker">Masked Completion</p><h2 id="completion-title">掩码补全：被掩盖的字节能补回多少</h2><p>五个模型共享同一份随机字节掩码（下方高亮位置）。逐位置列出真值与预测：绿色为命中，红色为未命中；多字节字符的每个字节位置单独计分，无法单独解码的预测字节显示为占位符「·」。</p></div>
+          <div class="demo-masked-text" data-masked-text><p class="demo-placeholder">掩码后的文本将在此显示。</p></div>
+          <p class="evidence-note">v3.6 有两个训练任务：任务一 readout 包直接进 decoder 做精准还原（direct_acc）；任务二 readout 包先经 TinyBackbone 改写、再由 decoder 全部还原（backbone_masked_acc，即演示的主口径 masked_acc）。H-Net AR 臂是纯因果模型，其口径为「mask 位置的 next-byte argmax 命中率」，与掩码重建不严格可比。</p>
+          <div class="demo-model-list" data-completion><p class="demo-placeholder">各模型的补全结果将在此显示。</p></div>
+        </section>
+
+        <section class="section section-dark section-observe" id="timing" aria-labelledby="timing-title">
+          <div class="page-grid">
+            <div class="section-heading"><p class="section-kicker">Latency</p><h2 id="timing-title">真实计算耗时</h2><p>推理服务当前运行在 CPU 上：每个模型的 forward 耗时为单次完整前向的实测墙上时钟，总耗时为五个模型串行完整推理的端到端时间（含数据准备）。CPU 串行下端到端为秒级（实测约 1–5 s），这是正常预期，不做毫秒级宣传。</p></div>
+            <div data-timing><p class="demo-placeholder">耗时数据将在此显示。</p></div>
+            <p class="evidence-note">S0.7 逐段条件化（per-chunk readout）已证明检索瓶颈可解：unmasked 全位置 acc 0.190→0.351、PPL 33.9→12.1。本演示为 canonical v36.1 口径（per_chunk_readout 默认关），不构成性能结论。</p>
+          </div>
+        </section>
+      </main>
+      <footer class="site-footer page-grid"><span>FLUED v3.6 Live Demo · Alethic Insight</span><div><a href="/flued.html">FLUED</a><a href="/flued-architecture.html">架构</a><a href="https://github.com/wdd9700/FLUED/tree/copilot/implement-stage-a-experiments">GitHub</a><a href="mailto:contact@alethicinsight.org">Contact</a></div></footer>
+    </div>
+    <script type="module" src="/src/main.js"></script>
+    <script type="module">
+      const API_BASE = "http://127.0.0.1:8722";
+      // 公网静态部署不含推理服务：非本机访问直接进入预录样例模式，不尝试连接 127.0.0.1
+      const IS_LOCAL = ["localhost", "127.0.0.1"].includes(location.hostname);
+      const $ = (selector) => document.querySelector(selector);
+      const esc = (value) => String(value ?? "").replace(/[&<>\"]/g, (ch) => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"})[ch]);
+      const pct = (value) => Number.isFinite(Number(value)) ? (Number(value) * 100).toFixed(1) + "%" : "-";
+      const fmtDur = (ms) => ms >= 1000 ? `${(ms / 1000).toFixed(2)} s` : `${Number(ms).toFixed(1)} ms`;
+      const enc = new TextEncoder();
+      const dec = new TextDecoder("utf-8");
+
+      const PRESETS = [
+        { label: "样本 A · 项目介绍", text: "FLUED（FLexible Unified Encoder-Decoder）是一个 tokenization-free 的字节级语言建模研究项目：语义单元由模型在编码阶段动态编译，而不是由外部分词器预先定义。Unlike BPE tokenizers that freeze a vocabulary before training, FLUED reads raw bytes and learns where semantic boundaries should fall — the boundary detector inspects hidden-state deltas and emits a confidence score at every byte position. 在本次演示里，同一段输入会同时送入五个模型：FLUED v3.6 的两个边界臂（S0 预训练的动态边界分割器，以及经 GRPO 边界优化的 R4 臂），另外三个 H-Net 基线覆盖自回归与掩码重建两种训练目标。输入中约百分之五的字节会被随机掩盖，模型需要依据上下文把它们补全。这一任务同时考验边界切分的质量与跨块信息压缩的能力。" },
+        { label: "样本 B · 架构说明", text: "KDA（逐通道门控 delta 规则的线性注意力）是 v3.6 主干的状态机：每一段语义块先被压缩成 memory，再由 WriteHead 以门控方式写入状态。The whole prompt is compressed into exactly one readout package — 1536 scalars from which the decoder must reconstruct everything. 这种极端压缩让信息传输效率成为核心指标：与逐位置传递 hidden state 的架构相比，readout 包把跨块通信压到固定大小。Compression is understanding: if a model can rebuild masked bytes from a tiny state, the state must carry real semantics. 边界即语义，压缩即理解。本页展示的每一个数字都来自本机 CPU 上的真实前向推理。" },
+        { label: "样本 C · 对比现象", text: "动态切分的难点在于没有免费午餐：如果训练信号不奖励压缩，边界检测器会退化。One arm of the fair comparison collapses into a single chunk — it simply never cuts; the other arm fragments the text into nearly two hundred tiny pieces. 只有显式的压缩激励才能在两个极端之间找到有意义的中间态。本演示把五个模型的真实切分结果并排渲染，每一段用交替底色标出，下文的迷你条形图显示每个字节位置上的切分置信度。The goal is not to pick a winner on a single sample, but to show what learned boundaries actually look like on real text — 单样本只用于演示现象，不构成性能结论。" },
+      ];
+
+      const MODEL_META = {
+        flued_v36_s0: { threshold: 0.94, space: "tanh", tag: "主模型 · S0 教师粒度", note: "S0 预训练的动态边界（学习切分）：tanh 置信度 > 0.94 且不在 UTF-8 续字节处下刀；按教师标注粒度切，约 13 段。" },
+        flued_v36_grpo_r4: { threshold: 0.94, space: "tanh", tag: "主模型 · R4 边界优化臂", note: "S0.5 边界优化臂：GRPO 让切分器自选粒度，停在约 24 段（≈用户手标 21B 粒度），对照 S0 臂约 13 段——任务奖励决定下刀密度。" },
+        hnet_repro_ar: { threshold: 0.5, space: "prob", tag: "对照 · 自回归", note: "H-Net AR 复现：next-byte 目标训练的熵边界，作为公认强基线对照。" },
+        hnet_dit_std: { threshold: 0.5, space: "prob", tag: "对照 · DiT 标准臂", warn: true, note: "HNet-DiT 公平对比标准臂：边界退化，几乎不切分（约 1 个 chunk）。这是真实模型行为，不是渲染错误。" },
+        hnet_dit_bottleneck: { threshold: 0.5, space: "prob", tag: "对照 · DiT 瓶颈臂", warn: true, note: "HNet-DiT 公平对比瓶颈臂：过度切分（约 190 个 chunk）。无显式压缩激励时动态切分无中间态。" },
+      };
+      const MODEL_ORDER = Object.keys(MODEL_META);
+
+      const state = { mode: "connecting", running: false, healthTimer: 0, healthTries: 0 };
+
+      function setService(stateName, detail) {
+        $("[data-service-state]").textContent = stateName;
+        $("[data-service-detail]").innerHTML = detail;
+      }
+      function setRunStatus(text) { $("[data-run-status]").textContent = text; }
+      function setRunEnabled(enabled) { $("[data-run-button]").disabled = !enabled; }
+
+      function enterOffline() {
+        state.mode = "offline";
+        clearTimeout(state.healthTimer);
+        $("[data-offline-badge]").hidden = false;
+        if (IS_LOCAL) {
+          setService("离线", "推理服务不可达<br />回退到静态样例数据");
+          setRunStatus("离线样例模式：将渲染预录的真实推理输出。");
+        } else {
+          setService("样例", "公网静态部署<br />展示预录的真实推理输出");
+          setRunStatus("预录样例模式：渲染推理服务的真实输出录样。本地启动 demo-server 后可实时推理。");
+        }
+        setRunEnabled(true);
+      }
+
+      async function pollHealth() {
+        try {
+          const res = await fetch(`${API_BASE}/api/health`);
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          const data = await res.json();
+          if (data.status === "ok") {
+            state.mode = "online";
+            const deviceLabel = data.gpu_name ? data.gpu_name : "CPU 推理";
+            setService("就绪", `已加载 ${data.models?.length ?? 5} 个模型 · ${esc(deviceLabel)}`);
+            setRunStatus("推理服务已就绪，可以直接运行。");
+            setRunEnabled(true);
+            return;
+          }
+          state.mode = "loading";
+          setService("加载中", "模型加载中（首次加载 5 个检查点需几分钟）");
+          setRunStatus("模型加载中，就绪后即可运行…");
+          state.healthTimer = setTimeout(pollHealth, 3000);
+        } catch (error) {
+          if (state.mode === "loading" && state.healthTries < 40) {
+            state.healthTries += 1;
+            state.healthTimer = setTimeout(pollHealth, 3000);
+          } else {
+            enterOffline();
+          }
+        }
+      }
+
+      function modelCardHead(model, meta) {
+        return `<div class="demo-model-head"><strong>${esc(model.name)}</strong><span class="demo-model-tag${meta.warn ? " is-warn" : ""}">${esc(meta.tag)}</span><span class="demo-model-chunks">${model.n_chunks} chunks</span></div><p class="demo-model-note">${esc(meta.note)}</p>`;
+      }
+
+      function renderSegmentText(model, displayBytes) {
+        const parts = model.segments.map((seg, index) => {
+          const text = dec.decode(displayBytes.slice(seg.start, seg.end));
+          return `<span class="demo-seg ${index % 2 ? "demo-seg-b" : "demo-seg-a"}">${esc(text)}</span>`;
+        });
+        return `<div class="demo-seg-text">${parts.join('<span class="demo-seg-mark" aria-hidden="true">▏</span>')}</div>`;
+      }
+
+      function renderScoreChart(model, meta) {
+        const scores = model.boundary_scores || [];
+        if (!scores.length) return "";
+        const n = scores.length;
+        const rects = scores.map((s, i) => {
+          const norm = meta.space === "tanh" ? (s + 1) / 2 : s;
+          const h = Math.max(0.6, norm * 38);
+          const cut = s >= meta.threshold;
+          return `<rect x="${i}" y="${(40 - h).toFixed(2)}" width="1" height="${h.toFixed(2)}" class="${cut ? "demo-score-cut" : "demo-score-bar"}"/>`;
+        }).join("");
+        return `<svg class="demo-score-chart" viewBox="0 0 ${n} 40" preserveAspectRatio="none" role="img" aria-label="${esc(model.name)} boundary scores">${rects}</svg><div class="demo-score-axis"><span>byte 0</span><span>切点阈值 ${meta.threshold}${meta.space === "tanh" ? "（tanh 空间）" : ""}</span><span>byte ${n}</span></div>`;
+      }
+
+      function renderSegments(data, displayBytes) {
+        const byId = Object.fromEntries(data.models.map((m) => [m.id, m]));
+        $("[data-segments]").innerHTML = MODEL_ORDER.filter((id) => byId[id]).map((id) => {
+          const model = byId[id], meta = MODEL_META[id];
+          return `<article class="demo-model-card">${modelCardHead(model, meta)}${renderSegmentText(model, displayBytes)}${renderScoreChart(model, meta)}</article>`;
+        }).join("");
+      }
+
+      function renderMaskedText(data, displayBytes) {
+        const full = dec.decode(displayBytes);
+        const charIndex = (bytePos) => dec.decode(displayBytes.slice(0, bytePos)).length;
+        const spans = (data.mask?.spans || []).map(([s, e]) => [charIndex(s), charIndex(e)]).sort((a, b) => a[0] - b[0]);
+        let html = "", cursor = 0;
+        for (const [s, e] of spans) {
+          html += esc(full.slice(cursor, s));
+          html += `<mark class="demo-mask-char">${esc(full.slice(s, e)) || "·"}</mark>`;
+          cursor = e;
+        }
+        html += esc(full.slice(cursor));
+        const nMasked = data.mask?.positions?.length ?? 0;
+        $("[data-masked-text]").innerHTML = `<p class="demo-masked-label">被掩盖的 ${nMasked} 个字节位置（高亮）：</p><div class="demo-masked-body">${html}</div>`;
+      }
+
+      function renderExtraMetrics(model) {
+        const extra = model.completion?.extra_metrics || {};
+        const items = [];
+        if (Number.isFinite(extra.direct_acc) || Number.isFinite(extra.backbone_masked_acc)) {
+          if (Number.isFinite(extra.direct_acc)) items.push(`<span>任务一 · direct 精准还原 <b>${pct(extra.direct_acc)}</b></span>`);
+          if (Number.isFinite(extra.backbone_masked_acc)) items.push(`<span>任务二 · 经 backbone 改写还原 <b>${pct(extra.backbone_masked_acc)}</b></span>`);
+        } else {
+          if (Number.isFinite(extra.boundary_rate)) items.push(`<span>边界率 <b>${pct(extra.boundary_rate)}</b></span>`);
+          if (extra.scoring) items.push(`<span>口径 ${esc(extra.scoring)}</span>`);
+        }
+        return items.length ? `<div class="demo-extra-metrics">${items.join("")}</div>` : "";
+      }
+
+      function renderCompletion(data) {
+        const byId = Object.fromEntries(data.models.map((m) => [m.id, m]));
+        $("[data-completion]").innerHTML = MODEL_ORDER.filter((id) => byId[id]).map((id) => {
+          const model = byId[id], meta = MODEL_META[id];
+          const preds = (model.completion?.predictions || []).map((p) =>
+            `<span class="demo-pred ${p.correct ? "is-ok" : "is-bad"}" title="byte ${p.true_byte} -> ${p.pred_byte}"><b>${p.pos}</b> ${esc(p.true)} → ${esc(p.pred)}</span>`
+          ).join("");
+          return `<article class="demo-model-card">${modelCardHead(model, meta)}<div class="demo-acc-row"><strong class="demo-acc">${pct(model.completion?.masked_acc)}</strong><span class="demo-acc-label">masked_acc</span></div>${renderExtraMetrics(model)}<div class="demo-pred-grid">${preds}</div></article>`;
+        }).join("");
+      }
+
+      function renderTiming(data) {
+        const models = MODEL_ORDER.map((id) => data.models.find((m) => m.id === id)).filter(Boolean);
+        const maxFwd = Math.max(...models.map((m) => m.timing_ms?.forward ?? 0), 1);
+        const rows = models.map((m) => {
+          const fwd = m.timing_ms?.forward ?? 0;
+          const width = Math.max(1.5, (fwd / maxFwd) * 100);
+          return `<div class="demo-timing-row"><span class="demo-timing-name">${esc(m.name)}</span><span class="demo-timing-track"><span class="demo-timing-bar" style="width:${width.toFixed(2)}%"></span></span><span class="demo-timing-ms">${fmtDur(fwd)}</span></div>`;
+        }).join("");
+        const deviceLabel = data.device === "cpu" ? "CPU 推理" : esc(data.device || "");
+        $("[data-timing]").innerHTML = `<div class="demo-timing-panel">${rows}</div><div class="demo-e2e"><strong>${fmtDur(Number(data.e2e_timing_ms ?? 0))}</strong><span>${models.length} 个模型串行完整推理总耗时（e2e，含数据准备） · ${deviceLabel}</span></div>`;
+      }
+
+      function renderAll(data) {
+        const bytes = enc.encode(data.input?.text || "");
+        const nBytes = Number.isFinite(data.input?.n_bytes) ? Math.min(data.input.n_bytes, bytes.length) : bytes.length;
+        const displayBytes = bytes.slice(0, nBytes);
+        renderSegments(data, displayBytes);
+        renderMaskedText(data, displayBytes);
+        renderCompletion(data);
+        renderTiming(data);
+        document.getElementById("segments").scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+
+      async function runDemo() {
+        if (state.running) return;
+        const text = $("[data-input-text]").value.trim();
+        if (!text) { setRunStatus("请先输入文本或选择一个预置样本。"); return; }
+        state.running = true;
+        setRunEnabled(false);
+        setRunStatus(state.mode === "online" ? "推理中（5 个模型串行前向）…" : "加载静态样例数据…");
+        try {
+          let data;
+          if (state.mode === "online") {
+            const res = await fetch(`${API_BASE}/api/demo`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ text }) });
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            data = await res.json();
+          } else {
+            const res = await fetch("/flued-demo-sample.json");
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            data = await res.json();
+          }
+          renderAll(data);
+          setRunStatus(state.mode === "online" ? "完成。修改文本后可再次运行。" : "完成（离线样例数据）。");
+        } catch (error) {
+          setRunStatus(`运行失败：${error.message}`);
+        } finally {
+          state.running = false;
+          setRunEnabled(true);
+        }
+      }
+
+      $("[data-presets]").innerHTML = `<span class="control-label">预置样本</span>` + PRESETS.map((p, i) => `<button type="button" class="demo-preset" data-preset="${i}">${esc(p.label)}</button>`).join("");
+      $("[data-presets]").addEventListener("click", (event) => {
+        const button = event.target.closest("button[data-preset]");
+        if (!button) return;
+        $("[data-input-text]").value = PRESETS[Number(button.dataset.preset)].text;
+        $("[data-input-text]").focus();
+      });
+      $("[data-run-button]").addEventListener("click", runDemo);
+      if (IS_LOCAL) { pollHealth(); } else { enterOffline(); }
+      // ?autorun=sample：直接渲染静态样例（离线检查/截图用），不改动正常交互路径
+      if (new URLSearchParams(location.search).get("autorun") === "sample") {
+        fetch("/flued-demo-sample.json").then((res) => res.json()).then((data) => {
+          const bytes = enc.encode(data.input?.text || "");
+          const nBytes = Number.isFinite(data.input?.n_bytes) ? Math.min(data.input.n_bytes, bytes.length) : bytes.length;
+          const displayBytes = bytes.slice(0, nBytes);
+          renderSegments(data, displayBytes);
+          renderMaskedText(data, displayBytes);
+          renderCompletion(data);
+          renderTiming(data);
+        }).catch(() => {});
+      }
+    </script>
+  </body>
+</html>

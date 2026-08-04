@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="CUMT Alethic Insight AI Lab is a student-led AI research, engineering, and open-source community at China University of Mining and Technology."
+    />
+    <meta name="theme-color" content="#070809" />
+    <meta property="og:title" content="CUMT Alethic Insight AI Lab" />
+    <meta
+      property="og:description"
+      content="中国矿业大学学生主导的 AI 研究工程共同体。"
+    />
+    <meta property="og:type" content="website" />
+    <title>CUMT Alethic Insight AI Lab</title>
+    <link rel="icon" href="/mark.svg" type="image/svg+xml" />
+    <script>
+      (() => {
+        let theme = "dark";
+        try {
+          theme = localStorage.getItem("theme") || "dark";
+        } catch {
+          theme = "dark";
+        }
+        document.documentElement.dataset.theme =
+          theme === "light" ? "light" : "dark";
+      })();
+    </script>
+    <link rel="stylesheet" href="/src/styles.css" />
+  </head>
+  <body>
+    <div class="site-shell">
+      <header class="site-header" data-site-header>
+        <a class="brand" href="#top" aria-label="Alethic Insight home">
+          <img src="/mark.svg" alt="" width="32" height="32" />
+          <span>Alethic Insight</span>
+        </a>
+        <nav class="nav-links" aria-label="Primary navigation">
+          <a href="#position">定位</a>
+          <a href="#work">方向</a>
+          <a href="#projects">项目</a>
+          <a href="/flued-demo.html">FLUED 演示</a>
+          <a href="#documents">文档</a>
+          <a href="#join">加入</a>
+        </nav>
+        <div class="header-controls">
+          <button
+            class="theme-toggle"
+            type="button"
+            data-theme-toggle
+            aria-label="切换到亮色主题"
+            aria-pressed="false"
+          >
+            <span class="theme-toggle-track" aria-hidden="true">
+              <span class="theme-toggle-thumb"></span>
+            </span>
+            <span data-theme-toggle-label>Dark</span>
+          </button>
+          <a class="header-action" href="https://github.com/CUMT-Alethic-Insight-Lab">
+            GitHub
+          </a>
+        </div>
+      </header>
+
+      <nav class="section-rail" aria-label="Section navigation">
+        <a href="#top" data-rail-link="top" aria-label="首页">
+          <span>Top</span>
+        </a>
+        <a href="#position" data-rail-link="position" aria-label="定位">
+          <span>Position</span>
+        </a>
+        <a href="#work" data-rail-link="work" aria-label="方向">
+          <span>Work</span>
+        </a>
+        <a href="#projects" data-rail-link="projects" aria-label="项目">
+          <span>Projects</span>
+        </a>
+        <a href="#documents" data-rail-link="documents" aria-label="文档">
+          <span>Docs</span>
+        </a>
+        <a href="#join" data-rail-link="join" aria-label="加入">
+          <span>Join</span>
+        </a>
+      </nav>
+
+      <main>
+        <section class="hero section-observe" id="top" aria-labelledby="hero-title">
+          <div class="hero-backdrop" aria-hidden="true">
+            <div class="backdrop-word">真知灼见</div>
+            <div class="signal-column signal-column-a">
+              <span>noise</span>
+              <span>structure</span>
+              <span>aletheia</span>
+              <span>handoff</span>
+            </div>
+            <div class="signal-column signal-column-b">
+              <span>collect</span>
+              <span>model</span>
+              <span>verify</span>
+              <span>release</span>
+            </div>
+          </div>
+
+          <div class="page-grid hero-content">
+            <div class="hero-copy">
+              <p class="eyebrow">CUMT Alethic Insight AI Lab · 真知灼见</p>
+              <h1 id="hero-title">Alethic Insight</h1>
+              <p class="hero-lede">
+                From noise, structure.<br />
+                From structure, aletheia.
+              </p>
+              <p class="hero-subcopy">
+                由繁得构，由构显真。中国矿业大学学生主导的 AI 研究工程共同体。
+              </p>
+              <div class="hero-actions" aria-label="Primary links">
+                <a class="button button-primary" href="https://github.com/CUMT-Alethic-Insight-Lab/join-us">
+                  Join Us
+                </a>
+                <a class="button button-secondary" href="https://huggingface.co/Alethic-Insight">
+                  Hugging Face
+                </a>
+                <a class="button button-text" href="https://github.com/CUMT-Alethic-Insight-Lab/governance-public">
+                  Governance
+                </a>
+              </div>
+            </div>
+
+            <aside class="lab-index" aria-label="Lab operating index">
+              <div class="index-row">
+                <span>input</span>
+                <strong>questions / data / systems</strong>
+              </div>
+              <div class="index-row">
+                <span>method</span>
+                <strong>structure / verify / review</strong>
+              </div>
+              <div class="index-row">
+                <span>output</span>
+                <strong>repos / datasets / docs</strong>
+              </div>
+            </aside>
+          </div>
+        </section>
+
+        <section class="intro page-grid section-observe" id="position" aria-label="Positioning">
+          <p class="section-kicker">Position</p>
+          <h2>组织定位</h2>
+          <p>
+            Alethic Insight，中文名“真知灼见”。AI 研究训练、工程实践、开源协作。
+          </p>
+        </section>
+
+        <section class="section page-grid section-observe" id="work" aria-labelledby="work-title">
+          <div class="section-heading">
+            <p class="section-kicker">Directions</p>
+            <h2 id="work-title">研究方向</h2>
+          </div>
+          <div class="direction-list">
+            <article>
+              <span>01</span>
+              <h3>Language & NLP</h3>
+              <p>LLM 应用 / 检索增强 / 中文 NLP / 评测 / 数据构建</p>
+            </article>
+            <article>
+              <span>02</span>
+              <h3>Vision & Multimodal</h3>
+              <p>视觉语言模型 / 视觉推理 / 遥感场景 / 多模态系统</p>
+            </article>
+            <article>
+              <span>03</span>
+              <h3>Agents & RL</h3>
+              <p>工具调用 / 规划 / 局部智能体 / 反馈循环 / 环境交互</p>
+            </article>
+            <article>
+              <span>04</span>
+              <h3>Trustworthy AI</h3>
+              <p>验证 / 可复现 / 安全边界 / 治理规范 / 技术诚实</p>
+            </article>
+            <article>
+              <span>05</span>
+              <h3>AI Infrastructure</h3>
+              <p>部署 / 实验追踪 / 模型服务 / GPU / 存储工作流</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="section section-dark section-observe" id="projects" aria-labelledby="projects-title">
+          <div class="page-grid">
+            <div class="section-heading">
+              <p class="section-kicker">Open Work</p>
+              <h2 id="projects-title">公开项目</h2>
+            </div>
+            <div class="project-table">
+              <a href="/flued.html">
+                <span>FLUED</span>
+                <strong>Byte-to-latent 语言编码接口研究</strong>
+              </a>
+              <a href="https://github.com/CUMT-Alethic-Insight-Lab/website">
+                <span>website</span>
+                <strong>组织官网源码与部署</strong>
+              </a>
+              <a href="https://github.com/CUMT-Alethic-Insight-Lab/join-us">
+                <span>join-us</span>
+                <strong>招新流程、准备建议与申请入口</strong>
+              </a>
+              <a href="https://github.com/CUMT-Alethic-Insight-Lab/governance-public">
+                <span>governance-public</span>
+                <strong>公开章程、成员规则和项目治理</strong>
+              </a>
+              <a href="https://github.com/CUMT-Alethic-Insight-Lab/awesome-ai">
+                <span>awesome-ai</span>
+                <strong>AI 学习与研究工程资源索引</strong>
+              </a>
+              <a href="https://huggingface.co/Alethic-Insight">
+                <span>Hugging Face</span>
+                <strong>模型、数据集、Spaces 和公开实验产物</strong>
+              </a>
+            </div>
+          </div>
+        </section>
+
+        <section class="section page-grid two-column section-observe" aria-labelledby="work-mode-title">
+          <div class="section-heading">
+            <p class="section-kicker">Operating System</p>
+            <h2 id="work-mode-title">协作公约</h2>
+          </div>
+          <div class="principle-grid">
+            <article>
+              <h3>Disclose</h3>
+              <p>AI 辅助披露 / 模型与范围 / 验证方式</p>
+            </article>
+            <article>
+              <h3>Review</h3>
+              <p>Pull Request / Review / 可追踪讨论</p>
+            </article>
+            <article>
+              <h3>Reproduce</h3>
+              <p>实验记录 / 数据来源 / 部署过程</p>
+            </article>
+            <article>
+              <h3>Handoff</h3>
+              <p>交接文档 / 权限清单 / 维护边界</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="section page-grid section-observe" id="documents" aria-labelledby="documents-title">
+          <div class="section-heading">
+            <p class="section-kicker">Documents</p>
+            <h2 id="documents-title">关键文档跳转</h2>
+          </div>
+          <div class="document-grid">
+            <a href="https://github.com/CUMT-Alethic-Insight-Lab/governance-public/blob/main/docs/zh-CN/charter.md">章程</a>
+            <a href="https://github.com/CUMT-Alethic-Insight-Lab/governance-public/blob/main/docs/zh-CN/membership.md">成员规则</a>
+            <a href="https://github.com/CUMT-Alethic-Insight-Lab/governance-public/blob/main/docs/zh-CN/project-governance.md">项目治理</a>
+            <a href="https://github.com/CUMT-Alethic-Insight-Lab/governance-public/blob/main/docs/zh-CN/open-source-policy.md">开源政策</a>
+            <a href="https://github.com/CUMT-Alethic-Insight-Lab/governance-public/blob/main/docs/zh-CN/ai-assistance-policy.md">AI 辅助规则</a>
+            <a href="https://github.com/CUMT-Alethic-Insight-Lab/governance-public/blob/main/docs/zh-CN/review-policy.md">Review 规则</a>
+            <a href="https://github.com/CUMT-Alethic-Insight-Lab/join-us/blob/main/docs/zh-CN/process.md">招新流程</a>
+            <a href="https://github.com/CUMT-Alethic-Insight-Lab/join-us/blob/main/docs/zh-CN/preparation.md">准备建议</a>
+            <a href="/flued.html">FLUED 研究展示</a>
+          </div>
+        </section>
+
+        <section class="join section-observe" id="join" aria-labelledby="join-title">
+          <div class="page-grid">
+            <p class="section-kicker">Join</p>
+            <h2 id="join-title">加入方式</h2>
+            <div class="join-flow" aria-label="Recruitment flow">
+              <span>申请表</span>
+              <span>机试</span>
+              <span>面试</span>
+              <span>Onboarding</span>
+            </div>
+            <div class="hero-actions">
+              <a class="button button-primary" href="https://github.com/CUMT-Alethic-Insight-Lab/join-us">
+                查看招新说明
+              </a>
+              <a class="button button-secondary" href="mailto:contact@alethicinsight.org">
+                contact@alethicinsight.org
+              </a>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer class="site-footer page-grid">
+        <span>CUMT Alethic Insight AI Lab</span>
+        <div>
+          <a href="https://github.com/CUMT-Alethic-Insight-Lab">GitHub</a>
+          <a href="https://huggingface.co/Alethic-Insight">Hugging Face</a>
+          <a href="mailto:contact@alethicinsight.org">Contact</a>
+        </div>
+      </footer>
+    </div>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

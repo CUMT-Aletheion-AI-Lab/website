@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="FLUED v3.6 architecture: S0 dynamic boundaries, ChunkSummarizer, WriteHead and the KDA state machine with a single readout package." />
+    <meta name="theme-color" content="#070809" />
+    <meta property="og:title" content="FLUED v3.6 Architecture · Alethic Insight" />
+    <meta property="og:description" content="v3.6 管线、两个训练任务、公平对比锚点与公开代码索引。" />
+    <meta property="og:type" content="website" />
+    <title>FLUED v3.6 Architecture · Alethic Insight</title>
+    <link rel="icon" href="/mark.svg" type="image/svg+xml" />
+    <script>
+      (() => { try { document.documentElement.dataset.theme = localStorage.getItem("theme") || "dark"; } catch { document.documentElement.dataset.theme = "dark"; } })();
+    </script>
+    <link rel="stylesheet" href="/src/styles.css" />
+  </head>
+  <body>
+    <div class="site-shell project-page architecture-trace">
+      <header class="site-header" data-site-header>
+        <a class="brand" href="/index.html#top" aria-label="Alethic Insight home"><img src="/mark.svg" alt="" width="32" height="32" /><span>Alethic Insight</span></a>
+        <nav class="nav-links" aria-label="FLUED navigation">
+          <a href="/flued.html">FLUED</a>
+          <a href="/flued-architecture.html" aria-current="page">架构</a>
+          <a href="/flued-demo.html">实时演示</a>
+          <a href="/flued-evidence.html">证据</a>
+          <a href="/flued-experiments.html">实验图谱</a>
+        </nav>
+        <div class="header-controls">
+          <button class="theme-toggle" type="button" data-theme-toggle aria-label="切换到亮色主题" aria-pressed="false"><span class="theme-toggle-track" aria-hidden="true"><span class="theme-toggle-thumb"></span></span><span data-theme-toggle-label>Dark</span></button>
+          <a class="header-action" href="https://github.com/wdd9700/FLUED/tree/copilot/implement-stage-a-experiments">GitHub</a>
+        </div>
+      </header>
+
+      <nav class="section-rail" aria-label="Section navigation">
+        <a href="#top" data-rail-link="top" aria-label="顶部"><span>Top</span></a>
+        <a href="#evolution" data-rail-link="evolution" aria-label="架构追踪"><span>Trace</span></a>
+        <a href="#pipeline" data-rail-link="pipeline" aria-label="前向管线"><span>Pipeline</span></a>
+        <a href="#tasks" data-rail-link="tasks" aria-label="两个训练任务"><span>Tasks</span></a>
+        <a href="#evidence" data-rail-link="evidence" aria-label="公平对比锚点"><span>Fair</span></a>
+        <a href="#frontier" data-rail-link="frontier" aria-label="最新证据"><span>Frontier</span></a>
+        <a href="#code" data-rail-link="code" aria-label="代码索引"><span>Code</span></a>
+      </nav>
+
+      <main>
+        <section class="project-hero section-observe" id="top">
+          <div class="page-grid project-hero-grid">
+            <div class="project-hero-copy">
+              <a class="back-link" href="/flued.html#architecture">返回 FLUED 主页面</a>
+              <p class="eyebrow">Architecture · v3.6</p>
+              <h1>FLUED v3.6</h1>
+              <p class="hero-lede">512 字节进，一个 readout 包出</p>
+              <p class="project-lede">v3.6 把问题压到最硬的一档：整条 prompt 经动态切分、逐段摘要和 KDA 状态机（逐通道门控 delta 规则的线性注意力）串行消费后，只保留一个 readout 包——1536 个标量的逻辑读出单位。decoder 必须从这个固定大小的状态里把原文还原回来。本页给出管线、两个训练任务与当前公平对比锚点；所有数字为单 seed 演示口径，不构成性能结论。</p>
+              <div class="hero-actions"><a class="button button-primary" href="/flued-demo.html">查看实时演示</a><a class="button button-secondary" href="#code">Open code index</a></div>
+            </div>
+            <aside class="project-signal" aria-label="Current v3.6 status">
+              <div class="signal-title">v3.6 research status</div>
+              <ol>
+                <li>512B 单样本全上下文，无窗口无 stride</li>
+                <li>S0 segmentor 段落标签预训后冻结</li>
+                <li>tanh 置信度 &gt; 0.94 切分，UTF-8 续字节禁切</li>
+                <li>整条 prompt 恰好 1 个 readout 包（1536 标量）</li>
+                <li>decoder 与 encoder 共享字节嵌入表，cosine logits</li>
+              </ol>
+            </aside>
+          </div>
+        </section>
+
+        <section class="section page-grid section-observe" id="evolution" aria-labelledby="evolution-title">
+          <div class="section-heading"><p class="section-kicker">Architecture Trace</p><h2 id="evolution-title">架构追踪：每代一张自上而下的流水线</h2><p>追踪的意思是逐节点对照真实代码：每张卡是一条从上而下的前向流水线，节点对应公开仓库里的具体模块，卡尾记录该代的结局。下方先给当前主线 v3.6 与 S0.5 训练阶段，再回溯 v0.4 → v3.4 三代，最后把竞争对手 BLT / H-Net / BPE 放到同一尺度上对照。</p></div>
+
+          <h3 class="pipe-subhead">当前主线 · v3.6（KDA 世代）</h3>
+          <div class="pipe-grid-duo">
+            <article class="pipe-card is-main">
+              <header>
+                <span class="pipe-tag">v3.6 · flued/v36/model.py（369 行）· canonical v36.1</span>
+                <h3>整条 prompt → 单个 readout 包</h3>
+                <p class="pipe-fate"><strong>状态：</strong>当前主线。S0 动态边界 + KDA 串行状态把 512B prompt 压成 1×1,536 标量；masked 0.149 打赢 HNet-DiT 瓶颈臂 0.142（单 seed 同口径）。</p>
+              </header>
+              <ol class="pipe-flow">
+                <li class="is-io">字节流 512B<small>单样本全上下文 · 无窗口无 stride</small></li>
+                <li>PlainByteLookup<small>d_byte 384 · PAD-offset</small></li>
+                <li>byte encoder ×3<small>DiTStyleBlock · RoPE + ALiBi</small></li>
+                <li>segmentor ×9 + head<small>S0 段落标签预训后冻结 · 教师 F1 0.886</small></li>
+                <li>tanh 有界置信度 → 动态切分<small>conf &gt; 0.94 · UTF-8 续字节禁切 · 首字节强切 · 容量截断</small></li>
+                <li>ChunkBuilder<small>max 64 chunks / span 64</small></li>
+                <li>ChunkSummarizer<small>4 slot 注意力池化 + FFN → d_mem 512（每段一个 memory）</small></li>
+                <li>WriteHead<small>k L2 归一 · v · β sigmoid（bias −2）· α 逐通道衰减</small></li>
+                <li>KDAStateMachine<small>S ← αS − βk(kᵀS) + βkvᵀ · 4 头 k128/v256 · 状态随样本生灭</small></li>
+                <li>readout query ×1 + realign<small>终态读出 4×256=1,024 → MLP realign → 包 1×1,536</small></li>
+                <li>TinyBackbone<small>3L pre-norm · 仅任务二经过</small></li>
+                <li>GlobalSpanDecoder<small>与 encoder 共享 byte 表 · cosine logits</small></li>
+                <li class="is-io">byte logits<small>任务一 direct 精准还原 · 任务二 backbone 改写后还原（5% span 1-8 原生 mask）</small></li>
+              </ol>
+              <p class="pipe-fate"><strong>瓶颈备注：</strong>v36.1 decoder 条件 = package.mean + chunk_pos 广播；S0.7 逐段条件化已证检索瓶颈可解（unmasked 0.351 / PPL 12.1），但非默认。</p>
+            </article>
+            <article class="pipe-card">
+              <header>
+                <span class="pipe-tag">S0.5 · 训练阶段（不改架构）</span>
+                <h3>GRPO 边界优化</h3>
+                <p class="pipe-fate"><strong>结局：</strong>hard 停点 24.3 段 ≈ 用户手标 21B，教师粒度之争了结；质量与控制臂打平——GRPO 当前价值 = 选粒度，非提质量。</p>
+              </header>
+              <ol class="pipe-flow">
+                <li>v3.6 已训基线<small>自 3K 检查点续训 2K 步</small></li>
+                <li>同前缀采 G=8 个切分方案<small>组内排名优势 · 免 value net</small></li>
+                <li>约束走可微直接损失<small>E[count] = Σcut_prob（不走采样计数率项）</small></li>
+                <li>微调边界 + β 写入门<small>R4 定稿；R1–R3 三轮失败教训见下方 #frontier</small></li>
+              </ol>
+            </article>
+          </div>
+
+          <h3 class="pipe-subhead">历代架构（v0.4 → v3.4）</h3>
+          <div class="pipe-grid">
+            <article class="pipe-card">
+              <header>
+                <span class="pipe-tag">v0.4 · flued/model.py · FLUEDAutoencoder</span>
+                <h3>tied 权重自编码器</h3>
+                <p class="pipe-fate"><strong>结局：</strong>共享逆被三重证据判死，tied inverse 路线关闭。</p>
+              </header>
+              <ol class="pipe-flow">
+                <li class="is-io">byte ids<small>vocab 257 · PAD-offset</small></li>
+                <li>tied Transformer blocks<small>encoder / decoder 共享同一组权重</small></li>
+                <li>sigmoid(Linear(ΔH))<small>相邻隐状态差 ΔH = h_t − h_{t−1} → 边界概率</small></li>
+                <li>软指派矩阵 A<small>O(T²) 池化 · 可微切分（训练期）</small></li>
+                <li>latent units</li>
+                <li>tied inverse decoder<small>逆序减块（MHA / FFN 减回）· 与正向共享参数</small></li>
+                <li class="is-io">bytes 还原</li>
+              </ol>
+            </article>
+            <article class="pipe-card">
+              <header>
+                <span class="pipe-tag">v3.3 · flued/v33/ · 模块化拆分</span>
+                <h3>职责边界确立</h3>
+                <p class="pipe-fate"><strong>结局：</strong>架构截止点——各职责拆成独立模块，转向系统消融与公开复现。</p>
+              </header>
+              <ol class="pipe-flow">
+                <li>StructuredByteLookup</li>
+                <li>SignedBoundarySegmentor</li>
+                <li>DualThresholdPolicy</li>
+                <li>ChunkBuilder</li>
+                <li>LatentMemoryInterpreter<small>读 other-memory，不读当前段</small></li>
+                <li>CausalLowRankSequenceMemory</li>
+                <li>SharedParameterDecoder</li>
+              </ol>
+            </article>
+            <article class="pipe-card">
+              <header>
+                <span class="pipe-tag">v3.4 · flued/v34/model.py · 单体 probe + 消融矩阵</span>
+                <h3>消融驱动取舍</h3>
+                <p class="pipe-fate"><strong>结局：</strong>memory / emit 举证失败关闭；plain lookup + 独立 decoder + uniform 边界固化为 canonical_v35。</p>
+              </header>
+              <ol class="pipe-flow">
+                <li>PlainByteLookup</li>
+                <li>DiTStyleBlock 堆叠<small>RoPE + ALiBi + 噪声条件</small></li>
+                <li>FixedDualThresholdPolicy<small>+ SoftBoundaryBridge 硬执行软反传</small></li>
+                <li>ChunkBuilder</li>
+                <li>QueryPool / DenseNoSelfMemory<small>并行 · no-self</small></li>
+                <li>SmallChunkARCorrection<small>chunk 内小 AR 修正</small></li>
+                <li>rate_emit<small>硬发声计入真实计算账本</small></li>
+                <li>SpanDecoder<small>独立 / 共享逆两臂对照</small></li>
+              </ol>
+            </article>
+          </div>
+
+          <h3 class="pipe-subhead">竞争对手：同一个问题的三种回答</h3>
+          <div class="pipe-grid">
+            <article class="pipe-card is-rival">
+              <header>
+                <span class="pipe-tag">竞争对手 · BLT · blt_baseline/model.py</span>
+                <h3>熵驱动动态 patching</h3>
+                <p class="pipe-fate"><strong>信号性质：</strong>纯局部统计——边界来自 byte LM 的逐字节熵，不为下游任务学习语义边界。</p>
+              </header>
+              <ol class="pipe-flow">
+                <li>byte LM<small>d512 / 4L · 逐字节 entropy</small></li>
+                <li>EntropyPatcher<small>熵超阈值下刀</small></li>
+                <li>local encoder / decoder<small>patch 内局部进出</small></li>
+              </ol>
+            </article>
+            <article class="pipe-card is-rival">
+              <header>
+                <span class="pipe-tag">竞争对手 · H-Net · flued/hnet_repro/model.py</span>
+                <h3>余弦不相似度动态分块</h3>
+                <p class="pipe-fate"><strong>E20 现象：</strong>无显式压缩激励时边界退化——DiT 标准臂 ~1 chunk，瓶颈臂 ~190 chunks，无中间态。</p>
+              </header>
+              <ol class="pipe-flow">
+                <li>byte encoder ×2<small>causal block · RoPE</small></li>
+                <li>余弦不相似度 DC<small>0.5·(1−cos) &gt; 0.5 硬下采样 · 直通估计回传</small></li>
+                <li>因果主干 ×9<small>复现用 causal Transformer · 论文 Mamba-2 留 R2</small></li>
+                <li>dechunk → decoder ×3<small>chunk 表示回投字节位</small></li>
+              </ol>
+            </article>
+            <article class="pipe-card is-rival">
+              <header>
+                <span class="pipe-tag">竞争对手 · BPE · 离线统计分词</span>
+                <h3>固定词表，与语义无关</h3>
+                <p class="pipe-fate"><strong>切分最碎：</strong>同一中文样本 148 段（对照 v3.6 S0 臂 ~13 段）；边界由离线频次合并决定，与模型语义无关。</p>
+              </header>
+              <ol class="pipe-flow">
+                <li>离线语料统计<small>频次最高字节对迭代合并</small></li>
+                <li>固定词表<small>vocab 8,192</small></li>
+                <li>查表切分<small>在线无参数、不看上下文</small></li>
+              </ol>
+            </article>
+          </div>
+        </section>
+
+        <section class="section page-grid section-observe" id="pipeline" aria-labelledby="pipeline-title">
+          <div class="section-heading"><p class="section-kicker">Forward Pipeline</p><h2 id="pipeline-title">从字节流到单个 readout 包</h2><p>前向是一条单向流水线：编码、切分、摘要、写入、读出。没有窗口、没有 stride，512 字节作为一个完整样本被一次性消费。</p></div>
+          <div class="architecture-flow architecture-flow-wide" aria-label="v3.6 forward architecture">
+            <span>字节流 512B<br />单样本全上下文</span><span>byte encoder<br />3 层</span><span>segmentor<br />9 层细长型 · S0 冻结</span><span>动态切分<br />tanh &gt; 0.94 · UTF-8 guard</span><span>ChunkSummarizer<br />逐段产 memory</span><span>WriteHead<br />k / v / β / α 门控</span><span>KDA 状态机<br />串行消费</span><span>readout 包 ×1<br />d_pack 1,536</span><span>TinyBackbone<br />任务二改写</span><span>共享 span decoder<br />cosine logits</span><span>byte logits</span>
+          </div>
+          <div class="research-grid">
+            <article><h3>边界是学出来的，且被冻结</h3><p>segmentor（9 层细长型）先用 S0 段落标签预训练，随后在主线训练中冻结。切分规则：tanh 置信度 &gt; 0.94 才下刀，且 UTF-8 续字节位置禁止切分，保证不切断多字节字符。</p></article>
+            <article><h3>KDA 状态机</h3><p>KDA（逐通道门控 delta 规则的线性注意力）把每个 chunk 的 memory 经 WriteHead 的 k/v/β/α 门控写入状态。1 个 readout query 从最终状态读出 4×256=1,024 维，再经 realign MLP 映射为 d_pack=1,536 标量——即整条 prompt 恰好一个 readout 包；状态本体（4 头 128×256）随样本生灭，不参与传输。</p></article>
+            <article><h3>共享 span decoder</h3><p>decoder 与 byte encoder 共享同一张字节嵌入表，输出 cosine logits。嵌入表两端共享让「编码进状态」与「从状态解码」使用同一套字节语义坐标。</p></article>
+          </div>
+        </section>
+
+        <section class="section section-dark section-observe" id="tasks" aria-labelledby="tasks-title">
+          <div class="page-grid">
+            <div class="section-heading"><p class="section-kicker">Two Training Tasks</p><h2 id="tasks-title">同一个 readout 包，两条还原路径</h2><p>训练由两个任务共同约束：一个考精准记忆，一个考经主干改写后的信息存活。掩码为原生 5%、span 1-8 的字节掩码。</p></div>
+            <div class="claim-columns">
+              <div><h3>任务一 · 精准还原（direct）</h3><ul><li>readout 包直接进共享 span decoder。</li><li>目标：逐字节精准还原文本，指标 direct_acc。</li><li>检验状态本身是否无损携带全文信息。</li></ul></div>
+              <div><h3>任务二 · 经主干改写还原（backbone）</h3><ul><li>readout 包先经 TinyBackbone 改写，再由 decoder 全部还原。</li><li>目标：掩码位置补全，指标 backbone_masked_acc（即演示与评估的主口径 masked_acc）。</li><li>检验信息经过主干计算后是否仍然存活。</li></ul></div>
+            </div>
+            <p class="evidence-note">两个任务共享同一份编码与切分，差别只在 readout 包之后是否插入主干。v3.6 报告的主指标一律是任务二口径。</p>
+          </div>
+        </section>
+
+        <section class="section page-grid section-observe" id="evidence" aria-labelledby="evidence-title">
+          <div class="section-heading"><p class="section-kicker">Fair Comparison Anchors</p><h2 id="evidence-title">公平对比锚点（2026-08-02 证据）</h2><p>对比只在同一信息传输预算下成立：v3.6 与 HNet-DiT 瓶颈臂在可比压缩档位上比较 masked acc；H-Net AR 复现作为 next-byte 天花板锚。HNet-DiT 标准臂边界退化（约 1 个 chunk），不在同一压缩口径，故不作锚点。</p></div>
+          <div class="evidence-table" role="table" aria-label="v3.6 fair comparison anchors">
+            <div role="row"><span role="columnheader">模型</span><span role="columnheader">口径</span><span role="columnheader">指标</span><span role="columnheader">信息传输</span><span role="columnheader">定位</span></div>
+            <div role="row"><span role="cell">FLUED v3.6 (S0)</span><span role="cell">任务二 masked acc（eval）</span><span role="cell"><b>0.149</b></span><span role="cell"><b>1,536 标量</b></span><span role="cell">主模型 · 单 readout 包</span></div>
+            <div role="row"><span role="cell">HNet-DiT 瓶颈臂</span><span role="cell">masked acc（eval）</span><span role="cell">0.142</span><span role="cell">97,540 标量</span><span role="cell">公平对比臂 · 过度切分</span></div>
+            <div role="row"><span role="cell">H-Net AR 复现</span><span role="cell">next-byte BPB</span><span role="cell">0.653</span><span role="cell">逐位置 hidden state</span><span role="cell">天花板锚（不同任务口径）</span></div>
+          </div>
+          <div class="research-grid">
+            <article><h3>~60× 信息传输效率</h3><p>在 masked acc 基本持平（0.149 vs 0.142）的档位上，v3.6 的跨块通信量为 1,536 标量，瓶颈臂 97,540 标量，约 60 倍差距。</p></article>
+            <article><h3>两臂退化是现象不是 bug</h3><p>无显式压缩激励时动态切分无中间态：标准臂几乎不切（约 1 chunk），瓶颈臂过度切分（约 190 chunks）。演示页可直观看到这两条臂的真实切分。</p></article>
+            <article><h3>口径声明</h3><p>以上均为单 seed、演示性质证据，用于锚定当前研究方向；不构成多种子或尺度上的性能结论。</p></article>
+          </div>
+        </section>
+
+        <section class="section section-dark section-observe" id="frontier" aria-labelledby="frontier-title">
+          <div class="page-grid">
+            <div class="section-heading"><p class="section-kicker">Latest Evidence · 2026-08-04</p><h2 id="frontier-title">S0.5–S0.7：粒度之争了结，瓶颈锁定 readout 通道</h2><p>三条新证据（E21 / E22 / E23，候选口径）：GRPO 改变的是切分粒度而不是质量；summarizer 容量消融全线无效；真正的瓶颈在下游 readout 的包均值条件通道。均为单 seed 演示口径，不构成性能结论。</p></div>
+            <div class="research-grid">
+              <article><h3>E21 · S0.5 GRPO 边界优化</h3><p>对 segmentor 边界 + β 写入门做组相对策略优化（GRPO：同前缀采 G 个切分方案、组内排名优势、免 value network）。R1–R3 三轮失败教训：纯质量奖励 → 碎切捷径冲 59/64 段；采样计数率项 → 温度涂抹脱钩；确定性罚项 → 组内零方差被优势归一化消掉——核心教训：组相对优势只能优化组内有方差的量。R4 定稿：约束走可微直接损失 E[count]=Σcut_prob，预算 18 ≈ 部署 24 段锚用户粒度 → masked 与控制臂双口径打平，但<b>边界裁决成功：hard 停点 24.3 段 ≈ 用户 21B，教师粒度之争了结</b>。GRPO 当前价值 = 选粒度，非提质量。</p></article>
+              <article><h3>E22 · S0.6 summarizer 容量全因子</h3><p>slots / hidden / d_mem 三因子 2³ 共 8 臂、20K step 从零消融：主效应 ≤ 0.24pp，全部无效。天花板不在 summarizer——瓶颈锁定到下游 readout 的包均值条件通道，直接把问题推向 S0.7 的逐段条件化诊断。</p></article>
+              <article><h3>E23 · S0.7 逐段条件化诊断</h3><p>per_chunk_readout：KDA 每消费一段即从当前状态读出该段条件向量，替代均值 + 位置广播。unmasked 全位置 acc 0.190 → 0.351（+16pp）、PPL 33.9 → 12.1——信息确实在 KDA 状态里，均值通道是检索瓶颈，路线活。masked 0.154 → 0.141 未过预注册线（口径：masked 测的是从未进状态的字节，靠推断而非检索）。率口径修正：该臂传输 ~27K 标量，仍比 HNet-DiT 瓶颈臂（~97K）便宜 ~3.6×。</p></article>
+            </div>
+            <p class="evidence-note">用户裁定（2026-08-04）：masked 保持必备项不降级；S0.7 不设默认——canonical 维持 v36.1，per_chunk_readout 默认关；新条件化下 GRPO 是否重跑待定。</p>
+          </div>
+        </section>
+
+        <section class="section section-dark section-observe" id="code" aria-labelledby="code-title">
+          <div class="page-grid">
+            <div class="section-heading"><p class="section-kicker">Code Anchors</p><h2 id="code-title">每个关键节点都能落到公开代码</h2><p>链接固定到公开分支的实现行；训练脚本中的任务定义与指标口径应和本页共同阅读。</p></div>
+            <div class="code-index-grid">
+              <a href="https://github.com/wdd9700/FLUED/blob/copilot/implement-stage-a-experiments/flued/v36/model.py#L83-L107"><span>01</span><strong>ChunkSummarizer</strong><p><code>flued/v36/model.py:83-107</code> · 逐段把 chunk 摘要成 memory。</p></a>
+              <a href="https://github.com/wdd9700/FLUED/blob/copilot/implement-stage-a-experiments/flued/v36/model.py#L141-L163"><span>02</span><strong>WriteHead</strong><p><code>flued/v36/model.py:141-163</code> · k/v/β/α 门控写入。</p></a>
+              <a href="https://github.com/wdd9700/FLUED/blob/copilot/implement-stage-a-experiments/flued/v36/model.py#L166-L211"><span>03</span><strong>KDAStateMachine</strong><p><code>flued/v36/model.py:166-211</code> · 逐通道门控 delta 规则状态机。</p></a>
+              <a href="https://github.com/wdd9700/FLUED/blob/copilot/implement-stage-a-experiments/flued/v36/model.py#L264-L369"><span>04</span><strong>FLUEDV36 主模型</strong><p><code>flued/v36/model.py:264-369</code> · 编码、切分、读出与两个任务的前向组装。</p></a>
+              <a href="https://github.com/wdd9700/FLUED/blob/copilot/implement-stage-a-experiments/tools/train/v3_6/train_v36.py"><span>05</span><strong>v3.6 训练与评估入口</strong><p><code>tools/train/v3_6/train_v36.py</code> · 两任务联合训练、掩码与指标口径。</p></a>
+              <a href="https://github.com/wdd9700/FLUED/blob/copilot/implement-stage-a-experiments/tools/train/v3_6/train_s0_segmentor.py"><span>06</span><strong>S0 segmentor 预训练</strong><p><code>tools/train/v3_6/train_s0_segmentor.py</code> · 段落标签预训练，之后冻结。</p></a>
+              <a href="https://github.com/wdd9700/FLUED/blob/copilot/implement-stage-a-experiments/flued/hnet_repro/model.py"><span>07</span><strong>H-Net AR 复现基线</strong><p><code>flued/hnet_repro/model.py</code> · next-byte BPB 0.653 天花板锚的实现。</p></a>
+            </div>
+          </div>
+        </section>
+      </main>
+      <footer class="site-footer page-grid"><span>FLUED v3.6 Architecture · Alethic Insight</span><div><a href="/flued.html">FLUED</a><a href="/flued-demo.html">实时演示</a><a href="/flued-experiments.html">Experiment Atlas</a><a href="https://github.com/wdd9700/FLUED/tree/copilot/implement-stage-a-experiments">GitHub</a></div></footer>
+    </div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

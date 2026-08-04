@@ -1,0 +1,622 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="FLUED is Alethic Insight's byte-to-latent language interface research project."
+    />
+    <meta name="theme-color" content="#070809" />
+    <meta property="og:title" content="FLUED · Alethic Insight" />
+    <meta
+      property="og:description"
+      content="从 byte stream 到可还原 latent representation 的语言编码接口研究。"
+    />
+    <meta property="og:type" content="website" />
+    <title>FLUED · Alethic Insight</title>
+    <link rel="icon" href="/mark.svg" type="image/svg+xml" />
+    <script>
+      (() => {
+        let theme = "dark";
+        try {
+          theme = localStorage.getItem("theme") || "dark";
+        } catch {
+          theme = "dark";
+        }
+        document.documentElement.dataset.theme =
+          theme === "light" ? "light" : "dark";
+      })();
+    </script>
+    <link rel="stylesheet" href="/src/styles.css" />
+  </head>
+  <body>
+    <div class="site-shell project-page">
+      <header class="site-header" data-site-header>
+        <a class="brand" href="/index.html#top" aria-label="Alethic Insight home">
+          <img src="/mark.svg" alt="" width="32" height="32" />
+          <span>Alethic Insight</span>
+        </a>
+        <nav class="nav-links" aria-label="FLUED navigation">
+          <a href="/flued.html" aria-current="page">FLUED</a>
+          <a href="/flued-architecture.html">架构</a>
+          <a href="/flued-demo.html">实时演示</a>
+          <a href="/flued-evidence.html">证据</a>
+          <a href="/flued-experiments.html">实验图谱</a>
+        </nav>
+        <div class="header-controls">
+          <button
+            class="theme-toggle"
+            type="button"
+            data-theme-toggle
+            aria-label="切换到亮色主题"
+            aria-pressed="false"
+          >
+            <span class="theme-toggle-track" aria-hidden="true">
+              <span class="theme-toggle-thumb"></span>
+            </span>
+            <span data-theme-toggle-label>Dark</span>
+          </button>
+          <a class="header-action" href="https://github.com/wdd9700/FLUED/tree/copilot/implement-stage-a-experiments">
+            GitHub
+          </a>
+        </div>
+      </header>
+
+      <nav class="section-rail" aria-label="Section navigation">
+        <a href="#top" data-rail-link="top" aria-label="顶部"><span>Top</span></a>
+        <a href="#research-feed" data-rail-link="research-feed" aria-label="最新研究"><span>Latest</span></a>
+        <a href="#thesis" data-rail-link="thesis" aria-label="研究问题"><span>Thesis</span></a>
+        <a href="#history" data-rail-link="history" aria-label="历史"><span>History</span></a>
+        <a href="#evidence" data-rail-link="evidence" aria-label="证据"><span>Evidence</span></a>
+        <a href="#roi" data-rail-link="roi" aria-label="切分展示"><span>Boundary</span></a>
+        <a href="#architecture" data-rail-link="architecture" aria-label="架构追踪"><span>Arch</span></a>
+        <a href="#references" data-rail-link="references" aria-label="借鉴工作"><span>Related</span></a>
+        <a href="#boundary" data-rail-link="boundary" aria-label="主张边界"><span>Claims</span></a>
+      </nav>
+
+      <main>
+        <section class="project-hero section-observe" id="top">
+          <div class="page-grid project-hero-grid">
+            <div class="project-hero-copy">
+              <a class="back-link" href="/index.html#projects">返回公开项目</a>
+              <p class="eyebrow">Alethic Insight Research Archive</p>
+              <h1>FLUED</h1>
+              <p class="hero-lede">Byte-to-Latent Decision Interface</p>
+              <p class="project-lede">
+                FLUED 研究如何把原始字节流翻译成神经网络更容易处理的连续潜空间表示，
+                同时保留字节级可还原能力。它不是新的 tokenizer 宣传页，而是一条语言编码器路线：
+                让模型先在连续语义空间中理解和补全，再通过 decoder 精确回到 byte。
+              </p>
+              <div class="hero-prompt" aria-label="FLUED research prompt">
+                <span>research prompt</span>
+                <p>Can byte streams be converted into latent intelligence without freezing language into a vocabulary?</p>
+              </div>
+              <div class="hero-actions">
+                <a class="button button-primary" href="https://github.com/wdd9700/FLUED/tree/copilot/implement-stage-a-experiments">
+                  Open Repository
+                </a>
+                <a class="button button-secondary" href="/flued-architecture.html">
+                  Read Architecture
+                </a>
+                <a class="button button-text" href="/flued-evidence.html">
+                  View Evidence
+                </a>
+              </div>
+            </div>
+
+            <aside class="project-signal" aria-label="FLUED architecture summary">
+              <div class="signal-title">byte stream -> latent interface</div>
+              <ol>
+                <li>bytes stay lossless</li>
+                <li>segments stay learnable</li>
+                <li>latents face backbone</li>
+                <li>memory stays internal</li>
+                <li>decoder returns bytes</li>
+              </ol>
+            </aside>
+          </div>
+        </section>
+
+        <section class="section page-grid section-observe" id="research-feed" aria-labelledby="research-feed-title">
+          <div class="section-heading">
+            <p class="section-kicker">Latest Research</p>
+            <h2 id="research-feed-title">当前主线 v3.6：整条 prompt 压缩成一个 readout 包</h2>
+            <p>
+              v3.6（KDA 世代）把 512 字节 prompt 经动态切分、逐段摘要和 KDA 状态机串行消费后，
+              只保留 1 个 readout 包（1,536 标量），再由 decoder 从固定大小状态还原原文。
+              下面四个入口是理解当前证据的最短路径；v2 D1 等旧口径保留在 History，不替代当前结论。
+            </p>
+          </div>
+          <div class="research-feed-grid">
+            <article>
+              <span>2026-08 · KDA Generation</span>
+              <h3>v3.6 架构：512 字节进，一个包出</h3>
+              <p>S0 动态边界、ChunkSummarizer、WriteHead 门控写入、KDA 状态机串行消费，整条 prompt 恰好读出 1×1,536 标量。</p>
+              <a href="/flued-architecture.html">Read architecture</a>
+            </article>
+            <article>
+              <span>Evidence · Fair Comparison</span>
+              <h3>masked 0.149 打赢 HNet-DiT 瓶颈臂 0.142</h3>
+              <p>单 seed、38–44M 同规模、同 20K 步同语料、同 masked infilling 口径；信息传输 1,536 vs ~97,540 标量，同指标约 60× 信息效率。</p>
+              <a href="/flued-experiments.html#frontier">Open frontier</a>
+            </article>
+            <article>
+              <span>S0.5 · GRPO</span>
+              <h3>边界优化停在 24.3 段 ≈ 用户手标 21B</h3>
+              <p>GRPO 组内排名优化边界与写入门，质量与控制臂打平——当前价值是选粒度而非提质量，教师粒度之争了结。</p>
+              <a href="/flued-architecture.html#frontier">Read S0.5–S0.7</a>
+            </article>
+            <article>
+              <span>S0.7 · 非默认口径</span>
+              <h3>逐段条件化：unmasked 0.351 / PPL 12.1</h3>
+              <p>证明检索瓶颈可解、路线活；masked 未过预注册线，canonical 维持 v36.1，此臂不设默认。</p>
+              <a href="/flued-demo.html">Watch live demo</a>
+            </article>
+          </div>
+        </section>
+
+        <section class="section page-grid section-observe" id="thesis" aria-labelledby="question-title">
+          <div class="section-heading">
+            <p class="section-kicker">Research Question</p>
+            <h2 id="question-title">
+              <span class="heading-line">问题不是取代 tokenizer，</span>
+              <span class="heading-line">也不是单纯的语言编码接口，</span>
+              <span class="heading-line">而是更平滑的语义表示空间</span>
+            </h2>
+            <p>
+              BPE 把字符串先离散切成 token，再让 embedding 表承载大量语义先验。
+              FLUED 的出发点是把这一步改成可训练、可还原、可压缩的 byte-to-latent 翻译过程。
+            </p>
+          </div>
+          <div class="research-grid">
+            <article>
+              <h3>输入保持字节级</h3>
+              <p>所有语言、符号和编码细节都保留在 byte stream 中，避免词表边界提前丢失信息。</p>
+            </article>
+            <article>
+              <h3>表示进入连续空间</h3>
+              <p>readout latent 承载局部语义和位置信息，让外部 backbone 在更平滑的空间中学习。</p>
+            </article>
+            <article>
+              <h3>输出必须可还原</h3>
+              <p>latent representation 必须能通过 tied decoder 回到 byte，不能只追求不可解释的中间特征。</p>
+            </article>
+          </div>
+          <div class="idea-band">
+            <div>
+              <span>核心判断</span>
+              <strong>语言可以先被翻译为连续潜空间表示，而不是先被永久离散化。</strong>
+            </div>
+            <div>
+              <span>工程约束</span>
+              <strong>编码成本必须接近 tokenizer / BPE 级别，否则语义优势没有部署价值。</strong>
+            </div>
+            <div>
+              <span>评估底线</span>
+              <strong>补全任务必须先在 byte 输入层 mask，不能 clean encode 后再遮 readout。</strong>
+            </div>
+          </div>
+        </section>
+
+        <section class="section page-grid section-observe" id="history" aria-labelledby="history-title">
+          <div class="section-heading">
+            <p class="section-kicker">History</p>
+            <h2 id="history-title">从最小假设到 byte-level language encoder</h2>
+            <p>
+              FLUED 的迭代不是简单从“小模型”走到“大模型”。v1 是最小假设验证：
+              软切分、可还原 latent、tied decoder 是否足以让 byte stream 被压缩成更适合神经网络处理的表示。
+              v2 进入去噪和大模型后，暴露的是训练微分动力学和可训练性问题。
+              v3 系列把问题重新表述为 byte-level language encoder 的三角权衡：
+              计算复杂度、语义自然度、训练难度。
+            </p>
+          </div>
+          <div class="evolution-grid" aria-label="FLUED iteration logic">
+            <article>
+              <span>v1 · 最小假设</span>
+              <h3>先证明 soft boundary codec 能跑通</h3>
+              <p>
+                v1 的价值在于把 byte stream -> latent units -> tied inverse bytes 这条链路跑通，
+                E1v5 达到 recon_acc 0.9999、m/n 0.379、bp_std 0.443，并在历史 E3 中出现强 BPB 信号。
+                问题是短序列还原能力差，
+                压缩率、阈值和训练参数仍像 magic number，语义质量也不能只靠重建证明。
+              </p>
+            </article>
+            <article>
+              <span>v2 · 训练动力学</span>
+              <h3>去噪增强了重建，也扰动了压缩目标</h3>
+              <p>
+                v2 加入 denoising 后三种子重建稳定，但去噪任务、压缩约束和边界分化之间存在冲突。
+                latent consistency 的均方误差损失曾直接触发 loss 爆炸和边界塌缩；
+                去噪比例扫描显示 m/n 随噪声漂移，压缩权重扫描在部分 target 上出现 NaN。
+              </p>
+            </article>
+            <article>
+              <span>v3 · 研究谱系</span>
+              <h3>从自编码器转向语言编码接口</h3>
+              <p>
+                v3 不再把 reconstruction 当作唯一目标，而是追问 latent readout 是否真的降低外部 backbone 的学习难度。
+                这让 FLUED 接近 BLT、H-Net、ByteFlow、FLEXITOKENS 等方向共同面对的问题：
+                如何扩大计算复杂度、语义自然度、训练难度的不可能三角面积。
+              </p>
+            </article>
+          </div>
+          <div class="history-grid">
+            <article class="result-panel result-strong">
+              <span>historical v1 fair run</span>
+              <strong>1.2114 vs 1.4786 BPB</strong>
+              <p>
+                v1 soft-boundary autoencoder 在历史 E3 20K 设置中，相比 BPE 有约 18.1% 更低的 bits-per-byte，
+                并在同一历史设置下优于当时的 BLT reproduction。这是 FLUED 路线最早的强阳性信号。
+              </p>
+            </article>
+            <article class="result-panel">
+              <span>v2 fair D1 rerun</span>
+              <strong>0.8732 BPB vs BPE-8K 0.8066</strong>
+              <p>
+                v2 在 2048 原始 byte、100K steps、统一 downstream backbone 的矩阵下稳定但落后 BPE。
+                这说明 v1 信号值得重视，但不能直接外推为生产 tokenizer 替代结论。
+              </p>
+            </article>
+            <article class="result-panel">
+              <span>v3.2.1 strict masked-source</span>
+              <strong>+0.0458 mask accuracy</strong>
+              <p>
+                严格在 byte 输入层 mask 后，no-memory latent backbone 明显超过 byte baseline。
+                这是 v3 系列目前最干净的正向证据。
+              </p>
+            </article>
+          </div>
+          <div class="timeline-list">
+            <div><span>v1</span><p>最小假设：soft segmentation + tied inverse decoder，证明可微 byte codec 有信号，但短序列和超参魔数暴露完成度不足。</p></div>
+            <div><span>v2</span><p>大模型与去噪：328M tied model 三种子重建稳定，同时暴露 denoising、compression、boundary 之间的训练动力学冲突。</p></div>
+            <div><span>v3.1</span><p>语言编码器原型：readout latent / summary memory / minimal backbone，但早期 clean encode 评估有侧漏风险。</p></div>
+            <div><span>v3.2.1</span><p>严格 masked-source：先在 byte 输入层 mask，再 encode，确认 latent readout 对小 backbone 有正向作用。</p></div>
+            <div><span>v3.3</span><p>架构截止点：segmentor、interpreter、memory、decoder 职责拆开，转向系统消融和公开复现。</p></div>
+            <div><span>v3.4</span><p>消融矩阵（2026-07）：共享逆以三重证据判死、独立 decoder 成为默认；提出 CBIU（counterfactual boundary utility，反事实边界效用）协议评估单点边界贡献。</p></div>
+            <div><span>v3.6</span><p>KDA 世代（2026-07/08）：S0 segmentor 预训 F1 0.886；组件预训 +5.8pp 判死端到端；归因矩阵确认增益全部来自 S0 动态边界；S0.5 GRPO 边界优化停于 24.3 段 ≈ 用户手标 21B；S0.7 逐段条件化证明检索瓶颈可解、路线活。</p></div>
+          </div>
+        </section>
+
+        <section class="section section-dark section-observe" id="evidence" aria-labelledby="evidence-title">
+          <div class="page-grid">
+            <div class="section-heading">
+              <p class="section-kicker">Evidence</p>
+              <h2 id="evidence-title">当前证据边界</h2>
+              <p>
+                这里保留官网摘要。完整训练历程、100-step 曲线、NaN 断点和 strict masked-source
+                对照表放在独立证据浏览器中，方便读者直接比较。
+              </p>
+              <div class="hero-actions">
+                <a class="button button-primary" href="/flued-evidence.html">Open training curves</a>
+                <a class="button button-secondary" href="#roi">View boundary ROI</a>
+              </div>
+            </div>
+            <div class="metric-strip">
+              <div>
+                <span>v2 reconstruction</span>
+                <strong>0.9993 +/- 0.0005</strong>
+              </div>
+              <div>
+                <span>fair D1 BPE-8K</span>
+                <strong>0.8066 BPB</strong>
+              </div>
+              <div>
+                <span>fair D1 FLUED-v2</span>
+                <strong>0.8732 BPB</strong>
+              </div>
+              <div>
+                <span>v3.2.1 gain</span>
+                <strong>+0.0458 mask acc</strong>
+              </div>
+              <div>
+                <span>v3.6 masked acc</span>
+                <strong>0.149 @ 1,536 标量</strong>
+              </div>
+            </div>
+            <div class="evidence-table" role="table" aria-label="FLUED evidence table">
+              <div role="row">
+                <span role="columnheader">阶段</span>
+                <span role="columnheader">发现</span>
+                <span role="columnheader">研究含义</span>
+              </div>
+              <div role="row">
+                <span role="cell">v2</span>
+                <span role="cell">A-class 三种子 eval_acc 0.9991 / 0.9993 / 0.9996，均值 0.9993 +/- 0.0005；说明可微 byte-boundary / reconstruction 稳定。</span>
+                <span role="cell">稳定边界学习成立，但不支撑“优于 BPE”。</span>
+              </div>
+              <div role="row">
+                <span role="cell">v2 D1</span>
+                <span role="cell">2048-byte / 100K 公平矩阵中，BPE-8K 0.8066 BPB，FLUED-v2 0.8732 BPB，BLT theta=0.3 reproduction 2.3996 BPB。</span>
+                <span role="cell">FLUED 稳定但落后 BPE，这是官网主口径。</span>
+              </div>
+              <div role="row">
+                <span role="cell">v3.2.1</span>
+                <span role="cell">严格 byte-level mask 后，byte baseline mask_acc 0.1440，no-memory latent backbone 达到 0.1898；memory 分支接近但未稳定超过 no-memory。</span>
+                <span role="cell">证明 latent interface 可能降低 backbone 学习难度，但 memory gain 仍需严格消融。</span>
+              </div>
+              <div role="row">
+                <span role="cell">v3.4</span>
+                <span role="cell">one-shot DiT-style refinement、硬执行/软反传、并行 no-self memory、RoPE + 小 AR 与 shared inverse decoder 已实现；40K 归因显示动态边界与 hard emit 的课程仍耦合。</span>
+                <span role="cell">当前公开重点是架构与梯度的可审计性，不将单种子归因写成最终性能结论。</span>
+              </div>
+              <div role="row">
+                <span role="cell">v3.6</span>
+                <span role="cell">38–44M 同规模、同 20K 步、同语料、同 masked infilling 口径（单 seed）：FLUED v3.6 masked 0.149 @ 1,536 标量，HNet-DiT 瓶颈臂 0.142 @ ~97,540 标量；HNet-DiT 标准臂 0.324 为无压缩天花板锚，不在同一压缩口径。</span>
+                <span role="cell">同指标下约 60× 信息效率；受控单种子证据，不做多种子或尺度外推。</span>
+              </div>
+              <div role="row">
+                <span role="cell">v3.6 S0.7</span>
+                <span role="cell">逐段条件化诊断臂：unmasked 全位置 acc 0.351 / PPL 12.1，masked 0.141 未过预注册线；该臂为非默认口径，canonical 维持 v36.1。</span>
+                <span role="cell">证明 KDA 状态的检索瓶颈可解、路线活；不进入主结论。</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section page-grid section-observe" id="roi" aria-labelledby="roi-title">
+          <div class="section-heading">
+            <p class="section-kicker">Boundary Showcase</p>
+            <h2 id="roi-title">v3.6 的切分边界长什么样</h2>
+            <p>
+              同一段文本，五种切分来源并排：FLUED v3.6 的 S0 / GRPO R4 两个学习切分臂、H-Net 复现（学习切分）、BLT 字节 LM 熵切分、BPE 分词器。
+              全部来自预计算的真实模型输出（单 seed 演示口径，offsets 为 UTF-8 字节偏移），不是示意图；
+              <a href="/flued-demo.html">实时演示</a>可以在本机对任意输入重跑其中的模型。
+            </p>
+          </div>
+          <p class="showcase-banner">当前主线为 v3.6（KDA 世代）：逐节点管线、历代架构变迁与竞争对手对照见<a href="/flued-architecture.html">架构追踪页</a>，完整实验数据见<a href="/flued-experiments.html">实验图谱</a>。</p>
+
+          <div class="roi-summary">
+            <div><span>checkpoint</span><strong>arm_a_s0 + grpo_r4</strong></div>
+            <div><span>S0 教师边界 F1</span><strong>0.886</strong></div>
+            <div><span>R4 hard 停点</span><strong>24.3 段 ≈ 用户手标 21B</strong></div>
+            <div><span>口径</span><strong>单 seed 演示</strong></div>
+          </div>
+
+          <div class="showcase-tabs" data-showcase-tabs role="tablist" aria-label="切换展示文本"></div>
+          <div class="showcase-list" data-showcase-list><p class="demo-placeholder">切分对比加载中…</p></div>
+          <p class="showcase-foot">
+            S0 臂按教师标注粒度切（约 27B/段）；GRPO R4 臂经 S0.5 边界优化停在约 24 段 ≈ 用户手标 21B 粒度——任务奖励自选粒度，GRPO 当前的价值是选粒度而非提质量。
+            BPE 切得碎且无语义（zh 148 段 / en 319 段）；BLT 熵切分是纯局部统计信号（entropy &gt; 3.5 下刀）；
+            H-Net 是字节级模型，zh 文本存在字符内部下刀（段内出现 � 替换符为正常行为，数据已标注 lossless_join=false）。
+          </p>
+        </section>
+
+        <section class="section page-grid section-observe" id="architecture" aria-labelledby="architecture-title">
+          <div class="section-heading">
+            <p class="section-kicker">Architecture Trace</p>
+            <h2 id="architecture-title">架构追踪：从 tied 自编码器到 KDA 状态机</h2>
+            <p>
+              每一代架构都是一条从上而下的流水线，节点对应公开仓库里的真实模块，结局如实记录。
+              这里是摘要版；逐节点完整流水线、两任务口径与代码行级对照在<a href="/flued-architecture.html">架构追踪页</a>。
+            </p>
+          </div>
+          <div class="pipe-grid-duo">
+            <article class="pipe-card is-main">
+              <header>
+                <span class="pipe-tag">v3.6 · flued/v36/model.py · 当前主线</span>
+                <h3>512 字节进，一个 readout 包出</h3>
+                <p class="pipe-fate"><strong>状态：</strong>canonical v36.1。整条 prompt 压成 1×1,536 标量；masked 0.149 打赢 HNet-DiT 瓶颈臂 0.142（单 seed 同口径）。</p>
+              </header>
+              <ol class="pipe-flow">
+                <li class="is-io">字节流 512B<small>单样本全上下文</small></li>
+                <li>PlainByteLookup → byte encoder ×3<small>DiTStyleBlock · RoPE + ALiBi</small></li>
+                <li>segmentor ×9 + tanh 置信度<small>S0 预训后冻结 · F1 0.886</small></li>
+                <li>动态切分<small>conf &gt; 0.94 · UTF-8 续字节禁切 · 容量截断</small></li>
+                <li>ChunkBuilder → ChunkSummarizer<small>每段摘要成一个 memory（d_mem 512）</small></li>
+                <li>WriteHead → KDAStateMachine<small>k/v/β/α 门控 · 串行 delta 规则 · 4 头 k128/v256</small></li>
+                <li>readout query ×1 + realign<small>包 1×1,536 标量</small></li>
+                <li>TinyBackbone<small>3L pre-norm · 仅任务二经过</small></li>
+                <li class="is-io">GlobalSpanDecoder → bytes<small>共享 byte 表 · cosine logits</small></li>
+              </ol>
+            </article>
+            <article class="pipe-card">
+              <header>
+                <span class="pipe-tag">竞争对手 · 同一问题的三种回答</span>
+                <h3>边界在哪里下刀</h3>
+              </header>
+              <ol class="pipe-flow">
+                <li>BLT<small>byte LM 逐字节熵超阈值下刀 · 纯局部统计信号</small></li>
+                <li>H-Net<small>余弦不相似度硬下采样 + 因果主干 · 无压缩激励即退化（E20：~1 或 ~190 chunks）</small></li>
+                <li>BPE<small>离线频次合并固定词表 · 与语义无关 · 最碎（zh 148 段）</small></li>
+                <li>FLUED v3.6<small>S0 学习边界 · 为下游任务训练 · 粒度可被 GRPO 选择（24.3 段 ≈ 用户 21B）</small></li>
+              </ol>
+              <p class="pipe-fate">逐节点流水线与 E20 退化证据见<a href="/flued-architecture.html#evolution">架构追踪页</a>。</p>
+            </article>
+          </div>
+          <div class="pipe-grid">
+            <article class="pipe-card">
+              <header>
+                <span class="pipe-tag">v0.4 · flued/model.py</span>
+                <h3>tied 权重自编码器</h3>
+                <p class="pipe-fate">sigmoid(Linear(ΔH)) 软切分 + O(T²) 池化 + tied inverse。<strong>结局：共享逆三重证据判死。</strong></p>
+              </header>
+            </article>
+            <article class="pipe-card">
+              <header>
+                <span class="pipe-tag">v3.3 · flued/v33/</span>
+                <h3>模块化拆分</h3>
+                <p class="pipe-fate">segmentor / policy / memory / decoder 七模块职责分离。<strong>结局：架构截止点，转向系统消融。</strong></p>
+              </header>
+            </article>
+            <article class="pipe-card">
+              <header>
+                <span class="pipe-tag">v3.4 · flued/v34/</span>
+                <h3>单体 probe + 消融矩阵</h3>
+                <p class="pipe-fate">DiT block、软桥、no-self memory、rate_emit 逐个过消融。<strong>结局：memory / emit 关闭，canonical_v35 固化。</strong></p>
+              </header>
+            </article>
+          </div>
+          <div class="hero-actions"><a class="button button-secondary" href="/flued-architecture.html">Read full architecture trace</a></div>
+        </section>
+
+        <section class="section section-dark section-observe" id="references" aria-labelledby="references-title">
+          <div class="page-grid">
+            <div class="section-heading">
+              <p class="section-kicker">Related Thinking</p>
+              <h2 id="references-title">借鉴工作和 FLUED 的取舍</h2>
+              <p>
+                FLUED 不是孤立提出的结构。它吸收了 tokenizer-free、动态分块、信息论压缩、
+                latent diffusion、草稿修正和控制空间映射等方向的启发，但最终目标仍是语言编码器，
+                不是直接复刻某一种 byte-level LM。
+              </p>
+            </div>
+            <div class="reference-grid">
+              <article>
+                <span>BLT</span>
+                <h3>熵驱动动态 patching</h3>
+                <p>启发 FLUED 关注 byte-level 动态分块和局部不确定性；FLUED 不依赖大型预训练 ByteLM 作为唯一边界来源。</p>
+              </article>
+              <article>
+                <span>ByteFlow / coding rate</span>
+                <h3>用编码率约束压缩</h3>
+                <p>启发 readout 数量不应只靠 reconstruction loss 控制；v3.3 保留 rate pressure 和消融入口。</p>
+              </article>
+              <article>
+                <span>H-Net / FLEXITOKENS / SOMBRERO</span>
+                <h3>边界学习与边界质量</h3>
+                <p>启发 signed boundary、边界置信度诊断和 ROI 可视化；FLUED 避免把硬规则当作最终 tokenizer。</p>
+              </article>
+              <article>
+                <span>MANTa / Charformer / GBST</span>
+                <h3>可微分词与梯度分块</h3>
+                <p>证明“切分可以学习”这一路线有先例；FLUED 进一步要求 latent 可被 decoder 反向还原为 byte span。</p>
+              </article>
+              <article>
+                <span>DiffusionGemma / ELF</span>
+                <h3>连续 latent 空间建模</h3>
+                <p>启发把 denoise 放在 latent refinement 上，而不是把 FLUED 变成纯 next-byte 自回归模型。</p>
+              </article>
+              <article>
+                <span>DSpark</span>
+                <h3>小自回归头做轻量修正</h3>
+                <p>启发少量串行 correction head，但 v3.3 当前先保留一阶段接口，避免训练和推理成本过早膨胀。</p>
+              </article>
+              <article>
+                <span>Mapping Network</span>
+                <h3>低维控制到高维行为</h3>
+                <p>启发 memory/readout 的控制与 payload 分离：memory 不直接暴露给 backbone，readout 才是外部接口。</p>
+              </article>
+              <article>
+                <span>MEGABYTE / Hourglass / Perceiver</span>
+                <h3>层次压缩与长上下文</h3>
+                <p>启发“本段高清、历史压缩”的长上下文路线；FLUED 把该思想放在 encoder memory，而不是固定 patch。</p>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <section class="section page-grid section-observe" id="boundary" aria-labelledby="boundary-title">
+          <div class="section-heading">
+            <p class="section-kicker">Claims</p>
+            <h2 id="boundary-title">我们主张什么，也不主张什么</h2>
+          </div>
+          <div class="claim-columns">
+            <div>
+              <h3>可以主张</h3>
+              <ul>
+                <li>FLUED 是 Alethic Insight 的 tokenizer-free language interface 研究项目。</li>
+                <li>v2 证明了稳定重建和可微边界的可行性。</li>
+                <li>v2 公平 D1 证明 FLUED-v2 稳定但仍落后 BPE。</li>
+                <li>v3.2.1 在严格协议下证明 latent readout 对小 backbone 有帮助：0.1898 mask_acc vs byte baseline 0.1440。</li>
+                <li>v3.3 把问题明确推进到 byte-level language encoder 的计算复杂度、语义自然度、训练难度三角。</li>
+                <li>v3.3 提供了清晰的开源架构、参数接口和消融入口。</li>
+                <li>v3.6 在同规模、同步数、同语料、同 masked infilling 口径下 masked 0.149 超过 HNet-DiT 瓶颈臂 0.142，信息传输少约 60×（单 seed 受控证据）。</li>
+              </ul>
+            </div>
+            <div>
+              <h3>暂不主张</h3>
+              <ul>
+                <li>FLUED 已经替代 BPE。</li>
+                <li>FLUED 已经击败 BLT、H-Net、ByteFlow 等近期系统。</li>
+                <li>memory branch 已被证明是默认主线。</li>
+                <li>v1 历史 BPB 优势已经被 v2/v3 在所有新设置中复现。</li>
+                <li>reconstruction accuracy 等于语义质量。</li>
+                <li>v3.3 已经彻底解决训练参数 magic number 和可塑性问题。</li>
+                <li>v3.3 已经完成系统实验并证明优于近期 tokenizer-free 系统。</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer class="site-footer page-grid">
+        <span>FLUED · Alethic Insight</span>
+        <div>
+          <a href="/index.html#projects">Projects</a>
+          <a href="https://github.com/wdd9700/FLUED/tree/copilot/implement-stage-a-experiments">GitHub</a>
+          <a href="mailto:contact@alethicinsight.org">Contact</a>
+        </div>
+      </footer>
+    </div>
+
+    <script type="module" src="/src/main.js"></script>
+    <script type="module">
+      // v3.6 segmentation showcase: render /flued-segmentation-showcase.json into #roi.
+      const esc = (value) => String(value ?? "").replace(/[&<>"]/g, (ch) => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"})[ch]);
+
+      const SHOWCASE_METHOD_META = {
+        flued_v36_s0:      { space: "tanh",    blurb: "S0 臂：按教师标注粒度切（约 27B/段）——学习切分，tanh 置信度 > 0.94 下刀。" },
+        flued_v36_grpo_r4: { space: "tanh",    blurb: "GRPO R4 臂：S0.5 边界优化后自选粒度，约 24 段 ≈ 用户手标 21B 粒度——任务奖励自选粒度。" },
+        hnet_repro_ar:     { space: "prob",    blurb: "H-Net 复现：动态分块学习切分（AR next-byte 目标），公认强基线对照。" },
+        blt_entropy:       { space: "entropy", blurb: "BLT 字节 LM 熵切分：entropy > 3.5 下刀，纯局部统计信号。" },
+        bpe_tokenizer:     { space: null,      blurb: "BPE 分词器（vocab 8192）：算法切分，最碎且无语义；段为 token 边界并集。" },
+      };
+
+      function showcaseChart(method, meta) {
+        const scores = method.scores || [];
+        const threshold = method.threshold;
+        if (!scores.length || !meta.space || !Number.isFinite(threshold)) return "";
+        const n = scores.length;
+        const peak = Math.max(...scores.map((s) => (meta.space === "tanh" ? (s + 1) / 2 : s)), 0.01);
+        const norm = (s) => {
+          const v = meta.space === "tanh" ? (s + 1) / 2 : s;
+          return meta.space === "entropy" ? v / peak : Math.min(v, 1);
+        };
+        const rects = scores.map((s, i) => {
+          const h = Math.max(0.6, norm(s) * 38);
+          const cut = s >= threshold;
+          return `<rect x="${i}" y="${(40 - h).toFixed(2)}" width="1" height="${h.toFixed(2)}" class="${cut ? "showcase-cut" : "showcase-bar"}"/>`;
+        }).join("");
+        const spaceLabel = meta.space === "tanh" ? "tanh 空间" : meta.space === "entropy" ? "nats" : "概率";
+        return `<svg class="showcase-chart" viewBox="0 0 ${n} 40" preserveAspectRatio="none" role="img" aria-label="${esc(method.name)} boundary scores">${rects}</svg><div class="showcase-axis"><span>byte 0</span><span>切点阈值 ${threshold}（${spaceLabel}），过阈值高亮</span><span>byte ${n}</span></div>`;
+      }
+
+      function showcaseCard(method, meta) {
+        const segs = method.segments.map((seg, index) =>
+          `<span class="${index % 2 ? "showcase-seg-b" : "showcase-seg-a"}" title="bytes ${seg.start}–${seg.end}">${esc(seg.text)}</span>`
+        ).join('<span class="showcase-seg-mark" aria-hidden="true">▏</span>');
+        const lossy = method.lossless_join === false
+          ? `<p class="showcase-lossy">lossless_join=false：学习切分在字符内部下刀，段内 � 替换符是字节级模型的正常行为。</p>` : "";
+        return `<article class="showcase-card"><div class="showcase-head"><strong>${esc(method.name)}</strong><span class="showcase-kind">${esc(method.kind)}</span><span class="showcase-nseg">${method.n_segments} 段</span></div><p class="showcase-blurb">${esc(meta.blurb)}</p><div class="showcase-text">${segs}</div>${showcaseChart(method, meta)}${lossy}</article>`;
+      }
+
+      async function initShowcase() {
+        const tabsEl = document.querySelector("[data-showcase-tabs]");
+        const listEl = document.querySelector("[data-showcase-list]");
+        if (!tabsEl || !listEl) return;
+        try {
+          const res = await fetch("/flued-segmentation-showcase.json");
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          const data = await res.json();
+          const render = (textId) => {
+            const text = data.texts.find((t) => t.id === textId) || data.texts[0];
+            listEl.innerHTML = text.methods.map((m) => showcaseCard(m, SHOWCASE_METHOD_META[m.id] || { space: null, blurb: "" })).join("");
+            tabsEl.querySelectorAll("button").forEach((b) => b.classList.toggle("is-active", b.dataset.textId === text.id));
+          };
+          tabsEl.innerHTML = data.texts.map((t) =>
+            `<button type="button" class="showcase-tab" role="tab" data-text-id="${esc(t.id)}">${esc(t.lang)} · ${t.n_bytes}B</button>`
+          ).join("");
+          tabsEl.addEventListener("click", (event) => {
+            const button = event.target.closest("button[data-text-id]");
+            if (button) render(button.dataset.textId);
+          });
+          render(data.texts[0].id);
+        } catch (error) {
+          listEl.innerHTML = `<p class="demo-placeholder">切分对比数据加载失败（${esc(error.message)}）。</p>`;
+        }
+      }
+      initShowcase();
+    </script>
+  </body>
+</html>
