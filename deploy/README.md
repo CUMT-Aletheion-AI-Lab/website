@@ -3,6 +3,17 @@
 主站架构：GitHub 仅作代码仓库（不走 Actions/Pages），腾讯云轻量服务器跑 nginx 托管
 `dist/` 静态产物；域名 DNS 与跳转在 Cloudflare，回源走 Full (strict)。
 
+域名口径：对外身份（GitHub/HuggingFace/邮箱）一律 `alethicinsight.org`；网站实体
+绑 `alethicinsight.com`（.org 不在工信部可备案目录，境内机房无法备案，.com 可以）。
+`.org` 及其余域名在 Cloudflare 边缘 301 到 `.com`，不直接解析到源站。
+
+## 前置：ICP 备案（境内机房的硬前置，最先启动）
+
+境内服务器（如成都）的 80/443 在域名未备案前被运营商层面拦截，**先买服务器、
+随即在腾讯云备案控制台/小程序提交 `alethicinsight.com` 的备案**（主体=实验室/
+个人实名，周期约 2-4 周），备案通过前域名无法指到境内源站。等待期间可先在
+本机/临时境外节点演练部署流程。
+
 ## 服务器一次性初始化（Ubuntu 24.04）
 
 ```bash
