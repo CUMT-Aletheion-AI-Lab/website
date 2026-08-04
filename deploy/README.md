@@ -29,10 +29,16 @@ DEPLOY_HOST=root@<服务器公网IP> bash deploy/push-dist.sh
 
 ## Cloudflare 侧（一次性）
 
-1. DNS：A 记录 `alethicinsight.org`（及 `www`）→ 服务器公网 IP，代理状态开启（橙云）；
+口径：主域名为 `alethicinsight.com`，其余四个域名（`alethicinsight.org`、
+`alethicinsight.cn`、`aletheion.cn`、`aletheion.org.cn`）全部 301 到主域名。
+
+1. DNS：`alethicinsight.com` 的 A 记录 → 服务器公网 IP，代理状态开启（橙云）；
+   其余四个 zone 不需要指向源站的记录（跳转由 Cloudflare 边缘完成），但可保留
+   占位记录（如 A `192.0.2.1` 开橙云）以便 Redirect Rule 生效；
 2. SSL/TLS：模式 **Full (strict)**；
-3. 若用旧域名（aletheion.cn / preview.aletheion.cn 等）做跳转，在 Rules 里配
-   Redirect Rule 到 `https://alethicinsight.org`，Tunnel 方案退役。
+3. Origin Server：为 `alethicinsight.com` 创建 Origin CA 证书装到 nginx；
+4. Rules → Redirect Rules：为其余四个 zone 各建一条 301 到
+   `https://alethicinsight.com`（preserve query string）；旧 Tunnel 方案退役。
 
 ## 回滚
 
