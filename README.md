@@ -1,6 +1,6 @@
-# CUMT Alethic Insight AI Lab Website
+# CUMT Alethic Insight Lab Website
 
-Public website source for CUMT Alethic Insight AI Lab.
+Public website repository for CUMT Alethic Insight Lab.
 
 ## Development
 
@@ -18,6 +18,6 @@ npm run preview
 
 The site is built with Vite and deploys as static files from `dist/`.
 
-Do not commit credentials, deployment tokens, private analytics keys, unreleased internal materials, recruitment questions, interview records, scoring rubrics, or candidate data.
+Do not commit credentials, deployment tokens, private analytics keys, unreleased internal materials, recruitment questions, interview records, scoring rubrics, candidate data, or absolute local machine paths.
 
 Contact: contact@alethicinsight.org
