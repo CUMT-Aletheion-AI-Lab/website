@@ -11,7 +11,7 @@ if (!url || !out) {
   process.exit(1);
 }
 
-const EDGE = "C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe";
+const EDGE = process.env.EDGE_PATH || "C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe";
 const PORT = 9333;
 
 const edge = spawn(EDGE, [

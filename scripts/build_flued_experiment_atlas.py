@@ -8,17 +8,24 @@ from __future__ import annotations
 
 import csv
 import json
+import os
 from pathlib import Path
 
 
-SITE = Path(r"E:\projects\Aletheion\website")
-REPO = Path(r"E:\projects\FLUED\FLUED")
-V1 = Path(r"L:\FLUED_archive\migrated_from_K_20260712\E_checkpoints")
-V34 = Path(r"L:\FLUED_archive\v34_attribution_matrices_20260716")
-V36_S0 = Path(r"L:\FLUED_archive\v36_s0_vs_e2e_20260727")
-V36_ATTR = Path(r"L:\FLUED_archive\v36_attribution_matrix_20260731")
-V36_GRPO = Path(r"L:\FLUED_archive\s05_grpo_r4_2k_20260802")
-V36_S07 = Path(r"L:\FLUED_archive\s07_perchunk_20k_20260802")
+# Local data roots are ops-only configuration supplied via environment variables
+# (never commit absolute machine paths):
+#   FLUED_SITE     -> this website repo root (default: parent of this script)
+#   FLUED_REPO     -> local FLUED research repo checkout
+#   FLUED_ARCHIVE  -> local experiment archive root (e.g. <drive>:/FLUED_archive)
+SITE = Path(os.environ.get("FLUED_SITE", Path(__file__).resolve().parents[1]))
+REPO = Path(os.environ["FLUED_REPO"])
+_ARCHIVE = Path(os.environ["FLUED_ARCHIVE"])
+V1 = _ARCHIVE / "migrated_from_K_20260712" / "E_checkpoints"
+V34 = _ARCHIVE / "v34_attribution_matrices_20260716"
+V36_S0 = _ARCHIVE / "v36_s0_vs_e2e_20260727"
+V36_ATTR = _ARCHIVE / "v36_attribution_matrix_20260731"
+V36_GRPO = _ARCHIVE / "s05_grpo_r4_2k_20260802"
+V36_S07 = _ARCHIVE / "s07_perchunk_20k_20260802"
 OUT = SITE / "public" / "flued-experiment-atlas.json"
 
 

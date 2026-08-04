@@ -1,13 +1,15 @@
 import { readFileSync, writeFileSync } from "node:fs";
-import { pathToFileURL } from "node:url";
+import { pathToFileURL, fileURLToPath } from "node:url";
+import { dirname, join } from "node:path";
 
-const html = readFileSync("E:/projects/Aletheion/website/flued-demo.html", "utf-8");
+const SITE = join(dirname(fileURLToPath(import.meta.url)), "..");
+const html = readFileSync(join(SITE, "flued-demo.html"), "utf-8");
 const scripts = [...html.matchAll(/<script type="module">([\s\S]*?)<\/script>/g)];
 if (scripts.length !== 1) throw new Error(`expected 1 inline module, got ${scripts.length}`);
 const src = scripts[0][1];
-writeFileSync("/tmp/demo_inline.mjs", src);
+writeFileSync(join(SITE, "scripts", "_demo_inline.tmp.mjs"), src);
 
-const fixture = JSON.parse(readFileSync("E:/projects/Aletheion/website/public/flued-demo-sample.json", "utf-8"));
+const fixture = JSON.parse(readFileSync(join(SITE, "public", "flued-demo-sample.json"), "utf-8"));
 
 const handlers = {};
 const stubs = new Map();
@@ -37,7 +39,7 @@ globalThis.fetch = async (url) => {
   throw new Error("unexpected fetch " + url);
 };
 
-await import(pathToFileURL("/tmp/demo_inline.mjs").href);
+await import(pathToFileURL(join(SITE, "scripts", "_demo_inline.tmp.mjs")).href);
 await new Promise((r) => setTimeout(r, 50));
 
 const assert = (cond, msg) => { if (!cond) throw new Error("ASSERT: " + msg); console.log("ok -", msg); };
