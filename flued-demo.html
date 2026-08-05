@@ -1,10 +1,10 @@
 <!doctype html>
-<html lang="zh-CN" data-theme="dark">
+<html lang="zh-CN" data-theme="light">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="FLUED v3.6 live demo: dynamic boundary segmentation and masked byte completion across five models." />
-    <meta name="theme-color" content="#070809" />
+    <meta name="theme-color" content="#f3f5f6" />
     <meta property="og:title" content="FLUED v3.6 Live Demo · Alethic Insight" />
     <meta property="og:description" content="同一段文本，五个模型的语义切分与掩码补全实时对比。" />
     <meta property="og:type" content="website" />
@@ -12,8 +12,8 @@
     <link rel="icon" href="/mark.svg" type="image/svg+xml" />
     <script>
       (() => {
-        try { document.documentElement.dataset.theme = localStorage.getItem("theme") || "dark"; }
-        catch { document.documentElement.dataset.theme = "dark"; }
+        try { document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"; }
+        catch { document.documentElement.dataset.theme = "light"; }
       })();
     </script>
     <link rel="stylesheet" href="/src/styles.css" />
@@ -23,14 +23,14 @@
       <header class="site-header" data-site-header>
         <a class="brand" href="/index.html#top" aria-label="Alethic Insight home"><img src="/mark.svg" alt="" width="32" height="32" /><span>Alethic Insight</span></a>
         <nav class="nav-links" aria-label="FLUED navigation">
-          <a href="/flued.html">FLUED</a>
-          <a href="/flued-architecture.html">架构</a>
-          <a href="/flued-demo.html" aria-current="page">实时演示</a>
-          <a href="/flued-evidence.html">证据</a>
-          <a href="/flued-experiments.html">实验图谱</a>
+          <a href="/flued.html"><b>01</b>问题</a>
+          <a href="/flued-architecture.html"><b>02</b>架构</a>
+          <a href="/flued-demo.html" aria-current="page"><b>03</b>演示</a>
+          <a href="/flued-evidence.html"><b>04</b>证据</a>
+          <a href="/flued-experiments.html"><b>05</b>图谱</a>
         </nav>
         <div class="header-controls">
-          <button class="theme-toggle" type="button" data-theme-toggle aria-label="切换到亮色主题" aria-pressed="false"><span class="theme-toggle-track" aria-hidden="true"><span class="theme-toggle-thumb"></span></span><span data-theme-toggle-label>Dark</span></button>
+          <button class="theme-toggle" type="button" data-theme-toggle aria-label="切换到深色主题" aria-pressed="true"><span class="theme-toggle-track" aria-hidden="true"><span class="theme-toggle-thumb"></span></span><span data-theme-toggle-label>Light</span></button>
           <a class="header-action" href="https://github.com/wdd9700/FLUED/tree/copilot/implement-stage-a-experiments">GitHub</a>
         </div>
       </header>
@@ -48,10 +48,12 @@
           <div class="page-grid project-hero-grid">
             <div class="project-hero-copy">
               <a class="back-link" href="/flued.html#evidence">返回 FLUED 主页面</a>
+              <p class="chapter-tag">Chapter 03 · 眼见为实</p>
               <p class="eyebrow">FLUED v3.6 Live Demo</p>
               <h1><span>五个模型，同一段文本，</span><span>各自决定在哪里下刀</span></h1>
               <p class="hero-lede">动态边界切分 · 掩码字节补全 · 本机实时推理</p>
               <p class="project-lede">本页面在本机访问时连接本机推理服务（127.0.0.1:8722，CPU 实时推理），公网访问时自动展示预录样例。演示把同一段输入同时送入 FLUED v3.6 的两个边界臂（S0 教师粒度 + GRPO R4 自选粒度）和三个 H-Net 基线：先展示每个模型把字节流切成了哪些语义段，再随机掩盖约 5% 的字节让模型补全。KDA（逐通道门控 delta 规则的线性注意力）是 v3.6 的主干状态机；readout 包指整条 prompt 被压缩成的单个逻辑读出单位（1536 个标量）。</p>
+              <p class="hero-cont"><b>上一章 · 架构：</b>整条 prompt 经动态切分、逐段摘要和 KDA 状态机串行消费，压成 1×1,536 标量——本章让它在你眼前跑。</p>
               <div class="hero-actions"><a class="button button-primary" href="#input">开始演示</a><a class="button button-secondary" href="/flued-architecture.html">阅读 v3.6 架构</a></div>
             </div>
             <aside class="project-signal" aria-label="Demo service status">
@@ -101,6 +103,13 @@
             <div data-timing><p class="demo-placeholder">耗时数据将在此显示。</p></div>
             <p class="evidence-note">S0.7 逐段条件化（per-chunk readout）已证明检索瓶颈可解：unmasked 全位置 acc 0.190→0.351、PPL 33.9→12.1。本演示为 canonical v36.1 口径（per_chunk_readout 默认关），不构成性能结论。</p>
           </div>
+        </section>
+        <section class="section page-grid section-observe" aria-label="下一章">
+          <a class="next-card" href="/flued-evidence.html">
+            <span class="next-kicker">Next · CH.04</span>
+            <span class="next-title">单样本之外——成规模的曲线与对照怎么说</span>
+            <span class="next-go">打开证据 →</span>
+          </a>
         </section>
       </main>
       <footer class="site-footer page-grid"><span>FLUED v3.6 Live Demo · Alethic Insight</span><div><a href="/flued.html">FLUED</a><a href="/flued-architecture.html">架构</a><a href="https://github.com/wdd9700/FLUED/tree/copilot/implement-stage-a-experiments">GitHub</a><a href="mailto:contact@alethicinsight.org">Contact</a></div></footer>

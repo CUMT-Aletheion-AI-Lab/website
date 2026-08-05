@@ -1,10 +1,10 @@
 <!doctype html>
-<html lang="zh-CN" data-theme="dark">
+<html lang="zh-CN" data-theme="light">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="FLUED v0.4-v3.6 experiment atlas with auditable training curves, baselines and ablations." />
-    <meta name="theme-color" content="#070809" />
+    <meta name="theme-color" content="#f3f5f6" />
     <meta property="og:title" content="FLUED Experiment Atlas · Alethic Insight" />
     <meta property="og:description" content="按版本、阶段、基线与可信度浏览 FLUED 的关键实验和完整训练趋势。" />
     <meta property="og:type" content="website" />
@@ -12,8 +12,8 @@
     <link rel="icon" href="/mark.svg" type="image/svg+xml" />
     <script>
       (() => {
-        try { document.documentElement.dataset.theme = localStorage.getItem("theme") || "dark"; }
-        catch { document.documentElement.dataset.theme = "dark"; }
+        try { document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"; }
+        catch { document.documentElement.dataset.theme = "light"; }
       })();
     </script>
     <link rel="stylesheet" href="/src/styles.css" />
@@ -23,14 +23,14 @@
       <header class="site-header" data-site-header>
         <a class="brand" href="/index.html#top" aria-label="Alethic Insight home"><img src="/mark.svg" alt="" width="32" height="32" /><span>Alethic Insight</span></a>
         <nav class="nav-links" aria-label="FLUED navigation">
-          <a href="/flued.html">FLUED</a>
-          <a href="/flued-architecture.html">架构</a>
-          <a href="/flued-demo.html">实时演示</a>
-          <a href="/flued-evidence.html">证据</a>
-          <a href="/flued-experiments.html" aria-current="page">实验图谱</a>
+          <a href="/flued.html"><b>01</b>问题</a>
+          <a href="/flued-architecture.html"><b>02</b>架构</a>
+          <a href="/flued-demo.html"><b>03</b>演示</a>
+          <a href="/flued-evidence.html"><b>04</b>证据</a>
+          <a href="/flued-experiments.html" aria-current="page"><b>05</b>图谱</a>
         </nav>
         <div class="header-controls">
-          <button class="theme-toggle" type="button" data-theme-toggle aria-label="切换到亮色主题" aria-pressed="false"><span class="theme-toggle-track" aria-hidden="true"><span class="theme-toggle-thumb"></span></span><span data-theme-toggle-label>Dark</span></button>
+          <button class="theme-toggle" type="button" data-theme-toggle aria-label="切换到深色主题" aria-pressed="true"><span class="theme-toggle-track" aria-hidden="true"><span class="theme-toggle-thumb"></span></span><span data-theme-toggle-label>Light</span></button>
           <a class="header-action" href="https://github.com/wdd9700/FLUED/tree/copilot/implement-stage-a-experiments">GitHub</a>
         </div>
       </header>
@@ -48,10 +48,12 @@
           <div class="page-grid project-hero-grid">
             <div class="project-hero-copy">
               <a class="back-link" href="/flued.html#evidence">返回 FLUED 主页面</a>
+              <p class="chapter-tag">Chapter 05 · 总账</p>
               <p class="eyebrow">FLUED Experiment Atlas</p>
               <h1><span>完整研究过程，</span><span>不只保留最终点</span></h1>
-              <p class="hero-lede">v0.4 -> v3.6 · baselines · ablations · failure cases</p>
+              <p class="hero-lede is-latin">v0.4 -> v3.6 · baselines · ablations · failure cases</p>
               <p class="project-lede">这里汇总可公开的关键实验条目和派生训练曲线。每项都标注口径与可信度：历史现象、受控机制实验和可作为主结论的公平比较被明确分开。</p>
+              <p class="hero-cont"><b>上一章 · 证据边界：</b>关键曲线与严格对照——本章是全部可公开实验记录的总账，以及当前前沿在整个坐标系里的位置。</p>
               <div class="hero-actions"><a class="button button-primary" href="#ledger">Browse ledger</a><a class="button button-secondary" href="#curves">Inspect curves</a></div>
             </div>
             <aside class="project-signal atlas-signal" aria-label="Atlas facts">
@@ -116,12 +118,19 @@
             <div><h3>只用于定位或历史叙事</h3><ul><li>v3.6 S0.7 逐段条件化（unmasked 0.351 / PPL 12.1）是非默认口径诊断臂，不进入主结论。</li><li>v1 的 E3 20K BPB 阳性不是 D1 公平比较的替代品。</li><li>v3.4 迁移前 5K 筛选用于发现候选组件，不能绕过后续代码纠偏。</li><li>v3.4 40K/20K 单种子矩阵可定位失稳机制，不能据此声称多种子或尺度规律。</li></ul></div>
           </div>
         </section>
+        <section class="section page-grid section-observe" aria-label="下一章">
+          <a class="next-card" href="/flued.html#boundary">
+            <span class="next-kicker">Loop · CH.01</span>
+            <span class="next-title">回到起点——我们主张什么，也不主张什么</span>
+            <span class="next-go">回到研究问题 →</span>
+          </a>
+        </section>
       </main>
       <footer class="site-footer page-grid"><span>FLUED Experiment Atlas · Alethic Insight</span><div><a href="/flued.html">FLUED</a><a href="https://github.com/wdd9700/FLUED/tree/copilot/implement-stage-a-experiments">GitHub</a><a href="mailto:contact@alethicinsight.org">Contact</a></div></footer>
     </div>
     <script type="module" src="/src/main.js"></script>
     <script type="module">
-      const COLORS = ["#45d3b5", "#7dd3fc", "#fbbf24", "#fb7185", "#c4b5fd", "#a3e635", "#fda4af", "#60a5fa"];
+      const COLORS = ["#c65a38", "#5e7e9b", "#b98a2f", "#a85d68", "#8a7ca8", "#6f8b5a", "#b0789b", "#4f7a72"];
       const METRIC = { reconstruction: { label: "reconstruction accuracy", digits: 3 }, completion: { label: "masked completion accuracy", digits: 3 }, backbone_acc: { label: "backbone acc（unmasked 全位置）", digits: 3 }, latent_per_byte: { label: "actual backbone latent / byte", digits: 3 }, loss: { label: "loss", digits: 3 }, chunks: { label: "chunks / sample（切分段数）", digits: 1 }, boundary_std: { label: "boundary probability std", digits: 3 }, grad_norm: { label: "gradient norm", digits: 2 } };
       const state = { payload: null, family: null, metric: "reconstruction", version: "all", evidence: "all", query: "" };
       const $ = (selector) => document.querySelector(selector);
@@ -175,10 +184,10 @@
     <script type="module">
       // Rate–distortion frontier + masked-acc bars (data: results/v3.6/rd_frontier_20260802/points.csv, 单 seed=42, 20K steps, corpus_v3).
       const RD_GROUPS = {
-        v36: { color: "#45d3b5", label: "v3.6 frontier（S0 + 4x KDA）" },
-        ctx: { color: "#9aa0aa", label: "uniform-boundary context" },
-        hnet: { color: "#fbbf24", label: "HNet-DiT reference" },
-        s07: { color: "#c4b5fd", label: "S0.7 逐段条件化臂 · 非默认" },
+        v36: { color: "#b34a24", label: "v3.6 frontier（S0 + 4x KDA）" },
+        ctx: { color: "#8a8578", label: "uniform-boundary context" },
+        hnet: { color: "#b98a2f", label: "HNet-DiT reference" },
+        s07: { color: "#8a7ca8", label: "S0.7 逐段条件化臂 · 非默认" },
       };
       const RD_POINTS = [
         { label: "v3.6 k=1 (S0+4x)", rate: 1536, acc: 0.1485, group: "v36", pos: "a" },
@@ -221,7 +230,7 @@
         const a = RD_POINTS[0], b = RD_POINTS[7];
         const ax = sx(a.rate) + (sx(b.rate) - sx(a.rate)) * 0.27;
         const ay = sy(a.acc) + (sy(b.acc) - sy(a.acc)) * 0.27;
-        out += `<line x1="${sx(a.rate)}" y1="${sy(a.acc)}" x2="${sx(b.rate)}" y2="${sy(b.acc)}" stroke="#45d3b5" stroke-width="1" stroke-dasharray="4 4" opacity="0.55"/>`;
+        out += `<line x1="${sx(a.rate)}" y1="${sy(a.acc)}" x2="${sx(b.rate)}" y2="${sy(b.acc)}" stroke="#b34a24" stroke-width="1" stroke-dasharray="4 4" opacity="0.55"/>`;
         out += `<text class="rd-annotation" x="${ax}" y="${ay + 20}" text-anchor="middle">同指标下 ~60× 信息效率</text>`;
         out += `<text class="rd-annotation" x="${ax}" y="${ay + 36}" text-anchor="middle">0.149 @ 1,536 vs 0.142 @ 97,540</text>`;
         // ceiling note

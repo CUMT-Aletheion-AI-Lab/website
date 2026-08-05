@@ -6,7 +6,7 @@
 set -euo pipefail
 
 HOST="${DEPLOY_HOST:?set DEPLOY_HOST=user@ip}"
-SSH_OPTS=(-o ConnectTimeout=10)
+SSH_OPTS=(-o ConnectTimeout=10 -o StrictHostKeyChecking=accept-new)
 KEY="${DEPLOY_KEY:-$HOME/.ssh/alethic_site_ed25519}"
 if [ -f "$KEY" ]; then SSH_OPTS+=(-i "$KEY"); fi
 

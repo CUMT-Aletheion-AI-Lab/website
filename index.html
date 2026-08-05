@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="zh-CN" data-theme="dark">
+<html lang="zh-CN" data-theme="light">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -7,7 +7,7 @@
       name="description"
       content="CUMT Alethic Insight AI Lab is a student-led AI research, engineering, and open-source community at China University of Mining and Technology."
     />
-    <meta name="theme-color" content="#070809" />
+    <meta name="theme-color" content="#f3f5f6" />
     <meta property="og:title" content="CUMT Alethic Insight AI Lab" />
     <meta
       property="og:description"
@@ -18,14 +18,14 @@
     <link rel="icon" href="/mark.svg" type="image/svg+xml" />
     <script>
       (() => {
-        let theme = "dark";
+        let theme = "light";
         try {
-          theme = localStorage.getItem("theme") || "dark";
+          theme = localStorage.getItem("theme") || "light";
         } catch {
-          theme = "dark";
+          theme = "light";
         }
         document.documentElement.dataset.theme =
-          theme === "light" ? "light" : "dark";
+          theme === "dark" ? "dark" : "light";
       })();
     </script>
     <link rel="stylesheet" href="/src/styles.css" />
@@ -50,13 +50,13 @@
             class="theme-toggle"
             type="button"
             data-theme-toggle
-            aria-label="切换到亮色主题"
-            aria-pressed="false"
+            aria-label="切换到深色主题"
+            aria-pressed="true"
           >
             <span class="theme-toggle-track" aria-hidden="true">
               <span class="theme-toggle-thumb"></span>
             </span>
-            <span data-theme-toggle-label>Dark</span>
+            <span data-theme-toggle-label>Light</span>
           </button>
           <a class="header-action" href="https://github.com/CUMT-Alethic-Insight-Lab">
             GitHub
@@ -89,25 +89,13 @@
         <section class="hero section-observe" id="top" aria-labelledby="hero-title">
           <div class="hero-backdrop" aria-hidden="true">
             <div class="backdrop-word">真知灼见</div>
-            <div class="signal-column signal-column-a">
-              <span>noise</span>
-              <span>structure</span>
-              <span>aletheia</span>
-              <span>handoff</span>
-            </div>
-            <div class="signal-column signal-column-b">
-              <span>collect</span>
-              <span>model</span>
-              <span>verify</span>
-              <span>release</span>
-            </div>
           </div>
 
           <div class="page-grid hero-content">
             <div class="hero-copy">
               <p class="eyebrow">CUMT Alethic Insight AI Lab · 真知灼见</p>
               <h1 id="hero-title">Alethic Insight</h1>
-              <p class="hero-lede">
+              <p class="hero-lede is-latin">
                 From noise, structure.<br />
                 From structure, aletheia.
               </p>
@@ -125,6 +113,7 @@
                   Governance
                 </a>
               </div>
+              <p class="hero-meta">CUMT · Xuzhou, CN · <b>34.2044°N 117.1438°E</b> · Est. 2025</p>
             </div>
 
             <aside class="lab-index" aria-label="Lab operating index">
@@ -161,27 +150,27 @@
             <article>
               <span>01</span>
               <h3>Language & NLP</h3>
-              <p>LLM 应用 / 检索增强 / 中文 NLP / 评测 / 数据构建</p>
+              <p>大模型应用与检索增强，面向中文场景的评测与数据构建。</p>
             </article>
             <article>
               <span>02</span>
               <h3>Vision & Multimodal</h3>
-              <p>视觉语言模型 / 视觉推理 / 遥感场景 / 多模态系统</p>
+              <p>视觉语言模型与视觉推理，遥感场景与多模态系统落地。</p>
             </article>
             <article>
               <span>03</span>
               <h3>Agents & RL</h3>
-              <p>工具调用 / 规划 / 局部智能体 / 反馈循环 / 环境交互</p>
+              <p>工具调用、规划与反馈循环，面向真实环境的智能体训练。</p>
             </article>
             <article>
               <span>04</span>
               <h3>Trustworthy AI</h3>
-              <p>验证 / 可复现 / 安全边界 / 治理规范 / 技术诚实</p>
+              <p>结果可验证、实验可复现，安全边界与治理规范先行。</p>
             </article>
             <article>
               <span>05</span>
               <h3>AI Infrastructure</h3>
-              <p>部署 / 实验追踪 / 模型服务 / GPU / 存储工作流</p>
+              <p>部署、实验追踪与模型服务，GPU 与存储的工程化工作流。</p>
             </article>
           </div>
         </section>
@@ -229,19 +218,19 @@
           <div class="principle-grid">
             <article>
               <h3>Disclose</h3>
-              <p>AI 辅助披露 / 模型与范围 / 验证方式</p>
+              <p>公开 AI 辅助的模型、使用范围与验证方式。</p>
             </article>
             <article>
               <h3>Review</h3>
-              <p>Pull Request / Review / 可追踪讨论</p>
+              <p>一切改动走 Pull Request，讨论全程可追踪。</p>
             </article>
             <article>
               <h3>Reproduce</h3>
-              <p>实验记录 / 数据来源 / 部署过程</p>
+              <p>实验记录、数据来源与部署过程全部留档。</p>
             </article>
             <article>
               <h3>Handoff</h3>
-              <p>交接文档 / 权限清单 / 维护边界</p>
+              <p>交接文档、权限清单与维护边界预先写明。</p>
             </article>
           </div>
         </section>

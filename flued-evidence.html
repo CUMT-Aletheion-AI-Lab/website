@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="zh-CN" data-theme="dark">
+<html lang="zh-CN" data-theme="light">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -7,7 +7,7 @@
       name="description"
       content="FLUED training curves and strict masked-source evidence browser."
     />
-    <meta name="theme-color" content="#070809" />
+    <meta name="theme-color" content="#f3f5f6" />
     <meta property="og:title" content="FLUED Evidence · Alethic Insight" />
     <meta
       property="og:description"
@@ -18,14 +18,14 @@
     <link rel="icon" href="/mark.svg" type="image/svg+xml" />
     <script>
       (() => {
-        let theme = "dark";
+        let theme = "light";
         try {
-          theme = localStorage.getItem("theme") || "dark";
+          theme = localStorage.getItem("theme") || "light";
         } catch {
-          theme = "dark";
+          theme = "light";
         }
         document.documentElement.dataset.theme =
-          theme === "light" ? "light" : "dark";
+          theme === "dark" ? "dark" : "light";
       })();
     </script>
     <link rel="stylesheet" href="/src/styles.css" />
@@ -38,24 +38,24 @@
           <span>Alethic Insight</span>
         </a>
         <nav class="nav-links" aria-label="FLUED navigation">
-          <a href="/flued.html">FLUED</a>
-          <a href="/flued-architecture.html">架构</a>
-          <a href="/flued-demo.html">实时演示</a>
-          <a href="/flued-evidence.html" aria-current="page">证据</a>
-          <a href="/flued-experiments.html">实验图谱</a>
+          <a href="/flued.html"><b>01</b>问题</a>
+          <a href="/flued-architecture.html"><b>02</b>架构</a>
+          <a href="/flued-demo.html"><b>03</b>演示</a>
+          <a href="/flued-evidence.html" aria-current="page"><b>04</b>证据</a>
+          <a href="/flued-experiments.html"><b>05</b>图谱</a>
         </nav>
         <div class="header-controls">
           <button
             class="theme-toggle"
             type="button"
             data-theme-toggle
-            aria-label="切换到亮色主题"
-            aria-pressed="false"
+            aria-label="切换到深色主题"
+            aria-pressed="true"
           >
             <span class="theme-toggle-track" aria-hidden="true">
               <span class="theme-toggle-thumb"></span>
             </span>
-            <span data-theme-toggle-label>Dark</span>
+            <span data-theme-toggle-label>Light</span>
           </button>
           <a class="header-action" href="https://github.com/wdd9700/FLUED/tree/copilot/implement-stage-a-experiments">
             GitHub
@@ -75,13 +75,15 @@
           <div class="page-grid project-hero-grid">
             <div class="project-hero-copy">
               <a class="back-link" href="/flued.html#evidence">返回 FLUED 主页面</a>
+              <p class="chapter-tag">Chapter 04 · 数据说话</p>
               <p class="eyebrow">FLUED Evidence Browser</p>
               <h1>训练曲线与证据边界</h1>
-              <p class="hero-lede">100-step logs, no downsampling</p>
+              <p class="hero-lede is-latin">100-step logs, no downsampling</p>
               <p class="project-lede">
                 这里把 v2 稳定性、去噪比例、压缩控制和 v3 strict masked-source
                 对照拆开展示。v1 历史阳性只作为历史背景，不混入 v2 公平 D1 结论。
               </p>
+              <p class="hero-cont"><b>上一章 · 实时演示：</b>五个模型同一段文本、秒级出结果——本章看这些数字在成规模训练里是否站得住。</p>
               <div class="hero-actions">
                 <a class="button button-primary" href="#curves">Open curves</a>
                 <a class="button button-secondary" href="#strict">Compare strict mask</a>
@@ -205,6 +207,13 @@
               </ul>
             </div>
           </div>
+        </section>
+        <section class="section page-grid section-observe" aria-label="下一章">
+          <a class="next-card" href="/flued-experiments.html">
+            <span class="next-kicker">Next · CH.05</span>
+            <span class="next-title">曲线是过程——全部实验记录的总账在这里</span>
+            <span class="next-go">翻开图谱 →</span>
+          </a>
         </section>
       </main>
 

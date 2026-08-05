@@ -6,8 +6,8 @@ const themeColor = document.querySelector('meta[name="theme-color"]');
 const railLinks = document.querySelectorAll("[data-rail-link]");
 
 const themeMeta = {
-  dark: "#070809",
-  light: "#f6f4ee",
+  dark: "#0b0e12",
+  light: "#f3f5f6",
 };
 
 const readStoredTheme = () => {
@@ -27,7 +27,7 @@ const storeTheme = (theme) => {
 };
 
 const applyTheme = (theme) => {
-  const nextTheme = theme === "light" ? "light" : "dark";
+  const nextTheme = theme === "dark" ? "dark" : "light";
 
   root.dataset.theme = nextTheme;
   storeTheme(nextTheme);

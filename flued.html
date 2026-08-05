@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="zh-CN" data-theme="dark">
+<html lang="zh-CN" data-theme="light">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -7,7 +7,7 @@
       name="description"
       content="FLUED is Alethic Insight's byte-to-latent language interface research project."
     />
-    <meta name="theme-color" content="#070809" />
+    <meta name="theme-color" content="#f3f5f6" />
     <meta property="og:title" content="FLUED · Alethic Insight" />
     <meta
       property="og:description"
@@ -18,14 +18,14 @@
     <link rel="icon" href="/mark.svg" type="image/svg+xml" />
     <script>
       (() => {
-        let theme = "dark";
+        let theme = "light";
         try {
-          theme = localStorage.getItem("theme") || "dark";
+          theme = localStorage.getItem("theme") || "light";
         } catch {
-          theme = "dark";
+          theme = "light";
         }
         document.documentElement.dataset.theme =
-          theme === "light" ? "light" : "dark";
+          theme === "dark" ? "dark" : "light";
       })();
     </script>
     <link rel="stylesheet" href="/src/styles.css" />
@@ -38,24 +38,24 @@
           <span>Alethic Insight</span>
         </a>
         <nav class="nav-links" aria-label="FLUED navigation">
-          <a href="/flued.html" aria-current="page">FLUED</a>
-          <a href="/flued-architecture.html">架构</a>
-          <a href="/flued-demo.html">实时演示</a>
-          <a href="/flued-evidence.html">证据</a>
-          <a href="/flued-experiments.html">实验图谱</a>
+          <a href="/flued.html" aria-current="page"><b>01</b>问题</a>
+          <a href="/flued-architecture.html"><b>02</b>架构</a>
+          <a href="/flued-demo.html"><b>03</b>演示</a>
+          <a href="/flued-evidence.html"><b>04</b>证据</a>
+          <a href="/flued-experiments.html"><b>05</b>图谱</a>
         </nav>
         <div class="header-controls">
           <button
             class="theme-toggle"
             type="button"
             data-theme-toggle
-            aria-label="切换到亮色主题"
-            aria-pressed="false"
+            aria-label="切换到深色主题"
+            aria-pressed="true"
           >
             <span class="theme-toggle-track" aria-hidden="true">
               <span class="theme-toggle-thumb"></span>
             </span>
-            <span data-theme-toggle-label>Dark</span>
+            <span data-theme-toggle-label>Light</span>
           </button>
           <a class="header-action" href="https://github.com/wdd9700/FLUED/tree/copilot/implement-stage-a-experiments">
             GitHub
@@ -65,9 +65,9 @@
 
       <nav class="section-rail" aria-label="Section navigation">
         <a href="#top" data-rail-link="top" aria-label="顶部"><span>Top</span></a>
-        <a href="#research-feed" data-rail-link="research-feed" aria-label="最新研究"><span>Latest</span></a>
         <a href="#thesis" data-rail-link="thesis" aria-label="研究问题"><span>Thesis</span></a>
-        <a href="#history" data-rail-link="history" aria-label="历史"><span>History</span></a>
+        <a href="#history" data-rail-link="history" aria-label="研究地图"><span>Route</span></a>
+        <a href="#research-feed" data-rail-link="research-feed" aria-label="当前位置"><span>Current</span></a>
         <a href="#evidence" data-rail-link="evidence" aria-label="证据"><span>Evidence</span></a>
         <a href="#roi" data-rail-link="roi" aria-label="切分展示"><span>Boundary</span></a>
         <a href="#architecture" data-rail-link="architecture" aria-label="架构追踪"><span>Arch</span></a>
@@ -80,9 +80,10 @@
           <div class="page-grid project-hero-grid">
             <div class="project-hero-copy">
               <a class="back-link" href="/index.html#projects">返回公开项目</a>
+              <p class="chapter-tag">Chapter 01 · 研究问题</p>
               <p class="eyebrow">Alethic Insight Research Archive</p>
               <h1>FLUED</h1>
-              <p class="hero-lede">Byte-to-Latent Decision Interface</p>
+              <p class="hero-lede is-latin">Byte-to-Latent Decision Interface</p>
               <p class="project-lede">
                 FLUED 研究如何把原始字节流翻译成神经网络更容易处理的连续潜空间表示，
                 同时保留字节级可还原能力。它不是新的 tokenizer 宣传页，而是一条语言编码器路线：
@@ -115,44 +116,6 @@
                 <li>decoder returns bytes</li>
               </ol>
             </aside>
-          </div>
-        </section>
-
-        <section class="section page-grid section-observe" id="research-feed" aria-labelledby="research-feed-title">
-          <div class="section-heading">
-            <p class="section-kicker">Latest Research</p>
-            <h2 id="research-feed-title">当前主线 v3.6：整条 prompt 压缩成一个 readout 包</h2>
-            <p>
-              v3.6（KDA 世代）把 512 字节 prompt 经动态切分、逐段摘要和 KDA 状态机串行消费后，
-              只保留 1 个 readout 包（1,536 标量），再由 decoder 从固定大小状态还原原文。
-              下面四个入口是理解当前证据的最短路径；v2 D1 等旧口径保留在 History，不替代当前结论。
-            </p>
-          </div>
-          <div class="research-feed-grid">
-            <article>
-              <span>2026-08 · KDA Generation</span>
-              <h3>v3.6 架构：512 字节进，一个包出</h3>
-              <p>S0 动态边界、ChunkSummarizer、WriteHead 门控写入、KDA 状态机串行消费，整条 prompt 恰好读出 1×1,536 标量。</p>
-              <a href="/flued-architecture.html">Read architecture</a>
-            </article>
-            <article>
-              <span>Evidence · Fair Comparison</span>
-              <h3>masked 0.149 打赢 HNet-DiT 瓶颈臂 0.142</h3>
-              <p>单 seed、38–44M 同规模、同 20K 步同语料、同 masked infilling 口径；信息传输 1,536 vs ~97,540 标量，同指标约 60× 信息效率。</p>
-              <a href="/flued-experiments.html#frontier">Open frontier</a>
-            </article>
-            <article>
-              <span>S0.5 · GRPO</span>
-              <h3>边界优化停在 24.3 段 ≈ 用户手标 21B</h3>
-              <p>GRPO 组内排名优化边界与写入门，质量与控制臂打平——当前价值是选粒度而非提质量，教师粒度之争了结。</p>
-              <a href="/flued-architecture.html#frontier">Read S0.5–S0.7</a>
-            </article>
-            <article>
-              <span>S0.7 · 非默认口径</span>
-              <h3>逐段条件化：unmasked 0.351 / PPL 12.1</h3>
-              <p>证明检索瓶颈可解、路线活；masked 未过预注册线，canonical 维持 v36.1，此臂不设默认。</p>
-              <a href="/flued-demo.html">Watch live demo</a>
-            </article>
           </div>
         </section>
 
@@ -201,16 +164,64 @@
 
         <section class="section page-grid section-observe" id="history" aria-labelledby="history-title">
           <div class="section-heading">
-            <p class="section-kicker">History</p>
-            <h2 id="history-title">从最小假设到 byte-level language encoder</h2>
+            <p class="section-kicker">Research Route</p>
+            <h2 id="history-title">研究地图：每一代的判词都留在线上</h2>
             <p>
-              FLUED 的迭代不是简单从“小模型”走到“大模型”。v1 是最小假设验证：
-              软切分、可还原 latent、tied decoder 是否足以让 byte stream 被压缩成更适合神经网络处理的表示。
-              v2 进入去噪和大模型后，暴露的是训练微分动力学和可训练性问题。
-              v3 系列把问题重新表述为 byte-level language encoder 的三角权衡：
-              计算复杂度、语义自然度、训练难度。
+              FLUED 的迭代不是从“小模型”走到“大模型”，而是沿一个问题逐代排雷：软切分能跑通吗、训练稳吗、
+              严格口径下还有效吗、压到最硬还剩什么。节点是版本，判词是结局——判死的也留在线上，点击跳到对应证据。
             </p>
           </div>
+          <div class="story-map" aria-label="FLUED 研究地图">
+            <a class="map-node" href="/flued-architecture.html#evolution">
+              <span class="map-ver">v0.4</span>
+              <span class="map-title">tied 自编码器</span>
+              <span class="map-verdict">软切分 + O(T²) 池化跑通 byte→latent→byte；共享逆后被三重证据判死</span>
+              <span class="map-status">历史</span>
+            </a>
+            <a class="map-node" href="/flued-experiments.html#ledger">
+              <span class="map-ver">v1</span>
+              <span class="map-title">最小假设验证</span>
+              <span class="map-verdict">E1v5 recon_acc 0.99999；历史 E3 BPB 1.21 vs BPE 1.48——最早强信号，仅作背景</span>
+              <span class="map-status">历史信号</span>
+            </a>
+            <a class="map-node" href="/flued-evidence.html#curves">
+              <span class="map-ver">v2</span>
+              <span class="map-title">训练动力学</span>
+              <span class="map-verdict">三种子重建稳定（0.9993±0.0005）；公平 D1 0.8732 落后 BPE 0.8066——稳定但落后</span>
+              <span class="map-status">公平口径</span>
+            </a>
+            <a class="map-node" href="/flued-evidence.html#strict">
+              <span class="map-ver">v3.2.1</span>
+              <span class="map-title">严格 masked-source</span>
+              <span class="map-verdict">先在 byte 层 mask 再 encode：latent readout 0.1898 对 byte 0.1440——v3 最干净正证据</span>
+              <span class="map-status">关键证据</span>
+            </a>
+            <a class="map-node" href="/flued-architecture.html#evolution">
+              <span class="map-ver">v3.3–3.4</span>
+              <span class="map-title">模块化与消融矩阵</span>
+              <span class="map-verdict">七模块拆分逐个过消融：共享逆判死、memory/emit 关闭，canonical_v35 固化</span>
+              <span class="map-status">截止点</span>
+            </a>
+            <a class="map-node is-main" href="/flued-architecture.html#pipeline">
+              <span class="map-ver">v3.6</span>
+              <span class="map-title">KDA 状态机</span>
+              <span class="map-verdict">512B → 1×1,536 readout 包；同口径 masked 0.149 对 HNet-DiT 瓶颈臂 0.142，传输少约 60×</span>
+              <span class="map-status">当前主线</span>
+            </a>
+            <a class="map-node" href="/flued-architecture.html#frontier">
+              <span class="map-ver">S0.5–0.6</span>
+              <span class="map-title">粒度与容量</span>
+              <span class="map-verdict">GRPO 自选停在 24.3 段 ≈ 用户手标 21B；summarizer 容量全因子无效——两案了结</span>
+              <span class="map-status">已了结</span>
+            </a>
+            <a class="map-node is-edge" href="/flued-experiments.html#frontier">
+              <span class="map-ver">S0.7</span>
+              <span class="map-title">瓶颈定位</span>
+              <span class="map-verdict">逐段条件化 unmasked acc 0.190→0.351、PPL 33.9→12.1：检索瓶颈在 readout 通道，路线活</span>
+              <span class="map-status">前沿</span>
+            </a>
+          </div>
+          <p class="pipe-subhead">逐代展开：三代的问题意识</p>
           <div class="evolution-grid" aria-label="FLUED iteration logic">
             <article>
               <span>v1 · 最小假设</span>
@@ -275,6 +286,44 @@
             <div><span>v3.3</span><p>架构截止点：segmentor、interpreter、memory、decoder 职责拆开，转向系统消融和公开复现。</p></div>
             <div><span>v3.4</span><p>消融矩阵（2026-07）：共享逆以三重证据判死、独立 decoder 成为默认；提出 CBIU（counterfactual boundary utility，反事实边界效用）协议评估单点边界贡献。</p></div>
             <div><span>v3.6</span><p>KDA 世代（2026-07/08）：S0 segmentor 预训 F1 0.886；组件预训 +5.8pp 判死端到端；归因矩阵确认增益全部来自 S0 动态边界；S0.5 GRPO 边界优化停于 24.3 段 ≈ 用户手标 21B；S0.7 逐段条件化证明检索瓶颈可解、路线活。</p></div>
+          </div>
+        </section>
+
+        <section class="section page-grid section-observe" id="research-feed" aria-labelledby="research-feed-title">
+          <div class="section-heading">
+            <p class="section-kicker">Current Position</p>
+            <h2 id="research-feed-title">当前位置：v3.6 主线，四个最短入口</h2>
+            <p>
+              地图走到这里，就是现在：v3.6（KDA 世代）把 512 字节 prompt 经动态切分、逐段摘要和 KDA 状态机串行消费后，
+              只保留 1 个 readout 包（1,536 标量），再由 decoder 从固定大小状态还原原文。
+              下面四个入口是理解当前证据的最短路径；v2 D1 等旧口径保留在研究地图，不替代当前结论。
+            </p>
+          </div>
+          <div class="research-feed-grid">
+            <article>
+              <span>2026-08 · KDA Generation</span>
+              <h3>v3.6 架构：512 字节进，一个包出</h3>
+              <p>S0 动态边界、ChunkSummarizer、WriteHead 门控写入、KDA 状态机串行消费，整条 prompt 恰好读出 1×1,536 标量。</p>
+              <a href="/flued-architecture.html">Read architecture</a>
+            </article>
+            <article>
+              <span>Evidence · Fair Comparison</span>
+              <h3>masked 0.149 打赢 HNet-DiT 瓶颈臂 0.142</h3>
+              <p>单 seed、38–44M 同规模、同 20K 步同语料、同 masked infilling 口径；信息传输 1,536 vs ~97,540 标量，同指标约 60× 信息效率。</p>
+              <a href="/flued-experiments.html#frontier">Open frontier</a>
+            </article>
+            <article>
+              <span>S0.5 · GRPO</span>
+              <h3>边界优化停在 24.3 段 ≈ 用户手标 21B</h3>
+              <p>GRPO 组内排名优化边界与写入门，质量与控制臂打平——当前价值是选粒度而非提质量，教师粒度之争了结。</p>
+              <a href="/flued-architecture.html#frontier">Read S0.5–S0.7</a>
+            </article>
+            <article>
+              <span>S0.7 · 非默认口径</span>
+              <h3>逐段条件化：unmasked 0.351 / PPL 12.1</h3>
+              <p>证明检索瓶颈可解、路线活；masked 未过预注册线，canonical 维持 v36.1，此臂不设默认。</p>
+              <a href="/flued-demo.html">Watch live demo</a>
+            </article>
           </div>
         </section>
 
@@ -537,6 +586,13 @@
               </ul>
             </div>
           </div>
+        </section>
+        <section class="section page-grid section-observe" aria-label="下一章">
+          <a class="next-card" href="/flued-architecture.html">
+            <span class="next-kicker">Next · CH.02</span>
+            <span class="next-title">赌注押下了——它具体怎么运转？逐节点架构追踪</span>
+            <span class="next-go">阅读架构 →</span>
+          </a>
         </section>
       </main>
 

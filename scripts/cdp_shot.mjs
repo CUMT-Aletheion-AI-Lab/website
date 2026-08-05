@@ -5,7 +5,7 @@
 import { spawn } from "node:child_process";
 import { writeFileSync } from "node:fs";
 
-const [url, out, selector = "", width = "1600", height = "1200", settleMs = "2500", evalJs = ""] = process.argv.slice(2);
+const [url, out, selector = "", width = "1600", height = "1200", settleMs = "2500", evalJs = "", evalWaitMs = "900"] = process.argv.slice(2);
 if (!url || !out) {
   console.error("usage: node scripts/cdp_shot.mjs <url> <out.png> [scrollSelector] [width] [height] [settleMs]");
   process.exit(1);
@@ -17,6 +17,7 @@ const PORT = 9333;
 const edge = spawn(EDGE, [
   "--headless=new",
   "--disable-gpu",
+  "--disable-extensions",
   "--hide-scrollbars",
   "--force-prefers-reduced-motion",
   `--remote-debugging-port=${PORT}`,
@@ -74,7 +75,7 @@ async function main() {
 
   if (evalJs) {
     await send("Runtime.evaluate", { expression: evalJs });
-    await sleep(900);
+    await sleep(Number(evalWaitMs));
   }
 
   if (selector) {

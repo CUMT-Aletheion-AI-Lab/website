@@ -1,17 +1,17 @@
 <!doctype html>
-<html lang="zh-CN" data-theme="dark">
+<html lang="zh-CN" data-theme="light">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="FLUED v3.6 architecture: S0 dynamic boundaries, ChunkSummarizer, WriteHead and the KDA state machine with a single readout package." />
-    <meta name="theme-color" content="#070809" />
+    <meta name="theme-color" content="#f3f5f6" />
     <meta property="og:title" content="FLUED v3.6 Architecture · Alethic Insight" />
     <meta property="og:description" content="v3.6 管线、两个训练任务、公平对比锚点与公开代码索引。" />
     <meta property="og:type" content="website" />
     <title>FLUED v3.6 Architecture · Alethic Insight</title>
     <link rel="icon" href="/mark.svg" type="image/svg+xml" />
     <script>
-      (() => { try { document.documentElement.dataset.theme = localStorage.getItem("theme") || "dark"; } catch { document.documentElement.dataset.theme = "dark"; } })();
+      (() => { try { document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"; } catch { document.documentElement.dataset.theme = "light"; } })();
     </script>
     <link rel="stylesheet" href="/src/styles.css" />
   </head>
@@ -20,14 +20,14 @@
       <header class="site-header" data-site-header>
         <a class="brand" href="/index.html#top" aria-label="Alethic Insight home"><img src="/mark.svg" alt="" width="32" height="32" /><span>Alethic Insight</span></a>
         <nav class="nav-links" aria-label="FLUED navigation">
-          <a href="/flued.html">FLUED</a>
-          <a href="/flued-architecture.html" aria-current="page">架构</a>
-          <a href="/flued-demo.html">实时演示</a>
-          <a href="/flued-evidence.html">证据</a>
-          <a href="/flued-experiments.html">实验图谱</a>
+          <a href="/flued.html"><b>01</b>问题</a>
+          <a href="/flued-architecture.html" aria-current="page"><b>02</b>架构</a>
+          <a href="/flued-demo.html"><b>03</b>演示</a>
+          <a href="/flued-evidence.html"><b>04</b>证据</a>
+          <a href="/flued-experiments.html"><b>05</b>图谱</a>
         </nav>
         <div class="header-controls">
-          <button class="theme-toggle" type="button" data-theme-toggle aria-label="切换到亮色主题" aria-pressed="false"><span class="theme-toggle-track" aria-hidden="true"><span class="theme-toggle-thumb"></span></span><span data-theme-toggle-label>Dark</span></button>
+          <button class="theme-toggle" type="button" data-theme-toggle aria-label="切换到深色主题" aria-pressed="true"><span class="theme-toggle-track" aria-hidden="true"><span class="theme-toggle-thumb"></span></span><span data-theme-toggle-label>Light</span></button>
           <a class="header-action" href="https://github.com/wdd9700/FLUED/tree/copilot/implement-stage-a-experiments">GitHub</a>
         </div>
       </header>
@@ -48,10 +48,12 @@
           <div class="page-grid project-hero-grid">
             <div class="project-hero-copy">
               <a class="back-link" href="/flued.html#architecture">返回 FLUED 主页面</a>
+              <p class="chapter-tag">Chapter 02 · 怎么做</p>
               <p class="eyebrow">Architecture · v3.6</p>
               <h1>FLUED v3.6</h1>
               <p class="hero-lede">512 字节进，一个 readout 包出</p>
               <p class="project-lede">v3.6 把问题压到最硬的一档：整条 prompt 经动态切分、逐段摘要和 KDA 状态机（逐通道门控 delta 规则的线性注意力）串行消费后，只保留一个 readout 包——1536 个标量的逻辑读出单位。decoder 必须从这个固定大小的状态里把原文还原回来。本页给出管线、两个训练任务与当前公平对比锚点；所有数字为单 seed 演示口径，不构成性能结论。</p>
+              <p class="hero-cont"><b>上一章 · 研究问题：</b>FLUED 赌语言可以先翻译成连续潜空间、再精确还原回字节——本章看 v3.6 如何把这条赌注压成一条具体流水线。</p>
               <div class="hero-actions"><a class="button button-primary" href="/flued-demo.html">查看实时演示</a><a class="button button-secondary" href="#code">Open code index</a></div>
             </div>
             <aside class="project-signal" aria-label="Current v3.6 status">
@@ -399,6 +401,13 @@
               <a href="https://github.com/wdd9700/FLUED/blob/copilot/implement-stage-a-experiments/flued/hnet_repro/model.py"><span>07</span><strong>H-Net AR 复现基线</strong><p><code>flued/hnet_repro/model.py</code> · next-byte BPB 0.653 天花板锚的实现。</p></a>
             </div>
           </div>
+        </section>
+        <section class="section page-grid section-observe" aria-label="下一章">
+          <a class="next-card" href="/flued-demo.html">
+            <span class="next-kicker">Next · CH.03</span>
+            <span class="next-title">管线看完了——让它在你眼前跑一遍</span>
+            <span class="next-go">进入演示 →</span>
+          </a>
         </section>
       </main>
       <footer class="site-footer page-grid"><span>FLUED v3.6 Architecture · Alethic Insight</span><div><a href="/flued.html">FLUED</a><a href="/flued-demo.html">实时演示</a><a href="/flued-experiments.html">Experiment Atlas</a><a href="https://github.com/wdd9700/FLUED/tree/copilot/implement-stage-a-experiments">GitHub</a></div></footer>

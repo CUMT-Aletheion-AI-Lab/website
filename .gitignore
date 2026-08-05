@@ -21,3 +21,6 @@ watchdog.log
 scripts/_demo_inline.tmp.mjs
 watchdog.ps1
 /_*.png
+
+# Local deploy tarball
+_dist_*.tar.gz
